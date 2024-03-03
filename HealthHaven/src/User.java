@@ -19,6 +19,8 @@ public class User {
 	private String legal_last_name;
 	private String address;
 	private LocalDate dob;
+	
+	private static short ACCOUNT_TYPE = -1;
 
 	/**
 	 * @param password
@@ -54,10 +56,20 @@ public class User {
 		this.password = password;
 	}
 
+	protected void generateUserID() {
+	}
+
+	/**
+	 * @return the userID
+	 */
+	protected int getUserID() {
+		return userID;
+	}
+
 	/**
 	 * @param userID the userID to set
 	 */
-	public void generateUserID() {
+	protected void setUserID(int userID) {
 		this.userID = userID;
 	}
 
@@ -138,4 +150,5 @@ public class User {
 				+ "]";
 	}
 
+	
 }
