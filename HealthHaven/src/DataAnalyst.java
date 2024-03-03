@@ -9,7 +9,7 @@ import java.time.LocalDate;
  *
  */
 public class DataAnalyst extends User {
-	private static short ACCOUNT_TYPE = 2;
+	private static Account ACCOUNT_TYPE = Account.DATA_ANALYST;
 
 	/**
 	 * @param password

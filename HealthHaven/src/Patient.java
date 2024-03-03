@@ -9,7 +9,7 @@ import java.time.LocalDate;
  *
  */
 public class Patient extends User {
-	private static short ACCOUNT_TYPE = 1;
+	private static Account ACCOUNT_TYPE = Account.PATIENT;
 
 	/**
 	 * @param password

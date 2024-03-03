@@ -9,7 +9,7 @@ import java.time.LocalDate;
  *
  */
 public class DataProtectionOfficer extends User {
-	private static short ACCOUNT_TYPE = 4;
+	private static Account ACCOUNT_TYPE = Account.DPO;
 
 	/**
 	 * @param password

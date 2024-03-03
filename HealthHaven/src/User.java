@@ -20,7 +20,24 @@ public class User {
 	private String address;
 	private LocalDate dob;
 	
-	private static short ACCOUNT_TYPE = -1;
+	protected static enum Account{
+		DOCTOR("Doctor"), 
+		PATIENT("Patient"),
+		DATA_ANALYST("Data Analyst"),
+		SUPERADMIN("Superadmin"),
+		DPO("Data Protection Officer"),
+		NONE("NONE");
+		private String account_name;
+		private Account(String account_name) {
+			this.account_name = account_name;
+		}
+		
+		private String getAccountName() {
+			return this.account_name;
+		}
+	}
+	
+	private static Account ACCOUNT_TYPE = Account.NONE;
 
 	/**
 	 * @param password
@@ -147,7 +164,7 @@ public class User {
 	public String toString() {
 		return "User [password=" + password + ", userID=" + userID + ", email=" + email + ", legal_first_name="
 				+ legal_first_name + ", legal_last_name=" + legal_last_name + ", address=" + address + ", dob=" + dob
-				+ "]";
+				+ ", Account Type=" + ACCOUNT_TYPE.getAccountName() + "]";
 	}
 
 	
