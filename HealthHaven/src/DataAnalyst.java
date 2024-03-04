@@ -1,11 +1,13 @@
 import java.time.LocalDate;
+import java.util.Random;
+
 
 /**
  * 
  */
 
 /**
- * @author sameermalik
+ * @author sameermalik and maxbaum
  *
  */
 public class DataAnalyst extends User {
@@ -27,7 +29,13 @@ public class DataAnalyst extends User {
 	
 	@Override
 	protected void generateUserID() {
-		this.setUserID(47);
+		Random random = new Random();
+		
+		// UserID created with random six digit number base. User class is appended as highest order digit. 
+		
+		int userIDrand = (random.nextInt(999999-100000)+100000) + 1000000;
+		
+		this.setUserID(userIDrand);
 	}
 
 }
