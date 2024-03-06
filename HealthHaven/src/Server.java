@@ -8,6 +8,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -24,6 +25,7 @@ public class Server {
 	private int PORT;
 	private int MAX_THREADS;
 	private int MAX_REQUESTS;
+	private final ReentrantLock databaseLock = new ReentrantLock();
 
 	public Server(int portNum, int maxThreads, int maxRequests) throws Exception {
 		this.PORT = portNum;
@@ -33,8 +35,7 @@ public class Server {
 
 	public void start() throws Exception {
 		// Create the thread pool. With a CachedThreadPoo, the number of threads will
-		// grow as needed,
-		// and unused threads will be terminated.
+		// grow as needed, and unused threads will be terminated.
 		ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
 
 		// Start the server.
@@ -53,6 +54,7 @@ public class Server {
 		while (true) {
 			try {
 				// Accept an incoming connection and store in socket object.
+				System.out.println("Awaiting connection...");
 				Socket client = server.accept();
 				// Send the client connection to the thread pool.
 				executor.execute(() -> handleClientConnection(client));
@@ -72,7 +74,9 @@ public class Server {
 			// Read the incoming message.
 			String msg = streamIn.readUTF();
 			// TODO Decipher the message and perform the appropriate task.
+			databaseLock.lock();
 			System.out.println(msg);
+			databaseLock.unlock();
 		} catch (IOException e) {
 			// Occurs when client disconnects.
 			e.printStackTrace();
