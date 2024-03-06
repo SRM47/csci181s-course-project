@@ -1,10 +1,14 @@
 import java.time.LocalDate;
 import java.util.Random;
+import java.util.Scanner;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.time.Instant;
+
+
 /**
  * 
  */
@@ -15,8 +19,6 @@ import java.net.Socket;
  */
 public class Doctor extends User {
 	private static Account ACCOUNT_TYPE = Account.DOCTOR;
-	private String serverAddress = "your.server.address"; // Replace with your actual server address
-    private int serverPort = 12345; // Replace with your actual server port
 
 	/**
 	 * @param password
@@ -41,10 +43,10 @@ public class Doctor extends User {
 	    this.setUserID(randomNumber);
 	}
 	
-	private String communicateWithServer(String message) {
+	private String communicateWithServer(String message, int serverPort) {
         StringBuilder response = new StringBuilder();
 
-        try (Socket socket = new Socket(serverAddress, serverPort);
+        try (Socket socket = new Socket("localhost", serverPort);
              BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
              BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
 
@@ -68,27 +70,74 @@ public class Doctor extends User {
     }
 	
 	
-	public void updatePatientRecord(int userID, String feature, String newData) {
+	public void updatePatientRecord(int userID, String height, String weight, int serverPort) {
+        Instant timestamp = Instant.now(); // This captures the current moment in UTC.
+
         // Construct a message to send to the server
-        String message = String.format("UPDATE %d %s %s", userID, feature, newData);
-        String serverResponse = communicateWithServer(message);
+        String message = String.format("UPDATE %d %s %s %s", userID, height, weight, timestamp.toString());
+        String serverResponse = communicateWithServer(message, serverPort);
         System.out.println("Server response: " + serverResponse);
+
+        // Example: Use the timestamp
+        System.out.println("Record updated at: " + timestamp);
     }
 	
-	public void viewPatientRecord(int userID) {
+	public void viewPatientRecord(int userID, int serverPort) {
         String message = String.format("VIEW %d", userID);
-        String serverResponse = communicateWithServer(message);
+        String serverResponse = communicateWithServer(message, serverPort);
         System.out.println("Server response: " + serverResponse);
     }
 
     public void createPatient(String password, String email, String legal_first_name, String legal_last_name, String address,
-                              LocalDate dob) {
+                              LocalDate dob, int serverPort) {
         String message = String.format("CREATE %s %s %s %s %s %s", password, email, legal_first_name, legal_last_name, address, dob);
-        String serverResponse = communicateWithServer(message);
+        String serverResponse = communicateWithServer(message, serverPort);
         System.out.println("Server response: " + serverResponse);
     }
 	
-	
-	
+    public void userInput() {
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            System.out.println("\nPlease choose an option:");
+            System.out.println("1. Update patient record");
+            System.out.println("2. View patient record");
+            System.out.println("3. Create a new client");
+            System.out.println("3. Exit");
+            System.out.print("Enter your choice: ");
+
+            int choice = scanner.nextInt(); // Read the user's choice
+
+            switch (choice) {
+                case 1:
+                    // Prompt for details needed to update a patient record
+                    System.out.print("Enter patient ID: ");
+                    int userIDUpdate = scanner.nextInt();
+                    scanner.nextLine(); // Consume newline left-over
+                    System.out.print("Enter feature to update: ");
+                    String feature = scanner.nextLine();
+                    System.out.print("Enter new data: ");
+                    String newData = scanner.nextLine();
+                    updatePatientRecord(userIDUpdate, feature, newData, 8888);
+                    break;
+                case 2:
+                    // Prompt for patient ID to view their record
+                    System.out.print("Enter patient ID: ");
+                    int userIDView = scanner.nextInt();
+                    viewPatientRecord(userIDView, 8888);
+                    break;
+                case 3:
+                    // Exit the method
+                    System.out.println("Exiting...");
+                    return;
+                default:
+                    System.out.println("Invalid option. Please try again.");
+            }
+        }
+    }
+    public static void main(String[] args) {
+        Doctor newDoctor = new Doctor("password", "Sae@pomona.edu", "Sae", "Furukawa", "Claremont", LocalDate.of(2002, 10, 05));
+        newDoctor.userInput();
+    }
 
 }
