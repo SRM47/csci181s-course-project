@@ -6,6 +6,9 @@ import java.io.BufferedWriter;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.time.Instant;
+
+
 /**
  * 
  */
@@ -67,11 +70,16 @@ public class Doctor extends User {
     }
 	
 	
-	public void updatePatientRecord(int userID, String feature, String newData, int serverPort) {
+	public void updatePatientRecord(int userID, String height, String weight, int serverPort) {
+        Instant timestamp = Instant.now(); // This captures the current moment in UTC.
+
         // Construct a message to send to the server
-        String message = String.format("UPDATE %d %s %s", userID, feature, newData);
+        String message = String.format("UPDATE %d %s %s %s", userID, height, weight, timestamp.toString());
         String serverResponse = communicateWithServer(message, serverPort);
         System.out.println("Server response: " + serverResponse);
+
+        // Example: Use the timestamp
+        System.out.println("Record updated at: " + timestamp);
     }
 	
 	public void viewPatientRecord(int userID, int serverPort) {
@@ -126,12 +134,10 @@ public class Doctor extends User {
                     System.out.println("Invalid option. Please try again.");
             }
         }
-        
-        public static void main() {
-        	Doctor newDoctor = new Doctor("password", "Sae@pomona.edu", "Sae", "Furukawa", "Claremont", LocalDate.of(2002, 10, 05));
-        	newDoctor.userInput();
-        }
-	
-	
+    }
+    public static void main(String[] args) {
+        Doctor newDoctor = new Doctor("password", "Sae@pomona.edu", "Sae", "Furukawa", "Claremont", LocalDate.of(2002, 10, 05));
+        newDoctor.userInput();
+    }
 
 }
