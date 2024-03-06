@@ -46,6 +46,7 @@ public class Server {
 			System.out.println("Successfully binded server to port " + PORT);
 		} catch (IOException exception) {
 			System.out.println("Error in creating the server");
+			System.out.println(exception);
 		}
 
 		// Begin listening for connections

@@ -8,6 +8,7 @@
  *
  */
 import java.time.LocalDate;
+import java.util.Scanner;
 
 public class User {
 
@@ -57,6 +58,7 @@ public class User {
 		this.address = address;
 		this.dob = dob;
 		this.generateUserID();
+		this.password = PasswordGenerator.generate(10); // Example: generate a 10-character password
 	}
 
 	/**
@@ -160,6 +162,43 @@ public class User {
 		this.dob = dob;
 	}
 
+	public void updatePersonalRecord(Scanner scanner) {
+		boolean updating = true;
+		while (updating) {
+			System.out.println("What do you want to update?");
+			System.out.println("1. Email Address");
+			System.out.println("2. Address");
+			System.out.println("3. Password");
+			System.out.println("4. Quit to main menu");
+			int updateChoice = scanner.nextInt();
+			scanner.nextLine(); // Consume the newline
+			switch (updateChoice) {
+				case 1:
+					System.out.print("Enter new email address: ");
+					String newEmail = scanner.nextLine();
+					setEmail(newEmail);
+					System.out.println("Email address updated.");
+					break;
+				case 2:
+					System.out.print("Enter new address: ");
+					String newAddress = scanner.nextLine();
+					setAddress(newAddress);
+					System.out.println("Address updated.");
+					break;
+				case 3:
+					System.out.print("Enter new password: ");
+					String newPassword = scanner.nextLine();
+					setPassword(newPassword);
+					System.out.println("Password updated.");
+					break;
+				case 4:
+					updating = false; // Quit to main menu
+					break;
+				default:
+					System.out.println("Invalid option. Please try again.");
+			}
+		}
+	}
 	@Override
 	public String toString() {
 		return "User [password=" + password + ", userID=" + userID + ", email=" + email + ", legal_first_name="

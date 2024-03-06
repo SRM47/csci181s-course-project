@@ -1,4 +1,6 @@
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Random;
 import java.util.Scanner;
 import java.io.BufferedReader;
@@ -70,11 +72,12 @@ public class Doctor extends User {
     }
 	
 	
-	public void updatePatientRecord(int userID, String height, String weight, int serverPort) {
+	public void updatePatientRecord(long userID, String height, String weight, int serverPort) {
         Instant timestamp = Instant.now(); // This captures the current moment in UTC.
 
         // Construct a message to send to the server
         String message = String.format("UPDATE %d %s %s %s", userID, height, weight, timestamp.toString());
+        System.out.println("message: "+ message);
         String serverResponse = communicateWithServer(message, serverPort);
         System.out.println("Server response: " + serverResponse);
 
@@ -82,15 +85,16 @@ public class Doctor extends User {
         System.out.println("Record updated at: " + timestamp);
     }
 	
-	public void viewPatientRecord(int userID, int serverPort) {
+	public void viewPatientRecord(long userID, int serverPort) {
         String message = String.format("VIEW %d", userID);
         String serverResponse = communicateWithServer(message, serverPort);
         System.out.println("Server response: " + serverResponse);
     }
 
-    public void createPatient(String password, String email, String legal_first_name, String legal_last_name, String address,
+    public void createPatient(String email, String legal_first_name, String legal_last_name, String address,
                               LocalDate dob, int serverPort) {
-        String message = String.format("CREATE %s %s %s %s %s %s", password, email, legal_first_name, legal_last_name, address, dob);
+        Instant timestamp = Instant.now(); // This captures the current moment in UTC.
+        String message = String.format("CREATE %s %s %s %s %s %s", email, legal_first_name, legal_last_name, address, dob, timestamp.toString());
         String serverResponse = communicateWithServer(message, serverPort);
         System.out.println("Server response: " + serverResponse);
     }
@@ -100,35 +104,84 @@ public class Doctor extends User {
 
         while (true) {
             System.out.println("\nPlease choose an option:");
-            System.out.println("1. Update patient record");
-            System.out.println("2. View patient record");
+            System.out.println("1. Access my info:");
+            System.out.println("2. Access patient record");
             System.out.println("3. Create a new client");
-            System.out.println("3. Exit");
+            System.out.println("4. Exit");
             System.out.print("Enter your choice: ");
 
             int choice = scanner.nextInt(); // Read the user's choice
-
+            int subChoice;
             switch (choice) {
                 case 1:
-                    // Prompt for details needed to update a patient record
-                    System.out.print("Enter patient ID: ");
-                    int userIDUpdate = scanner.nextInt();
-                    scanner.nextLine(); // Consume newline left-over
-                    System.out.print("Enter feature to update: ");
-                    String feature = scanner.nextLine();
-                    System.out.print("Enter new data: ");
-                    String newData = scanner.nextLine();
-                    updatePatientRecord(userIDUpdate, feature, newData, 8888);
+                    // Access doctor's own info.
+                    System.out.println(toString());
+                    System.out.print("Do you want to update your record? 1 (yes) 2 (no): ");
+                    subChoice = scanner.nextInt();
+                    switch(subChoice){
+                        case 1:
+                            updatePersonalRecord(scanner);
+                        case 2:
+                            System.out.print("Not updating any personal data.");
+                            break;
+                        default:
+                            System.out.println("Invalid option. Please try again");
+                    }
                     break;
                 case 2:
                     // Prompt for patient ID to view their record
                     System.out.print("Enter patient ID: ");
-                    int userIDView = scanner.nextInt();
-                    viewPatientRecord(userIDView, 8888);
+                    long userIDView = scanner.nextLong();
+                    viewPatientRecord(userIDView, 8889);
+                    System.out.print("Do you want to update this patient record? 1 (yes) 2 (no): ");
+                    subChoice = scanner.nextInt();
+                    switch (subChoice){
+                        case 1:
+                            System.out.println("Updating the patient record");
+                            // Prompt for details needed to update a patient record
+                            System.out.print("Enter patient ID: ");
+                            long userIDUpdate = scanner.nextLong();
+                            scanner.nextLine(); // Consume newline left-over
+                            System.out.print("Enter feature to update: ");
+                            String feature = scanner.nextLine();
+                            System.out.print("Enter new data: ");
+                            String newData = scanner.nextLine();
+                            updatePatientRecord(userIDUpdate, feature, newData, 8889);
+                            break;
+                        case 2:
+                            System.out.println("Not updating the patient record");
+                            break;
+                        default:
+                            System.out.println("Invalid option. Please try again");
+                    }
                     break;
                 case 3:
+                    //Create a new patient account
+                    System.out.print("Enter the patient's email: ");
+                    String patientEmail = scanner.nextLine();
+                    System.out.print("Enter the first name: ");
+                    String firstName = scanner.nextLine();
+                    System.out.print("Enter the last name: ");
+                    String lastName = scanner.nextLine();
+                    System.out.print("Enter the address: ");
+                    String address = scanner.nextLine();
+                    LocalDate dateOfBirth = null;
+                    while (dateOfBirth == null) {
+                        System.out.print("Enter the date of birth (yyyy-mm-dd): ");
+                        String dobInput = scanner.nextLine();
+
+                        try {
+                            dateOfBirth = LocalDate.parse(dobInput, DateTimeFormatter.ISO_LOCAL_DATE);
+                        } catch (DateTimeParseException e) {
+                            System.out.println("Invalid date format. Please enter the date in yyyy-mm-dd format.");
+                        }
+                    }
+                    createPatient(patientEmail, firstName, lastName, address, dateOfBirth, 8889);
+
+                case 4:
                     // Exit the method
                     System.out.println("Exiting...");
+                    scanner.close();
                     return;
                 default:
                     System.out.println("Invalid option. Please try again.");

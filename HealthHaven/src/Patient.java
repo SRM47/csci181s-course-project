@@ -1,8 +1,11 @@
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.Socket;
 import java.time.LocalDate;
-
-/**
- * 
- */
+import java.util.Random;
+import java.util.Scanner;
 
 /**
  * @author sameermalik
@@ -22,7 +25,7 @@ public class Patient extends User {
 	public Patient(String password, String email, String legal_first_name, String legal_last_name, String address,
 			LocalDate dob) {
 		super(password, email, legal_first_name, legal_last_name, address, dob);
-		// TODO Auto-generated constructor stub
+		generateUserID();
 	}
 
 	@Override
@@ -69,22 +72,39 @@ public class Patient extends User {
 
 		while (true) {
 			System.out.println("\nPlease choose an option:");
-			System.out.println("1. View patient record");
-			System.out.println("2. Exit");
+			System.out.println("1. View my personal data");
+			System.out.println("2. View patient record");
+			System.out.println("3. Exit");
 			System.out.print("Enter your choice: ");
 
 			int choice = scanner.nextInt(); // Read the user's choice
 
 			switch (choice) {
 				case 1:
+					// Access doctor's own info.
+					System.out.println(toString());
+					System.out.print("Do you want to update your record? 1 (yes) 2 (no): ");
+					int subChoice = scanner.nextInt();
+					switch(subChoice){
+						case 1:
+							updatePersonalRecord(scanner);
+						case 2:
+							System.out.print("Not updating any personal data.");
+							break;
+						default:
+							System.out.println("Invalid option. Please try again");
+					}
+					break;
+				case 2:
 					// Prompt for patient ID to view their record
 					System.out.print("Enter patient ID: ");
 					int userIDView = scanner.nextInt();
-					viewPatientRecord(userIDView, 8888);
+					viewPatientRecord(userIDView, 8889);
 					break;
-				case 2:
+				case 3:
 					// Exit the method
 					System.out.println("Exiting...");
+					scanner.close();
 					return;
 				default:
 					System.out.println("Invalid option. Please try again.");
