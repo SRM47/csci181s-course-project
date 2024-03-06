@@ -29,5 +29,8 @@ public class Patient extends User {
 	protected void generateUserID() {
 		this.setUserID(47);
 	}
+	
+	
+	
 
 }

@@ -13,7 +13,7 @@ public class User {
 
 	private String password;
 	// The format of the userID will correspond to the account type
-	private int userID;
+	private double userID;
 	private String email;
 	private String legal_first_name;
 	private String legal_last_name;
@@ -79,14 +79,14 @@ public class User {
 	/**
 	 * @return the userID
 	 */
-	protected int getUserID() {
+	protected double getUserID() {
 		return userID;
 	}
 
 	/**
 	 * @param userID the userID to set
 	 */
-	protected void setUserID(int userID) {
+	protected void setUserID(double userID) {
 		this.userID = userID;
 	}
 
