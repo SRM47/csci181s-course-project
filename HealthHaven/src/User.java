@@ -7,11 +7,6 @@
  * @author sameermalik
  *
  */
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.Socket;
 import java.time.LocalDate;
 import java.util.Scanner;
 
@@ -186,6 +181,10 @@ public class User {
 		this.dob = dob;
 	}
 
+	/**
+	 *  User accessing personal record (include user prompt)
+	 * @param scanner
+	 */
 	protected  void accessPersonalRecord(Scanner scanner){
 		// Access doctor's own info.
 		System.out.println(this);
@@ -195,7 +194,7 @@ public class User {
 			int subChoice = Integer.parseInt(input);
 			switch(subChoice){
 				case 1:
-					updatePersonalRecord(scanner);
+					updatePersonalRecord(scanner); //update personal record on database
 					break;
 				case 2:
 					System.out.println("Not updating any personal data.");
@@ -208,20 +207,32 @@ public class User {
 		}
 	}
 
+	/**
+	 * Update the personal record on the database, return the server response.
+	 * @param newEmail
+	 * @param newPassword
+	 * @param newAddress
+	 * @return
+	 */
 	protected String updatePersonalRecordOnDB(String newEmail, String newPassword, String newAddress){
-		// Apply changes and communicate with the server to update the database
+
+		// First set the changes to the object instance.
 		setEmail(newEmail);
 		setAddress(newAddress);
 		setPassword(newPassword);
 
 		System.out.println(this);
 
-		// Assuming communicateWithServer is a method that takes the updates and sends them to the server
+		// Communicate with the server to update
 		String updateMessage = String.format("UPDATE %f %s %s %s", getUserID(), newEmail, newPassword, newAddress);
 		System.out.println("Message: " + updateMessage);
 		return ServerCommunicator.communicateWithAccountServer(updateMessage);
 	}
 
+	/**
+	 * Update the personal record (include user prompt)
+	 * @param scanner
+	 */
 	protected void updatePersonalRecord(Scanner scanner) {
 		String newEmail = this.email; // Start with current values
 		String newAddress = this.address;
@@ -254,12 +265,9 @@ public class User {
 					System.out.println("Password set for update.");
 					break;
 				case 4:
+					//Actual updating
 					String serverResponse = updatePersonalRecordOnDB(newEmail, newPassword, newAddress);
-					if (serverResponse.equals("SUCCESS")) {
-						System.out.println("Updates saved successfully.");
-					} else {
-						System.out.println("Failed to save updates.");
-					}
+					System.out.println(serverResponse);
 					updating = false; // Quit to main menu
 					break;
 				case 5:

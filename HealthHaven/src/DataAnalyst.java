@@ -15,6 +15,7 @@ public class DataAnalyst extends User {
 	private static Account ACCOUNT_TYPE = Account.DATA_ANALYST;
 
 	/**
+	 * New Data Analyst
 	 * @param email
 	 * @param legal_first_name
 	 * @param legal_last_name
@@ -27,11 +28,25 @@ public class DataAnalyst extends User {
 
 	}
 
+	/**
+	 * Existing Data Analyst
+	 * @param userID
+	 * @param email
+	 * @param password
+	 * @param legal_first_name
+	 * @param legal_last_name
+	 * @param address
+	 * @param dob
+	 */
 	public DataAnalyst(double userID, String email, String password, String legal_first_name, String legal_last_name, String address,
 					   LocalDate dob) {
 		super(userID, email, password, legal_first_name, legal_last_name, address, dob);
 	}
 
+	/**
+	 * Get and print the data summary
+	 * @param scanner
+	 */
 	protected void performDataAnalysis(Scanner scanner){
 		String message = "REQUEST_PATIENT_DATA_SUMMARY";
 		System.out.println("message");

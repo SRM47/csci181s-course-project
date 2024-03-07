@@ -16,6 +16,7 @@ public class Doctor extends User {
 	private static Account ACCOUNT_TYPE = Account.DOCTOR;
 
 	/**
+     * New doctor
 	 * @param email
 	 * @param legal_first_name
 	 * @param legal_last_name
@@ -29,19 +30,36 @@ public class Doctor extends User {
 		generateUserID();
 	}
 
+    /**
+     * Existing doctor
+     * @param userID
+     * @param email
+     * @param password
+     * @param legal_first_name
+     * @param legal_last_name
+     * @param address
+     * @param dob
+     */
     public Doctor(double userID, String email, String password, String legal_first_name, String legal_last_name,
                    String address, LocalDate dob){
         super(userID, email, password, legal_first_name, legal_last_name, address, dob);
 
     }
-	
+
+    /**
+     * User ID with left most digit = 1
+     */
 	@Override
 	protected void generateUserID() {
 		Random rnd = new Random();
         long randomNumber = 1_000_000_000L + (long)(rnd.nextDouble() * 9_000_000_000L);
 	    this.setUserID(randomNumber);
 	}
-	
+
+    /**
+     * Display and update the patient record (include user prompt)
+     * @param scanner
+     */
 	protected void viewAndUpdatePatientRecord(Scanner scanner){
         System.out.print("Enter patient ID: ");
         long userIDView = scanner.nextLong();
@@ -67,6 +85,14 @@ public class Doctor extends User {
                 System.out.println("Invalid option. Please try again");
         }
     }
+
+    /**
+     * Update the patient record on DB, communicate with the server, return the server response.
+     * @param userID
+     * @param height
+     * @param weight
+     * @return
+     */
 	protected String updatePatientRecordOnDB(long userID, String height, String weight) {
         Instant timestamp = Instant.now(); // This captures the current moment in UTC.
 
@@ -75,7 +101,12 @@ public class Doctor extends User {
         System.out.println("message: "+ message);
         return ServerCommunicator.communicateWithMedicalServer(message);
     }
-	
+
+    /**
+     * View patient record, return the server response
+     * @param userID
+     * @return
+     */
 	protected String viewPatientRecord(long userID) {
         String message = String.format("VIEW %d", userID);
         System.out.println("Message: " + message);
@@ -102,7 +133,6 @@ public class Doctor extends User {
                 System.out.println("Invalid input. Please enter a number.");
                 continue;
             }
-            String serverResponse = "";
             switch (choice) {
                 case 1:
                     accessPersonalRecord(scanner);

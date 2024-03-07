@@ -1,16 +1,9 @@
 /**
  * 
  */
-
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.Socket;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
 /**
@@ -18,6 +11,12 @@ import java.util.Scanner;
  *
  */
 public class Main {
+	/**
+	 * Check if the existing user's userID and password are in DB
+	 * @param email
+	 * @param password
+	 * @return
+	 */
 	private static String authenticateExistingUser(String email, String password){
 		Instant timestamp = Instant.now(); // This captures the current moment in UTC.
 		String message = String.format("EXISTING ACCOUNT %s %s %s", email, password, timestamp.toString());
@@ -28,6 +27,18 @@ public class Main {
 		return serverResponse;
 	}
 
+	/**
+	 * Create a new user instance.
+	 * @param accountType
+	 * @param userID
+	 * @param email
+	 * @param password
+	 * @param legalFirstName
+	 * @param legalLastName
+	 * @param address
+	 * @param dob
+	 * @return
+	 */
 	private static User createUserInstance(String accountType, double userID, String email, String password, String legalFirstName, String legalLastName,
 										   String address, LocalDate dob){
 		return switch (accountType) {
@@ -41,6 +52,11 @@ public class Main {
 		};
 	}
 
+	/**
+	 * Select an account type, return the type. (Include the user prompt)
+	 * @param scanner
+	 * @return
+	 */
 	private static User.Account selectAccountType(Scanner scanner) {
 		int accountType = 0;
 		while (accountType < 1 || accountType > 5) {
@@ -64,6 +80,11 @@ public class Main {
         };
 	}
 
+	/**
+	 * User log in, if valid, then it uses the server response to parse the data and create an existing user instance (include user prompt)
+	 * @param scanner
+	 * @return
+	 */
 	private static User login(Scanner scanner) {
 		System.out.print("Email: ");
 		String email = scanner.nextLine().trim();

@@ -1,7 +1,4 @@
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -13,6 +10,7 @@ public class Superadmin extends User {
 	private static Account ACCOUNT_TYPE = Account.SUPERADMIN;
 
 	/**
+	 * New superadmin
 	 * @param email
 	 * @param legal_first_name
 	 * @param legal_last_name
@@ -24,6 +22,16 @@ public class Superadmin extends User {
 		super(email, password, legal_first_name, legal_last_name, address, dob);
 	}
 
+	/**
+	 * Existing superadmin
+	 * @param userID
+	 * @param email
+	 * @param password
+	 * @param legal_first_name
+	 * @param legal_last_name
+	 * @param address
+	 * @param dob
+	 */
 	public Superadmin(double userID, String email, String password, String legal_first_name, String legal_last_name, String address,
 					  LocalDate dob) {
 		super(userID, email, password, legal_first_name, legal_last_name, address, dob);
@@ -35,6 +43,12 @@ public class Superadmin extends User {
 		long randomNumber = 5_000_000_000L + (long)(rnd.nextDouble() * 9_000_000_000L);
 		this.setUserID(randomNumber);
 	}
+
+	/**
+	 * Choose account type to create (include user prompt)
+	 * @param scanner
+	 * @return
+	 */
 	protected static User.Account selectAccountType(Scanner scanner) {
 		int accountType = 0;
 		while (accountType < 1 || accountType > 5) {
@@ -57,6 +71,10 @@ public class Superadmin extends User {
 			default -> User.Account.NONE;
 		};
 	}
+
+	/**
+	 * Print out the account list
+	 */
 	public void viewAccountList(){
 		String message = "VIEW ACCOUNT";
 		System.out.println("Message: " + message);
