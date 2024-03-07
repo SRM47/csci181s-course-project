@@ -23,7 +23,6 @@ public class Doctor extends User {
 	private static Account ACCOUNT_TYPE = Account.DOCTOR;
 
 	/**
-	 * @param password
 	 * @param email
 	 * @param legal_first_name
 	 * @param legal_last_name
@@ -31,9 +30,9 @@ public class Doctor extends User {
 	 * @param dob
 	 */
     
-	public Doctor(String password, String email, String legal_first_name, String legal_last_name, String address,
+	public Doctor(String email, String legal_first_name, String legal_last_name, String address,
 			LocalDate dob) {
-		super(password, email, legal_first_name, legal_last_name, address, dob);
+		super(email, legal_first_name, legal_last_name, address, dob);
 		generateUserID();
 		// TODO Auto-generated constructor stub
 	}
@@ -44,32 +43,6 @@ public class Doctor extends User {
 	    long randomNumber = 1_000_000_000_00L + (long)(rnd.nextDouble() * 9_000_000_000_00L);
 	    this.setUserID(randomNumber);
 	}
-	
-	private String communicateWithServer(String message, int serverPort) {
-        StringBuilder response = new StringBuilder();
-
-        try (Socket socket = new Socket("localhost", serverPort);
-             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-             BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
-
-            // Send the message to the server
-            writer.write(message);
-            writer.newLine();
-            writer.flush();
-
-            // Read the response
-            String line;
-            while ((line = reader.readLine()) != null) {
-                response.append(line);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "Error communicating with server.";
-        }
-
-        return response.toString();
-    }
 	
 	
 	public void updatePatientRecord(long userID, String height, String weight, int serverPort) {
@@ -87,6 +60,7 @@ public class Doctor extends User {
 	
 	public void viewPatientRecord(long userID, int serverPort) {
         String message = String.format("VIEW %d", userID);
+        System.out.println("Message: " + message);
         String serverResponse = communicateWithServer(message, serverPort);
         System.out.println("Server response: " + serverResponse);
     }
@@ -94,7 +68,7 @@ public class Doctor extends User {
     public void createPatient(String email, String legal_first_name, String legal_last_name, String address,
                               LocalDate dob, int serverPort) {
         Instant timestamp = Instant.now(); // This captures the current moment in UTC.
-        String message = String.format("CREATE %s %s %s %s %s %s", email, legal_first_name, legal_last_name, address, dob, timestamp.toString());
+        String message = String.format("CREATE PATIENT %s %s %s %s %s %s", email, legal_first_name, legal_last_name, address, dob, timestamp.toString());
         String serverResponse = communicateWithServer(message, serverPort);
         System.out.println("Server response: " + serverResponse);
     }
@@ -104,7 +78,7 @@ public class Doctor extends User {
 
         while (true) {
             System.out.println("\nPlease choose an option:");
-            System.out.println("1. Access my info:");
+            System.out.println("1. Access my info");
             System.out.println("2. Access patient record");
             System.out.println("3. Create a new client");
             System.out.println("4. Exit");
@@ -115,12 +89,13 @@ public class Doctor extends User {
             switch (choice) {
                 case 1:
                     // Access doctor's own info.
-                    System.out.println(toString());
+                    System.out.println(this);
                     System.out.print("Do you want to update your record? 1 (yes) 2 (no): ");
                     subChoice = scanner.nextInt();
                     switch(subChoice){
                         case 1:
                             updatePersonalRecord(scanner);
+                            break;
                         case 2:
                             System.out.print("Not updating any personal data.");
                             break;
@@ -141,7 +116,6 @@ public class Doctor extends User {
                             // Prompt for details needed to update a patient record
                             System.out.print("Enter patient ID: ");
                             long userIDUpdate = scanner.nextLong();
-                            scanner.nextLine(); // Consume newline left-over
                             System.out.print("Enter feature to update: ");
                             String feature = scanner.nextLine();
                             System.out.print("Enter new data: ");
@@ -189,7 +163,7 @@ public class Doctor extends User {
         }
     }
     public static void main(String[] args) {
-        Doctor newDoctor = new Doctor("password", "Sae@pomona.edu", "Sae", "Furukawa", "Claremont", LocalDate.of(2002, 10, 05));
+        Doctor newDoctor = new Doctor("Sae@pomona.edu", "Sae", "Furukawa", "Claremont", LocalDate.of(2002, 10, 05));
         newDoctor.userInput();
     }
 

@@ -7,6 +7,11 @@
  * @author sameermalik
  *
  */
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.Socket;
 import java.time.LocalDate;
 import java.util.Scanner;
 
@@ -41,17 +46,15 @@ public class User {
 	private static Account ACCOUNT_TYPE = Account.NONE;
 
 	/**
-	 * @param password
 	 * @param email
 	 * @param legal_first_name
 	 * @param legal_last_name
 	 * @param address
 	 * @param dob
 	 */
-	public User(String password, String email, String legal_first_name, String legal_last_name, String address,
+	public User(String email, String legal_first_name, String legal_last_name, String address,
 			LocalDate dob) {
 		super();
-		this.password = password;
 		this.email = email;
 		this.legal_first_name = legal_first_name;
 		this.legal_last_name = legal_last_name;
@@ -162,6 +165,31 @@ public class User {
 		this.dob = dob;
 	}
 
+	protected String communicateWithServer(String message, int serverPort) {
+		StringBuilder response = new StringBuilder();
+
+		try (Socket socket = new Socket("localhost", serverPort);
+			 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+			 BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
+
+			// Send the message to the server
+			writer.write(message);
+			writer.newLine();
+			writer.flush();
+
+			// Read the response
+			String line;
+			while ((line = reader.readLine()) != null) {
+				response.append(line);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "Error communicating with server.";
+		}
+
+		return response.toString();
+	}
 	public void updatePersonalRecord(Scanner scanner) {
 		boolean updating = true;
 		while (updating) {
