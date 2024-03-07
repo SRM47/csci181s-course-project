@@ -22,15 +22,15 @@ public class Patient extends User {
 	 * @param address
 	 * @param dob
 	 */
-	public Patient(String email, String legal_first_name, String legal_last_name, String address,
+	public Patient(String email, String password, String legal_first_name, String legal_last_name, String address,
 			LocalDate dob) {
-		super(email, legal_first_name, legal_last_name, address, dob);
+		super(email, password, legal_first_name, legal_last_name, address, dob);
 		generateUserID();
 	}
 
-	public Patient(double userID, String password, String email, String legal_first_name, String legal_last_name,
+	public Patient(double userID, String email, String password, String legal_first_name, String legal_last_name,
 				   String address, LocalDate dob){
-        super(userID, password, email, legal_first_name, legal_last_name, address, dob);
+        super(userID, email, password, legal_first_name, legal_last_name, address, dob);
 
     }
 
@@ -40,12 +40,13 @@ public class Patient extends User {
 		long randomNumber = 2_000_000_000_00L + (long)(rnd.nextDouble() * 9_000_000_000_00L);
 		this.setUserID(randomNumber);
 	}
-	public void viewPatientRecord(int userID, int serverPort) {
-		String message = String.format("VIEW %d", userID);
+	private void viewPatientRecord(double userID) {
+		String message = String.format("VIEW %s", userID);
+		System.out.println("Message: " + message);
 		String serverResponse = ServerCommunicator.communicateWithMedicalServer(message);
 		System.out.println("Server response: " + serverResponse);
 	}
-
+	@Override
 	protected void userInput() {
 		Scanner scanner = new Scanner(System.in);
 
@@ -77,9 +78,7 @@ public class Patient extends User {
 					break;
 				case 2:
 					// Prompt for patient ID to view their record
-					System.out.print("Enter patient ID: ");
-					int userIDView = scanner.nextInt();
-					viewPatientRecord(userIDView, 8889);
+					viewPatientRecord(getUserID());
 					break;
 				case 3:
 					// Exit the method
@@ -93,7 +92,7 @@ public class Patient extends User {
 	}
 
 	public static void main(String[] args) {
-		Patient newPatient = new Patient("Sae@pomona.edu", "Sae", "Furukawa", "Claremont", LocalDate.of(2002, 10, 05));
+		Patient newPatient = new Patient("Sae@pomona.edu", "password", "Sae", "Furukawa", "Claremont", LocalDate.of(2002, 10, 05));
 		newPatient.userInput();
 	}
 	

@@ -19,14 +19,14 @@ public class Superadmin extends User {
 	 * @param address
 	 * @param dob
 	 */
-	public Superadmin(String email, String legal_first_name, String legal_last_name, String address,
+	public Superadmin(String email, String password, String legal_first_name, String legal_last_name, String address,
 			LocalDate dob) {
-		super(email, legal_first_name, legal_last_name, address, dob);
+		super(email, password, legal_first_name, legal_last_name, address, dob);
 	}
 
-	public Superadmin(double userID, String password, String email, String legal_first_name, String legal_last_name, String address,
+	public Superadmin(double userID, String email, String password, String legal_first_name, String legal_last_name, String address,
 					  LocalDate dob) {
-		super(userID, password, email, legal_first_name, legal_last_name, address, dob);
+		super(userID, email, password, legal_first_name, legal_last_name, address, dob);
 	}
 	
 	@Override
@@ -64,7 +64,7 @@ public class Superadmin extends User {
 		String serverResponse = ServerCommunicator.communicateWithAccountServer(message);
 		System.out.println("Server response: " + serverResponse);
 	}
-
+	@Override
 	public void userInput(){
 		Scanner scanner = new Scanner(System.in);
 
@@ -100,38 +100,7 @@ public class Superadmin extends User {
 					break;
 				case 3:
 					System.out.println("Creating a new user");
-					int accountType = 0;
-					while (accountType < 1 || accountType > 5) {
-						System.out.println("Select an account type 1. Patient 2. Doctor 3. Data Science Analyst 4. Data Protection Officer 5. Super Admin: ");
-						try {
-							accountType = Integer.parseInt(scanner.nextLine());
-							if (accountType < 1 || accountType > 5) {
-								System.out.println("Invalid account type. Please select a number between 1 and 5.");
-							}
-						} catch (NumberFormatException e) {
-							System.out.println("Invalid input. Please enter a number.");
-						}
-					}
-					System.out.print("Enter the email: ");
-					String email = scanner.nextLine();
-					System.out.print("Enter the first name: ");
-					String firstName = scanner.nextLine();
-					System.out.print("Enter the last name: ");
-					String lastName = scanner.nextLine();
-					System.out.print("Enter the address: ");
-					String address = scanner.nextLine();
-					LocalDate dateOfBirth = null;
-					while (dateOfBirth == null) {
-						System.out.print("Enter the date of birth (yyyy-mm-dd): ");
-						String dobInput = scanner.nextLine();
-
-						try {
-							dateOfBirth = LocalDate.parse(dobInput, DateTimeFormatter.ISO_LOCAL_DATE);
-						} catch (DateTimeParseException e) {
-							System.out.println("Invalid date format. Please enter the date in yyyy-mm-dd format.");
-						}
-					}
-					createUser(accountType, email, firstName, lastName, address, dateOfBirth);
+					User newUser = AccountCreationService.createAccount(scanner, Account.SUPERADMIN);
 				case 4:
 					// Exit the method
 					System.out.println("Exiting...");
@@ -145,7 +114,7 @@ public class Superadmin extends User {
 	}
 
 	public static void main(String[] args) {
-		Superadmin newSuperadmin = new Superadmin("Sae@pomona.edu", "Sae", "Furukawa", "Claremont", LocalDate.of(2002, 10, 05));
+		Superadmin newSuperadmin = new Superadmin("Sae@pomona.edu", "password", "Sae", "Furukawa", "Claremont", LocalDate.of(2002, 10, 05));
 		newSuperadmin.userInput();
 	}
 

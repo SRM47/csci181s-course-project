@@ -26,7 +26,7 @@ public class User {
 	private String address;
 	private LocalDate dob;
 	
-	protected static enum Account{
+	public static enum Account{
 		DOCTOR("Doctor"), 
 		PATIENT("Patient"),
 		DATA_ANALYST("Data Analyst"),
@@ -53,16 +53,15 @@ public class User {
 	 * @param address
 	 * @param dob
 	 */
-	public User(String email, String legal_first_name, String legal_last_name, String address,
+	public User(String email, String password, String legal_first_name, String legal_last_name, String address,
 			LocalDate dob) {
 		super();
 		this.email = email;
+		this.password = password;
 		this.legal_first_name = legal_first_name;
 		this.legal_last_name = legal_last_name;
 		this.address = address;
 		this.dob = dob;
-		this.generateUserID();
-		this.password = PasswordGenerator.generate(10); // Example: generate a 10-character password
 	}
 
 	/**
@@ -75,7 +74,7 @@ public class User {
 	 * @param address
 	 * @param dob
 	 */
-	public User(double userID, String password, String email, String legal_first_name, String legal_last_name, String address, LocalDate dob) {
+	public User(double userID, String email, String password, String legal_first_name, String legal_last_name, String address, LocalDate dob) {
 		this.userID = userID;
 		this.password = password;
 		this.email = email;
@@ -211,43 +210,65 @@ public class User {
 //
 //		return response.toString();
 //	}
-	public void updatePersonalRecord(Scanner scanner) {
-		boolean updating = true;
-		while (updating) {
-			System.out.println("What do you want to update?");
-			System.out.println("1. Email Address");
-			System.out.println("2. Address");
-			System.out.println("3. Password");
-			System.out.println("4. Quit to main menu");
-			int updateChoice = scanner.nextInt();
-			scanner.nextLine(); // Consume the newline
-			switch (updateChoice) {
-				case 1:
-					System.out.print("Enter new email address: ");
-					String newEmail = scanner.nextLine();
-					setEmail(newEmail);
-					System.out.println("Email address updated.");
-					break;
-				case 2:
-					System.out.print("Enter new address: ");
-					String newAddress = scanner.nextLine();
-					setAddress(newAddress);
-					System.out.println("Address updated.");
-					break;
-				case 3:
-					System.out.print("Enter new password: ");
-					String newPassword = scanner.nextLine();
-					setPassword(newPassword);
-					System.out.println("Password updated.");
-					break;
-				case 4:
-					updating = false; // Quit to main menu
-					break;
-				default:
-					System.out.println("Invalid option. Please try again.");
-			}
+protected void updatePersonalRecord(Scanner scanner) {
+	String newEmail = this.email; // Start with current values
+	String newAddress = this.address;
+	String newPassword = this.password;
+
+	boolean updating = true;
+	while (updating) {
+		System.out.println("What do you want to update?");
+		System.out.println("1. Email Address");
+		System.out.println("2. Address");
+		System.out.println("3. Password");
+		System.out.println("4. Save & Quit to main menu");
+		System.out.println("5. Cancel & Quit to main menu");
+		int updateChoice = scanner.nextInt();
+		scanner.nextLine(); // Consume the newline
+		switch (updateChoice) {
+			case 1:
+				System.out.print("Enter new email address: ");
+				newEmail = scanner.nextLine();
+				System.out.println("Email address set for update.");
+				break;
+			case 2:
+				System.out.print("Enter new address: ");
+				newAddress = scanner.nextLine();
+				System.out.println("Address set for update.");
+				break;
+			case 3:
+				System.out.print("Enter new password: ");
+				newPassword = scanner.nextLine();
+				System.out.println("Password set for update.");
+				break;
+			case 4:
+				// Apply changes and communicate with the server to update the database
+				setEmail(newEmail);
+				setAddress(newAddress);
+				setPassword(newPassword);
+
+				System.out.println(this);
+
+				// Assuming communicateWithServer is a method that takes the updates and sends them to the server
+				String updateMessage = String.format("UPDATE %f %s %s %s", getUserID(), newEmail, newPassword, newAddress);
+				String serverResponse = ServerCommunicator.communicateWithAccountServer(updateMessage);
+				if (serverResponse.equals("SUCCESS")) {
+					System.out.println("Updates saved successfully.");
+				} else {
+					System.out.println("Failed to save updates.");
+				}
+				updating = false; // Quit to main menu
+				break;
+			case 5:
+				updating = false; // Quit to main menu without saving
+				System.out.println("Updates canceled.");
+				break;
+			default:
+				System.out.println("Invalid option. Please try again.");
 		}
 	}
+}
+
 
 	protected void userInput(){
 

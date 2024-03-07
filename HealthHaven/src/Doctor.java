@@ -30,16 +30,15 @@ public class Doctor extends User {
 	 * @param dob
 	 */
     
-	public Doctor(String email, String legal_first_name, String legal_last_name, String address,
+	public Doctor(String email, String password, String legal_first_name, String legal_last_name, String address,
 			LocalDate dob) {
-		super(email, legal_first_name, legal_last_name, address, dob);
+		super(email, password, legal_first_name, legal_last_name, address, dob);
 		generateUserID();
-		// TODO Auto-generated constructor stub
 	}
 
-    public Doctor(double userID, String password, String email, String legal_first_name, String legal_last_name,
+    public Doctor(double userID, String email, String password, String legal_first_name, String legal_last_name,
                    String address, LocalDate dob){
-        super(userID, password, email, legal_first_name, legal_last_name, address, dob);
+        super(userID, email, password, legal_first_name, legal_last_name, address, dob);
 
     }
 	
@@ -51,7 +50,7 @@ public class Doctor extends User {
 	}
 	
 	
-	public void updatePatientRecord(long userID, String height, String weight, int serverPort) {
+	private void updatePatientRecord(long userID, String height, String weight) {
         Instant timestamp = Instant.now(); // This captures the current moment in UTC.
 
         // Construct a message to send to the server
@@ -59,26 +58,16 @@ public class Doctor extends User {
         System.out.println("message: "+ message);
         String serverResponse = ServerCommunicator.communicateWithMedicalServer(message);
         System.out.println("Server response: " + serverResponse);
-
-        // Example: Use the timestamp
-        System.out.println("Record updated at: " + timestamp);
     }
 	
-	public void viewPatientRecord(long userID, int serverPort) {
+	private void viewPatientRecord(long userID) {
         String message = String.format("VIEW %d", userID);
         System.out.println("Message: " + message);
         String serverResponse = ServerCommunicator.communicateWithMedicalServer(message);
         System.out.println("Server response: " + serverResponse);
     }
 
-    public void createPatient(String email, String legal_first_name, String legal_last_name, String address,
-                              LocalDate dob, int serverPort) {
-        Instant timestamp = Instant.now(); // This captures the current moment in UTC.
-        String message = String.format("CREATE PATIENT %s %s %s %s %s %s", email, legal_first_name, legal_last_name, address, dob, timestamp.toString());
-        String serverResponse = ServerCommunicator.communicateWithAccountServer(message);
-        System.out.println("Server response: " + serverResponse);
-    }
-	
+    @Override
     protected void userInput() {
         Scanner scanner = new Scanner(System.in);
 
@@ -113,20 +102,20 @@ public class Doctor extends User {
                     // Prompt for patient ID to view their record
                     System.out.print("Enter patient ID: ");
                     long userIDView = scanner.nextLong();
-                    viewPatientRecord(userIDView, 8889);
+                    viewPatientRecord(userIDView);
+
                     System.out.print("Do you want to update this patient record? 1 (yes) 2 (no): ");
                     subChoice = scanner.nextInt();
                     switch (subChoice){
                         case 1:
                             System.out.println("Updating the patient record");
                             // Prompt for details needed to update a patient record
-                            System.out.print("Enter patient ID: ");
-                            long userIDUpdate = scanner.nextLong();
-                            System.out.print("Enter feature to update: ");
+                            scanner.nextLine();
+                            System.out.print("Enter height to update: ");
                             String feature = scanner.nextLine();
-                            System.out.print("Enter new data: ");
+                            System.out.print("Enter weight to update: ");
                             String newData = scanner.nextLine();
-                            updatePatientRecord(userIDUpdate, feature, newData, 8889);
+                            updatePatientRecord(userIDView, feature, newData);
                             break;
                         case 2:
                             System.out.println("Not updating the patient record");
@@ -137,27 +126,9 @@ public class Doctor extends User {
                     break;
                 case 3:
                     //Create a new patient account
-                    System.out.print("Enter the patient's email: ");
-                    String patientEmail = scanner.nextLine();
-                    System.out.print("Enter the first name: ");
-                    String firstName = scanner.nextLine();
-                    System.out.print("Enter the last name: ");
-                    String lastName = scanner.nextLine();
-                    System.out.print("Enter the address: ");
-                    String address = scanner.nextLine();
-                    LocalDate dateOfBirth = null;
-                    while (dateOfBirth == null) {
-                        System.out.print("Enter the date of birth (yyyy-mm-dd): ");
-                        String dobInput = scanner.nextLine();
-
-                        try {
-                            dateOfBirth = LocalDate.parse(dobInput, DateTimeFormatter.ISO_LOCAL_DATE);
-                        } catch (DateTimeParseException e) {
-                            System.out.println("Invalid date format. Please enter the date in yyyy-mm-dd format.");
-                        }
-                    }
-                    createPatient(patientEmail, firstName, lastName, address, dateOfBirth, 8889);
-
+                    System.out.println("Creating a new patient's account");
+                    User newPatient = AccountCreationService.createAccount(scanner, ACCOUNT_TYPE);
+                    break;
                 case 4:
                     // Exit the method
                     System.out.println("Exiting...");
@@ -169,7 +140,7 @@ public class Doctor extends User {
         }
     }
     public static void main(String[] args) {
-        Doctor newDoctor = new Doctor("Sae@pomona.edu", "Sae", "Furukawa", "Claremont", LocalDate.of(2002, 10, 05));
+        Doctor newDoctor = new Doctor("Sae@pomona.edu", "password", "Sae", "Furukawa", "Claremont", LocalDate.of(2002, 10, 05));
         newDoctor.userInput();
     }
 
