@@ -32,7 +32,7 @@ public class Superadmin extends User {
 	@Override
 	protected void generateUserID() {
 		Random rnd = new Random();
-		long randomNumber = 3_000_000_000_00L + (long)(rnd.nextDouble() * 9_000_000_000_00L);
+		long randomNumber = 5_000_000_000L + (long)(rnd.nextDouble() * 9_000_000_000L);
 		this.setUserID(randomNumber);
 	}
 	protected static User.Account selectAccountType(Scanner scanner) {

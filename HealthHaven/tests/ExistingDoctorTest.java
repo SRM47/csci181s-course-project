@@ -2,15 +2,14 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.Before;
 
-import java.time.Instant;
 import java.time.LocalDate;
 
 
-public class DoctorTest {private Doctor doctor;
+public class ExistingDoctorTest {private Doctor doctor;
 
     @Before
     public void setUp() {
-        // Existing user
+        // Existing user (check the database)
         doctor = new Doctor(1234567890,"doctor@example.com","password123", "John",
                 "Doe", "123 Main St", LocalDate.of(1980, 1, 1));
     }
@@ -41,6 +40,11 @@ public class DoctorTest {private Doctor doctor;
     }
 
     @Test
+    public void testAccessPersonalRecord(){
+        String serverResponse = doctor.updatePersonalRecordOnDB("newemail@gmail.com", "password123", "");
+    }
+
+    @Test
     public void testUpdatePatientRecordOnDB(){
         String serverResponse = doctor.updatePatientRecordOnDB((long) doctor.getUserID(), "111","111");
         //Instant timestamp = Instant.now();
@@ -53,6 +57,5 @@ public class DoctorTest {private Doctor doctor;
         //Here we have to first see what's stored in database and the format that server returns.
         assertEquals("", serverResponse);
     }
-
 
 }

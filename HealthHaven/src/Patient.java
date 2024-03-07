@@ -36,7 +36,7 @@ public class Patient extends User {
 	@Override
 	protected void generateUserID() {
 		Random rnd = new Random();
-		long randomNumber = 2_000_000_000_00L + (long)(rnd.nextDouble() * 9_000_000_000_00L);
+		long randomNumber = 2_000_000_000L + (long)(rnd.nextDouble() * 9_000_000_000L);
 		this.setUserID(randomNumber);
 	}
 	private void viewPatientRecord(double userID) {

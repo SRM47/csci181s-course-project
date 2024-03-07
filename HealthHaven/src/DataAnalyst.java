@@ -46,7 +46,7 @@ public class DataAnalyst extends User {
 		// This is done by starting at 3_000_000_000_000L (the smallest 12-digit number starting with 3)
 		// and adding a random number up to 8_999_999_999_999L to ensure the first digit remains 3
 		// and we have a total of 12 digits.
-		long randomNumber = 3_000_000_000_000L + (long)(rnd.nextDouble() * 8_999_999_999_999L);
+		long randomNumber = 3_000_000_000L + (long)(rnd.nextDouble() * 9_000_000_000L);
 
 		this.setUserID(randomNumber);
 	}
