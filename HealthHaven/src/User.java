@@ -46,6 +46,7 @@ public class User {
 	private static Account ACCOUNT_TYPE = Account.NONE;
 
 	/**
+	 * New user
 	 * @param email
 	 * @param legal_first_name
 	 * @param legal_last_name
@@ -62,6 +63,26 @@ public class User {
 		this.dob = dob;
 		this.generateUserID();
 		this.password = PasswordGenerator.generate(10); // Example: generate a 10-character password
+	}
+
+	/**
+	 * For existing user
+	 * @param userID
+	 * @param password
+	 * @param email
+	 * @param legal_first_name
+	 * @param legal_last_name
+	 * @param address
+	 * @param dob
+	 */
+	public User(double userID, String password, String email, String legal_first_name, String legal_last_name, String address, LocalDate dob) {
+		this.userID = userID;
+		this.password = password;
+		this.email = email;
+		this.legal_first_name = legal_first_name;
+		this.legal_last_name = legal_last_name;
+		this.address = address;
+		this.dob = dob;
 	}
 
 	/**
@@ -165,31 +186,31 @@ public class User {
 		this.dob = dob;
 	}
 
-	protected String communicateWithServer(String message, int serverPort) {
-		StringBuilder response = new StringBuilder();
-
-		try (Socket socket = new Socket("localhost", serverPort);
-			 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-			 BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
-
-			// Send the message to the server
-			writer.write(message);
-			writer.newLine();
-			writer.flush();
-
-			// Read the response
-			String line;
-			while ((line = reader.readLine()) != null) {
-				response.append(line);
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			return "Error communicating with server.";
-		}
-
-		return response.toString();
-	}
+//	protected String communicateWithServer(String message, int serverPort) {
+//		StringBuilder response = new StringBuilder();
+//
+//		try (Socket socket = new Socket("localhost", serverPort);
+//			 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+//			 BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
+//
+//			// Send the message to the server
+//			writer.write(message);
+//			writer.newLine();
+//			writer.flush();
+//
+//			// Read the response
+//			String line;
+//			while ((line = reader.readLine()) != null) {
+//				response.append(line);
+//			}
+//
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			return "Error communicating with server.";
+//		}
+//
+//		return response.toString();
+//	}
 	public void updatePersonalRecord(Scanner scanner) {
 		boolean updating = true;
 		while (updating) {
@@ -227,6 +248,11 @@ public class User {
 			}
 		}
 	}
+
+	protected void userInput(){
+
+	}
+
 	@Override
 	public String toString() {
 		return "User [password=" + password + ", userID=" + userID + ", email=" + email + ", legal_first_name="

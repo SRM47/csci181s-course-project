@@ -25,6 +25,12 @@ public class DataAnalyst extends User {
 		super(email, legal_first_name, legal_last_name, address, dob);
 		// TODO Auto-generated constructor stub
 	}
+
+	public DataAnalyst(double userID, String password, String email, String legal_first_name, String legal_last_name, String address,
+					   LocalDate dob) {
+		super(userID, password, email, legal_first_name, legal_last_name, address, dob);
+		// TODO Auto-generated constructor stub
+	}
 	
 	@Override
 	protected void generateUserID() {

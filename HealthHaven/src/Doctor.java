@@ -36,6 +36,12 @@ public class Doctor extends User {
 		generateUserID();
 		// TODO Auto-generated constructor stub
 	}
+
+    public Doctor(double userID, String password, String email, String legal_first_name, String legal_last_name,
+                   String address, LocalDate dob){
+        super(userID, password, email, legal_first_name, legal_last_name, address, dob);
+
+    }
 	
 	@Override
 	protected void generateUserID() {
@@ -51,7 +57,7 @@ public class Doctor extends User {
         // Construct a message to send to the server
         String message = String.format("UPDATE %d %s %s %s", userID, height, weight, timestamp.toString());
         System.out.println("message: "+ message);
-        String serverResponse = communicateWithServer(message, serverPort);
+        String serverResponse = ServerCommunicator.communicateWithMedicalServer(message);
         System.out.println("Server response: " + serverResponse);
 
         // Example: Use the timestamp
@@ -61,7 +67,7 @@ public class Doctor extends User {
 	public void viewPatientRecord(long userID, int serverPort) {
         String message = String.format("VIEW %d", userID);
         System.out.println("Message: " + message);
-        String serverResponse = communicateWithServer(message, serverPort);
+        String serverResponse = ServerCommunicator.communicateWithMedicalServer(message);
         System.out.println("Server response: " + serverResponse);
     }
 
@@ -69,11 +75,11 @@ public class Doctor extends User {
                               LocalDate dob, int serverPort) {
         Instant timestamp = Instant.now(); // This captures the current moment in UTC.
         String message = String.format("CREATE PATIENT %s %s %s %s %s %s", email, legal_first_name, legal_last_name, address, dob, timestamp.toString());
-        String serverResponse = communicateWithServer(message, serverPort);
+        String serverResponse = ServerCommunicator.communicateWithAccountServer(message);
         System.out.println("Server response: " + serverResponse);
     }
 	
-    public void userInput() {
+    protected void userInput() {
         Scanner scanner = new Scanner(System.in);
 
         while (true) {

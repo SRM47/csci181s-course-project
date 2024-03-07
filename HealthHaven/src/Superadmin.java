@@ -22,7 +22,11 @@ public class Superadmin extends User {
 	public Superadmin(String email, String legal_first_name, String legal_last_name, String address,
 			LocalDate dob) {
 		super(email, legal_first_name, legal_last_name, address, dob);
-		// TODO Auto-generated constructor stub
+	}
+
+	public Superadmin(double userID, String password, String email, String legal_first_name, String legal_last_name, String address,
+					  LocalDate dob) {
+		super(userID, password, email, legal_first_name, legal_last_name, address, dob);
 	}
 	
 	@Override
@@ -33,7 +37,7 @@ public class Superadmin extends User {
 	}
 
 	public void createUser(int accountType, String email, String legal_first_name, String legal_last_name, String address,
-							  LocalDate dob, int serverPort) {
+							  LocalDate dob) {
 		String account;
 		switch (accountType){
 			case 1:
@@ -51,13 +55,13 @@ public class Superadmin extends User {
 		}
 		Instant timestamp = Instant.now(); // This captures the current moment in UTC.
 		String message = String.format("CREATE %s %s %s %s %s %s %s", account, email, legal_first_name, legal_last_name, address, dob, timestamp.toString());
-		String serverResponse = communicateWithServer(message, serverPort);
+		String serverResponse = ServerCommunicator.communicateWithAccountServer(message);
 		System.out.println("Server response: " + serverResponse);
 	}
 
 	public void viewAccountList(int serverPort){
 		String message = "VIEW ACCOUNT";
-		String serverResponse = communicateWithServer(message, serverPort);
+		String serverResponse = ServerCommunicator.communicateWithAccountServer(message);
 		System.out.println("Server response: " + serverResponse);
 	}
 
@@ -127,7 +131,7 @@ public class Superadmin extends User {
 							System.out.println("Invalid date format. Please enter the date in yyyy-mm-dd format.");
 						}
 					}
-					createUser(accountType, email, firstName, lastName, address, dateOfBirth, 8888);
+					createUser(accountType, email, firstName, lastName, address, dateOfBirth);
 				case 4:
 					// Exit the method
 					System.out.println("Exiting...");

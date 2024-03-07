@@ -15,6 +15,7 @@ public class Patient extends User {
 	private static Account ACCOUNT_TYPE = Account.PATIENT;
 
 	/**
+	 * For new doctor
 	 * @param email
 	 * @param legal_first_name
 	 * @param legal_last_name
@@ -27,6 +28,12 @@ public class Patient extends User {
 		generateUserID();
 	}
 
+	public Patient(double userID, String password, String email, String legal_first_name, String legal_last_name,
+				   String address, LocalDate dob){
+        super(userID, password, email, legal_first_name, legal_last_name, address, dob);
+
+    }
+
 	@Override
 	protected void generateUserID() {
 		Random rnd = new Random();
@@ -35,11 +42,11 @@ public class Patient extends User {
 	}
 	public void viewPatientRecord(int userID, int serverPort) {
 		String message = String.format("VIEW %d", userID);
-		String serverResponse = communicateWithServer(message, serverPort);
+		String serverResponse = ServerCommunicator.communicateWithMedicalServer(message);
 		System.out.println("Server response: " + serverResponse);
 	}
 
-	public void userInput() {
+	protected void userInput() {
 		Scanner scanner = new Scanner(System.in);
 
 		while (true) {

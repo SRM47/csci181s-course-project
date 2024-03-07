@@ -24,7 +24,11 @@ public class DataProtectionOfficer extends User {
 	public DataProtectionOfficer(String email, String legal_first_name, String legal_last_name,
 			String address, LocalDate dob) {
 		super(email, legal_first_name, legal_last_name, address, dob);
-		// TODO Auto-generated constructor stub
+	}
+
+	public DataProtectionOfficer(double userID, String password, String email, String legal_first_name, String legal_last_name,
+								 String address, LocalDate dob) {
+		super(userID, password, email, legal_first_name, legal_last_name, address, dob);
 	}
 	
 	@Override
