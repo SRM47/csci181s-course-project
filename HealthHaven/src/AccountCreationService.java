@@ -10,17 +10,18 @@ public class AccountCreationService {
         String email = scanner.nextLine();
 
         String password = "";
-        if (userType == User.Account.DOCTOR || userType == User.Account.SUPERADMIN){
-            password = PasswordGenerator.generate(10);
-        } else{
-            System.out.print("Enter the password: ");
-            password = scanner.nextLine();
-        }
+        System.out.print("Enter the password: ");
+        password = scanner.nextLine();
+
+//        if (userType == User.Account.DOCTOR || userType == User.Account.SUPERADMIN){
+//            password = PasswordGenerator.generate(10);
+//        } else{
+//            System.out.print("Enter the password: ");
+//            password = scanner.nextLine();
+//        }
 
         // First communication with the server to check if the email already exists
         if (authenticateNewUser(email)) {
-           
-
             System.out.print("Enter the first name: ");
             String firstName = scanner.nextLine();
             System.out.print("Enter the last name: ");

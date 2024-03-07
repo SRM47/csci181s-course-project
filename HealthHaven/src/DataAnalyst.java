@@ -30,11 +30,11 @@ public class DataAnalyst extends User {
 	public DataAnalyst(double userID, String email, String password, String legal_first_name, String legal_last_name, String address,
 					   LocalDate dob) {
 		super(userID, email, password, legal_first_name, legal_last_name, address, dob);
-		// TODO Auto-generated constructor stub
 	}
 
 	private void performDataAnalysis(Scanner scanner){
 		String message = "REQUEST_PATIENT_DATA_SUMMARY";
+		System.out.println("message");
 		String ServerResponse = ServerCommunicator.communicateWithMedicalServer(message);
 		System.out.println(ServerResponse);
 	}
@@ -64,22 +64,10 @@ public class DataAnalyst extends User {
 			System.out.println("Enter your choice: ");
 
 			int choice = scanner.nextInt();
-			int subChoice;
+			scanner.nextLine();
 			switch (choice){
 				case 1:
-					System.out.println(this);
-					System.out.print("Do you want to update your record? 1 (yes) 2 (no): ");
-					subChoice = scanner.nextInt();
-					switch(subChoice){
-						case 1:
-							updatePersonalRecord(scanner);
-							break;
-						case 2:
-							System.out.print("Not updating any personal data.");
-							break;
-						default:
-							System.out.println("Invalid option. Please try again");
-					}
+					accessPersonalRecord(scanner);
 					break;
 				case 2:
 					System.out.println("Accessing the medical data.");
@@ -96,5 +84,11 @@ public class DataAnalyst extends User {
 
 
 	}
+
+	public static void main(String [] args){
+		DataAnalyst newDSA = new DataAnalyst("Sae@pomona.edu", "password", "Sae", "Furukawa", "Claremont", LocalDate.of(2002, 10, 05));
+		newDSA.userInput();
+	}
+
 
 }

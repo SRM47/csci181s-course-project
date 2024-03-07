@@ -57,23 +57,12 @@ public class Patient extends User {
 			System.out.print("Enter your choice: ");
 
 			int choice = scanner.nextInt(); // Read the user's choice
+			scanner.nextLine();
 
 			switch (choice) {
 				case 1:
 					// Access doctor's own info.
-					System.out.println(toString());
-					System.out.print("Do you want to update your record? 1 (yes) 2 (no): ");
-					int subChoice = scanner.nextInt();
-					switch(subChoice){
-						case 1:
-							updatePersonalRecord(scanner);
-							break;
-						case 2:
-							System.out.print("Not updating any personal data.");
-							break;
-						default:
-							System.out.println("Invalid option. Please try again");
-					}
+					accessPersonalRecord(scanner);
 					break;
 				case 2:
 					// Prompt for patient ID to view their record

@@ -41,6 +41,29 @@ public class Main {
 		};
 	}
 
+	private static User.Account selectAccountType(Scanner scanner) {
+		int accountType = 0;
+		while (accountType < 1 || accountType > 5) {
+			System.out.println("Select an account type 1. Patient 2. Doctor 3. Data Science Analyst 4. Data Protection Officer 5. Super Admin: ");
+			try {
+				accountType = Integer.parseInt(scanner.nextLine());
+				if (accountType < 1 || accountType > 5) {
+					System.out.println("Invalid account type. Please select a number between 1 and 5.");
+				}
+			} catch (NumberFormatException e) {
+				System.out.println("Invalid input. Please enter a number.");
+			}
+		}
+        return switch (accountType) {
+            case 1 -> User.Account.DOCTOR;
+            case 2 -> User.Account.PATIENT;
+            case 3 -> User.Account.DATA_ANALYST;
+            case 4 -> User.Account.DPO;
+            case 5 -> User.Account.SUPERADMIN;
+            default -> User.Account.NONE;
+        };
+	}
+
 	private static User login(Scanner scanner) {
 		System.out.print("Email: ");
 		String email = scanner.nextLine().trim();
@@ -76,6 +99,7 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 		Scanner scanner = new Scanner(System.in);
+		int option = 0;
 
 		boolean running = true;
 
@@ -86,31 +110,37 @@ public class Main {
 			System.out.println("3. Quit");
 			System.out.print("Select an option: ");
 
-			int option = scanner.nextInt();
+			try{
+				String input = scanner.nextLine().trim(); // Read the input as String and trim whitespace
+				option = Integer.parseInt(input);
+				switch(option) {
+					case 1:
+						// Here, call a method to handle account creation
+						User.Account userType = selectAccountType(scanner);
 
-			switch(option) {
-				case 1:
-					// Here, call a method to handle account creation
-					User newUser = AccountCreationService.createAccount(scanner, User.Account.NONE);
-					if (newUser != null) {
-						newUser.userInput();
-					}
-					break;
-				case 2:
-					// Handle login
-					User existingUser = login(scanner);
-					if (existingUser != null) {
-						existingUser.userInput();
-					}
-					break;
-				case 3:
-					// Quit
-					System.out.println("Quitting program.");
-					running = false; // Exit the while loop
-					break;
-				default:
-					System.out.println("Invalid option selected. Please try again.");
-					break;
+						User newUser = AccountCreationService.createAccount(scanner, userType);
+						if (newUser != null) {
+							newUser.userInput();
+						}
+						break;
+					case 2:
+						// Handle login
+						User existingUser = login(scanner);
+						if (existingUser != null) {
+							existingUser.userInput();
+						}
+						break;
+					case 3:
+						// Quit
+						System.out.println("Quitting program.");
+						running = false; // Exit the while loop
+						break;
+					default:
+						System.out.println("Invalid option selected. Please try again.");
+						break;
+				}
+			} catch (NumberFormatException e){
+				System.out.println("Please enter a valid number.");
 			}
 		}
 
