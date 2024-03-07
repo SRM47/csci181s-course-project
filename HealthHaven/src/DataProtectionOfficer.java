@@ -24,7 +24,7 @@ public class DataProtectionOfficer extends User {
 	public DataProtectionOfficer(String email, String password, String legal_first_name, String legal_last_name,
 			String address, LocalDate dob) {
 		super(email, password, legal_first_name, legal_last_name, address, dob);
-		generateUserID();
+
 	}
 
 	public DataProtectionOfficer(double userID, String email, String password, String legal_first_name, String legal_last_name,

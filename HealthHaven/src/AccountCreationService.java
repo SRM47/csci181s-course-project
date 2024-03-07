@@ -6,7 +6,6 @@ import java.util.Scanner;
 
 public class AccountCreationService {
     public static User createAccount(Scanner scanner, User.Account userType) {
-        scanner.nextLine();
         System.out.print("Enter the email: ");
         String email = scanner.nextLine();
 
@@ -20,13 +19,7 @@ public class AccountCreationService {
 
         // First communication with the server to check if the email already exists
         if (authenticateNewUser(email)) {
-            // Email is new, proceed with gathering additional information
-            int accountType = 0;
-            if (userType== User.Account.DOCTOR){
-                accountType = 2;
-            } else{
-                accountType = selectAccountType(scanner);
-            }
+           
 
             System.out.print("Enter the first name: ");
             String firstName = scanner.nextLine();
@@ -54,9 +47,9 @@ public class AccountCreationService {
 
                 if (subChoice == 1) {
                     proceed = true; // Break out of the loop and continue with account creation
-                    String serverResponse = updateAccountDB(accountType, email, password, firstName, lastName, address, dateOfBirth);
+                    String serverResponse = updateAccountDB(userType, email, password, firstName, lastName, address, dateOfBirth);
                     if (serverResponse.equals("SUCCESS")){
-                        return createUserInstance(accountType, email, password, firstName, lastName, address, dateOfBirth);
+                        return createUserInstance(userType, email, password, firstName, lastName, address, dateOfBirth);
                     }
                     System.out.println("Error creating an account.");
                     return null;
@@ -90,16 +83,16 @@ public class AccountCreationService {
     }
 
 
-    private static User createUserInstance(int accountType, String email, String password, String legal_first_name, String legal_last_name, String address,
+    private static User createUserInstance(User.Account userType, String email, String password, String legal_first_name, String legal_last_name, String address,
                                            LocalDate dob) {
 
 
-        return switch (accountType) {
-            case 1 -> new Doctor(email, password, legal_first_name, legal_last_name, address, dob);
-            case 2 -> new Patient(email, password, legal_first_name, legal_last_name, address, dob);
-            case 3 -> new DataAnalyst(email, password, legal_first_name, legal_last_name, address, dob);
-            case 4 -> new DataProtectionOfficer(email, password, legal_first_name, legal_last_name, address, dob);
-            case 5 -> new Superadmin(email, password, legal_first_name, legal_last_name, address, dob);
+        return switch (userType) {
+            case DOCTOR -> new Doctor(email, password, legal_first_name, legal_last_name, address, dob);
+            case PATIENT -> new Patient(email, password, legal_first_name, legal_last_name, address, dob);
+            case DATA_ANALYST -> new DataAnalyst(email, password, legal_first_name, legal_last_name, address, dob);
+            case DPO -> new DataProtectionOfficer(email, password, legal_first_name, legal_last_name, address, dob);
+            case SUPERADMIN -> new Superadmin(email, password, legal_first_name, legal_last_name, address, dob);
             default -> null;
         };
     }
@@ -113,21 +106,9 @@ public class AccountCreationService {
         return (serverResponse.equals("VALID"));
     }
 
-    private static String updateAccountDB(int accountType, String email, String password, String first_name, String last_name, String address, LocalDate dob){
+    private static String updateAccountDB(User.Account userType, String email, String password, String first_name, String last_name, String address, LocalDate dob){
         Instant timestamp = Instant.now();
-        String account ="";
-        switch (accountType){
-            case 1:
-                account = "DOCTOR";
-            case 2:
-                account = "PATIENT";
-            case 3:
-                account = "DSA";
-            case 4:
-                account = "DPO";
-            case 5:
-                account = "SA";
-        }
+        String account = userType.getAccountName();
         String message = String.format(("CREATE ACCOUNT %s %s %s %s %s %s %s %s"), account, email, password, first_name, last_name, address, dob, timestamp.toString());
         return ServerCommunicator.communicateWithAccountServer(message);
     }

@@ -28,7 +28,7 @@ public class User {
 	
 	public static enum Account{
 		DOCTOR("Doctor"), 
-		PATIENT("Patient"),
+		PATIENT( "Patient"),
 		DATA_ANALYST("Data Analyst"),
 		SUPERADMIN("Superadmin"),
 		DPO("Data Protection Officer"),
@@ -38,7 +38,7 @@ public class User {
 			this.account_name = account_name;
 		}
 		
-		private String getAccountName() {
+		String getAccountName() {
 			return this.account_name;
 		}
 	}
@@ -82,6 +82,7 @@ public class User {
 		this.legal_last_name = legal_last_name;
 		this.address = address;
 		this.dob = dob;
+		this.generateUserID();
 	}
 
 	/**
