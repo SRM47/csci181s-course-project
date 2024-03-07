@@ -42,10 +42,10 @@ public class Doctor extends User {
 	    this.setUserID(randomNumber);
 	}
 	
-	private void viewAndUpdatePatientRecord(Scanner scanner){
+	protected void viewAndUpdatePatientRecord(Scanner scanner){
         System.out.print("Enter patient ID: ");
         long userIDView = scanner.nextLong();
-        viewPatientRecord(userIDView);
+        System.out.println(viewPatientRecord(userIDView));
 
         System.out.print("Do you want to update this patient record? 1 (yes) 2 (no): ");
         int subChoice = scanner.nextInt();
@@ -58,7 +58,7 @@ public class Doctor extends User {
                 String feature = scanner.nextLine();
                 System.out.print("Enter weight to update: ");
                 String newData = scanner.nextLine();
-                updatePatientRecordOnDB(userIDView, feature, newData);
+                System.out.println( updatePatientRecordOnDB(userIDView, feature, newData));
                 break;
             case 2:
                 System.out.println("Not updating the patient record");
@@ -67,21 +67,19 @@ public class Doctor extends User {
                 System.out.println("Invalid option. Please try again");
         }
     }
-	private void updatePatientRecordOnDB(long userID, String height, String weight) {
+	protected String updatePatientRecordOnDB(long userID, String height, String weight) {
         Instant timestamp = Instant.now(); // This captures the current moment in UTC.
 
         // Construct a message to send to the server
         String message = String.format("UPDATE %d %s %s %s", userID, height, weight, timestamp.toString());
         System.out.println("message: "+ message);
-        String serverResponse = ServerCommunicator.communicateWithMedicalServer(message);
-        System.out.println("Server response: " + serverResponse);
+        return ServerCommunicator.communicateWithMedicalServer(message);
     }
 	
-	private void viewPatientRecord(long userID) {
+	protected String viewPatientRecord(long userID) {
         String message = String.format("VIEW %d", userID);
         System.out.println("Message: " + message);
-        String serverResponse = ServerCommunicator.communicateWithMedicalServer(message);
-        System.out.println("Server response: " + serverResponse);
+        return ServerCommunicator.communicateWithMedicalServer(message);
     }
 
     @Override
@@ -104,7 +102,7 @@ public class Doctor extends User {
                 System.out.println("Invalid input. Please enter a number.");
                 continue;
             }
-
+            String serverResponse = "";
             switch (choice) {
                 case 1:
                     accessPersonalRecord(scanner);

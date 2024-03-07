@@ -207,6 +207,21 @@ public class User {
 			System.out.println("Invalid input. Please enter a number.");
 		}
 	}
+
+	protected String updatePersonalRecordOnDB(String newEmail, String newPassword, String newAddress){
+		// Apply changes and communicate with the server to update the database
+		setEmail(newEmail);
+		setAddress(newAddress);
+		setPassword(newPassword);
+
+		System.out.println(this);
+
+		// Assuming communicateWithServer is a method that takes the updates and sends them to the server
+		String updateMessage = String.format("UPDATE %f %s %s %s", getUserID(), newEmail, newPassword, newAddress);
+		System.out.println("Message: " + updateMessage);
+		return ServerCommunicator.communicateWithAccountServer(updateMessage);
+	}
+
 	protected void updatePersonalRecord(Scanner scanner) {
 		String newEmail = this.email; // Start with current values
 		String newAddress = this.address;
@@ -239,17 +254,7 @@ public class User {
 					System.out.println("Password set for update.");
 					break;
 				case 4:
-					// Apply changes and communicate with the server to update the database
-					setEmail(newEmail);
-					setAddress(newAddress);
-					setPassword(newPassword);
-
-					System.out.println(this);
-
-					// Assuming communicateWithServer is a method that takes the updates and sends them to the server
-					String updateMessage = String.format("UPDATE %f %s %s %s", getUserID(), newEmail, newPassword, newAddress);
-					System.out.println("Message: " + updateMessage);
-					String serverResponse = ServerCommunicator.communicateWithAccountServer(updateMessage);
+					String serverResponse = updatePersonalRecordOnDB(newEmail, newPassword, newAddress);
 					if (serverResponse.equals("SUCCESS")) {
 						System.out.println("Updates saved successfully.");
 					} else {

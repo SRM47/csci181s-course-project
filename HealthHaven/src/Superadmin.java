@@ -35,7 +35,7 @@ public class Superadmin extends User {
 		long randomNumber = 3_000_000_000_00L + (long)(rnd.nextDouble() * 9_000_000_000_00L);
 		this.setUserID(randomNumber);
 	}
-	private static User.Account selectAccountType(Scanner scanner) {
+	protected static User.Account selectAccountType(Scanner scanner) {
 		int accountType = 0;
 		while (accountType < 1 || accountType > 5) {
 			System.out.println("Select an account type 1. Patient 2. Doctor 3. Data Science Analyst 4. Data Protection Officer 5. Super Admin: ");

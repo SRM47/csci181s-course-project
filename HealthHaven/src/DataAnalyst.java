@@ -32,7 +32,7 @@ public class DataAnalyst extends User {
 		super(userID, email, password, legal_first_name, legal_last_name, address, dob);
 	}
 
-	private void performDataAnalysis(Scanner scanner){
+	protected void performDataAnalysis(Scanner scanner){
 		String message = "REQUEST_PATIENT_DATA_SUMMARY";
 		System.out.println("message");
 		String ServerResponse = ServerCommunicator.communicateWithMedicalServer(message);
@@ -42,7 +42,6 @@ public class DataAnalyst extends User {
 	@Override
 	protected void generateUserID() {
 		Random rnd = new Random();
-
 		// Generate a random number where the first digit is 3 and the rest 11 digits are random
 		// This is done by starting at 3_000_000_000_000L (the smallest 12-digit number starting with 3)
 		// and adding a random number up to 8_999_999_999_999L to ensure the first digit remains 3
