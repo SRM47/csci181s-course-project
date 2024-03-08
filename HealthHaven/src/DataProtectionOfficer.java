@@ -48,7 +48,7 @@ public class DataProtectionOfficer extends User {
 		Random random = new Random();
 		
 		// UserID created with random six digit number base. User class is appended as highest order digit.
-		long randomNumber = 4_000_000_000L + (long)(random.nextDouble() * 9_000_000_000L);
+		long randomNumber = 4_000_000_000L + (long)(random.nextDouble() * 999_999_999L);
 		this.setUserID(randomNumber);
 	}
 

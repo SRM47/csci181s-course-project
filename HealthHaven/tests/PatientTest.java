@@ -18,10 +18,11 @@ public class PatientTest extends UserTest<Patient> {
         super.setUp();
     }
     
-//    @Test
-//    void testGenerateUserID() {
-//        user.generateUserID(); //use user since setUp
-//        long userID = user.getUserID();
-//        assertTrue(String.valueOf(userID).startsWith("2"), "Patient userID should start with 2.");
-//    }
+    @Test
+    public void testGenerateUserID() {
+        user.generateUserID(); //use user since setUp
+        long userID = user.getUserID();
+        System.out.println(userID);
+        assertTrue(String.valueOf(userID).startsWith("2"), "Patient userID should start with 2.");
+    }
 }

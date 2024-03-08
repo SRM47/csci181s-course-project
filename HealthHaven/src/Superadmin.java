@@ -40,7 +40,7 @@ public class Superadmin extends User {
 	@Override
 	protected void generateUserID() {
 		Random rnd = new Random();
-		long randomNumber = 5_000_000_000L + (long)(rnd.nextDouble() * 9_000_000_000L);
+		long randomNumber = 5_000_000_000L + (long)(rnd.nextDouble() * 999_999_999L);
 		this.setUserID(randomNumber);
 	}
 
