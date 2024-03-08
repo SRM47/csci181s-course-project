@@ -11,7 +11,7 @@ import java.util.ArrayList;
  */
 public class AccountInformationDatabaseHandler {
 	
-	private static String databaseName = "medical_records.csv";
+	private static String databaseName = "user_accounts.csv";
 
 	public static String createAccount(String userId, String email, String password, String legal_first_name,
 			String legal_last_name, String address, String dob, String timestamp) {
