@@ -28,7 +28,7 @@ public class CSVHandler{
     
     // Method to append data to a CSV file
     // ChatGPT
-    public static boolean appendToCSV(String filePath, String[] data) {
+    public static synchronized boolean appendToCSV(String filePath, String[] data) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true))) {
             StringBuilder sb = new StringBuilder();
             for (String value : data) {
@@ -45,7 +45,7 @@ public class CSVHandler{
     }
     
     // ChatGPT
-    public static ArrayList<String> readColumnValue(String filePath, int col){
+    public static synchronized ArrayList<String> readColumnValue(String filePath, int col){
     	if (col < 0) {
     		return null;
     	}
@@ -64,7 +64,7 @@ public class CSVHandler{
         return values;
     }
     
-    public static String readAll(String filePath){
+    public static synchronized String readAll(String filePath){
     	StringBuilder sb = new StringBuilder();
     	try (BufferedReader csvReader = new BufferedReader(new FileReader(filePath))) {
             String csvLine;
@@ -77,7 +77,7 @@ public class CSVHandler{
         return sb.toString();
     }
 
-	public static String readRowByIndex(String filePath, int row) {
+	public static synchronized String readRowByIndex(String filePath, int row) {
 		String csvLine = null;
 		try (BufferedReader csvReader = new BufferedReader(new FileReader(filePath))) {
 
