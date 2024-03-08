@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 /**
  * 
  */
@@ -7,20 +9,23 @@
  *
  */
 public class MedicalRecordDatabaseHandler {
+	
+	private static String databaseName = "medical_records.csv";
 
-	public static String updatePatientMedicalRecords(String patientID, String height, String weight, String timestamp) {
-		return "Updated patient medical record.";
-
+	public static String updatePatientMedicalRecords(String patientId, String height, String weight, String timestamp) {
+		String[] newData = { patientId, height, weight, timestamp };
+		boolean success = CSVHandler.appendToCSV(databaseName, newData);
+		return success ? "SUCCESS" : "FAILURE";
 	}
 
-	public static String viewPatientMedicalRecord(String patientID) {
-		return "This is the Patient's medical record.";
-
+	public static String viewPatientMedicalRecord(String patientId) {
+		ArrayList<String> patientIds = CSVHandler.readColumnValue(databaseName, 0);
+		int index = patientIds.indexOf(patientId);
+		return CSVHandler.readRowByIndex(databaseName, index);
 	}
 
 	public static String getAllRecords() {
-		return "All records.";
-
+		return CSVHandler.readAll(databaseName);
 	}
 
 }
