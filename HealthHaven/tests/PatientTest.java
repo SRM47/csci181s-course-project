@@ -22,7 +22,6 @@ public class PatientTest extends UserTest<Patient> {
     public void testGenerateUserID() {
         user.generateUserID(); //use user since setUp
         long userID = user.getUserID();
-        System.out.println(userID);
         assertTrue(String.valueOf(userID).startsWith("2"), "Patient userID should start with 2.");
     }
 }

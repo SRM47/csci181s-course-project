@@ -6,6 +6,8 @@ import java.util.Random;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 public class DoctorTest extends UserTest<Doctor> {
     
@@ -20,25 +22,29 @@ public class DoctorTest extends UserTest<Doctor> {
         super.setUp();
     }
 
-//    @Test
-//    public void testGenerateUserID() {
-//        // Ensuring that the generated userID starts with '1', indicating a Doctor's userID
-//        user.generateUserID();
-//        long userID = user.getUserID();
-//        assertTrue(Long.toString(userID).startsWith("1"), "Doctor userID should start with 1.");
-//    }
-//
-//    @Test
-//    public void testViewPatientRecord() {
-//        // Mock ServerCommunicator to return a predefined response for testing
-//        String expectedResponse = "Patient Record Data";
-//        // Assuming ServerCommunicator.communicateWithMedicalServer has been adapted or wrapped for mocking
-//        // For demonstration, we'll pretend we have a method in Doctor we can mock that wraps the call
-//        when(user.mockableCommunicateWithMedicalServer(anyString())).thenReturn(expectedResponse);
-//        
-//        String response = user.viewPatientRecord(12345L); // Use a test patient ID
-//        assertEquals(expectedResponse, response, "The response should match the mocked server response.");
-//    }
+    @Test
+    public void testGenerateUserID() {
+        // Ensuring that the generated userID starts with '1', indicating a Doctor's userID
+        user.generateUserID();
+        long userID = user.getUserID();
+        assertTrue(Long.toString(userID).startsWith("1"), "Doctor userID should start with 1.");
+    }
+    
+    @Test
+    public void testViewPatientRecord() {
+        try (MockedStatic<ServerCommunicator> mockedStatic = Mockito.mockStatic(ServerCommunicator.class)) {
+            // Mock the static method call
+            mockedStatic.when(() -> ServerCommunicator.communicateWithMedicalServer("VIEW 12345"))
+                    .thenReturn("Mocked patient record response");
+
+            // Call the method under test
+            String response = user.viewPatientRecord(12345);
+
+            // Assert the expected behavior or outcome
+            assertEquals("Mocked patient record response", response, "The response should match the mocked one.");
+        }
+    }
+    
 //
 //    @Test
 //    public void testUpdatePatientRecordOnDB() {

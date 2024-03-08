@@ -1,22 +1,27 @@
-//import org.mockito.Mock;
-//import static org.mockito.Mockito.*;
-//import org.mockito.MockitoAnnotations;
-//import org.junit.Before;
-//import org.junit.Test;
-//
-//public class DataAnalystTest {
-//
-//    @Mock
-//    MyDependency myDependency;
-//
-//    @Before
-//    public void setUp() throws Exception {
-//        MockitoAnnotations.openMocks(this);
-//    }
-//
-//    @Test
-//    public void test() {
-//        when(myDependency.method()).thenReturn("mocked response");
-//        // Your test code here
-//    }
-//}
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.time.LocalDate;
+
+public class DataAnalystTest extends UserTest<DataAnalyst> {
+
+    @Override
+    public DataAnalyst createUser() {
+        return new DataAnalyst(1234567890,"example@example.com","password123", "John", "Doe", "123 Main St", LocalDate.of(1980, 1, 1));
+    }
+    
+    @BeforeEach
+    @Override
+    public void setUp() {
+        super.setUp();
+    }
+    
+    @Test
+    public void testGenerateUserID() {
+        user.generateUserID(); //use user since setUp
+        long userID = user.getUserID();
+        assertTrue(String.valueOf(userID).startsWith("3"), "Data Analyst userID should start with .");
+    }
+}
