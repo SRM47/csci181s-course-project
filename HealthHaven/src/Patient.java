@@ -27,23 +27,41 @@ public class Patient extends User {
 		super(email, password, legal_first_name, legal_last_name, address, dob);
 	}
 
+	/**
+	 * For existing user
+	 * @param userID
+	 * @param email
+	 * @param password
+	 * @param legal_first_name
+	 * @param legal_last_name
+	 * @param address
+	 * @param dob
+	 */
 	public Patient(double userID, String email, String password, String legal_first_name, String legal_last_name,
 				   String address, LocalDate dob){
         super(userID, email, password, legal_first_name, legal_last_name, address, dob);
 
     }
 
+	/**
+	 * Generating user id with left most digit = 2
+	 */
 	@Override
 	protected void generateUserID() {
 		Random rnd = new Random();
-		long randomNumber = 2_000_000_000_00L + (long)(rnd.nextDouble() * 9_000_000_000_00L);
+		long randomNumber = 2_000_000_000L + (long)(rnd.nextDouble() * 9_000_000_000L);
 		this.setUserID(randomNumber);
 	}
-	private void viewPatientRecord(double userID) {
+
+	/**
+	 * Display the patient record, return the server response.
+	 * @param userID
+	 */
+	private String viewPatientRecord(double userID) {
 		String message = String.format("VIEW %s", userID);
 		System.out.println("Message: " + message);
-		String serverResponse = ServerCommunicator.communicateWithMedicalServer(message);
-		System.out.println("Server response: " + serverResponse);
+		return ServerCommunicator.communicateWithMedicalServer(message);
+
 	}
 	@Override
 	protected void userInput() {
@@ -57,27 +75,16 @@ public class Patient extends User {
 			System.out.print("Enter your choice: ");
 
 			int choice = scanner.nextInt(); // Read the user's choice
+			scanner.nextLine();
 
 			switch (choice) {
 				case 1:
 					// Access doctor's own info.
-					System.out.println(toString());
-					System.out.print("Do you want to update your record? 1 (yes) 2 (no): ");
-					int subChoice = scanner.nextInt();
-					switch(subChoice){
-						case 1:
-							updatePersonalRecord(scanner);
-							break;
-						case 2:
-							System.out.print("Not updating any personal data.");
-							break;
-						default:
-							System.out.println("Invalid option. Please try again");
-					}
+					accessPersonalRecord(scanner);
 					break;
 				case 2:
 					// Prompt for patient ID to view their record
-					viewPatientRecord(getUserID());
+					System.out.println(viewPatientRecord(getUserID()));
 					break;
 				case 3:
 					// Exit the method

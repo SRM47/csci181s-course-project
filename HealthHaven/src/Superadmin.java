@@ -1,7 +1,4 @@
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -13,6 +10,7 @@ public class Superadmin extends User {
 	private static Account ACCOUNT_TYPE = Account.SUPERADMIN;
 
 	/**
+	 * New superadmin
 	 * @param email
 	 * @param legal_first_name
 	 * @param legal_last_name
@@ -24,6 +22,16 @@ public class Superadmin extends User {
 		super(email, password, legal_first_name, legal_last_name, address, dob);
 	}
 
+	/**
+	 * Existing superadmin
+	 * @param userID
+	 * @param email
+	 * @param password
+	 * @param legal_first_name
+	 * @param legal_last_name
+	 * @param address
+	 * @param dob
+	 */
 	public Superadmin(double userID, String email, String password, String legal_first_name, String legal_last_name, String address,
 					  LocalDate dob) {
 		super(userID, email, password, legal_first_name, legal_last_name, address, dob);
@@ -32,35 +40,44 @@ public class Superadmin extends User {
 	@Override
 	protected void generateUserID() {
 		Random rnd = new Random();
-		long randomNumber = 3_000_000_000_00L + (long)(rnd.nextDouble() * 9_000_000_000_00L);
+		long randomNumber = 5_000_000_000L + (long)(rnd.nextDouble() * 9_000_000_000L);
 		this.setUserID(randomNumber);
 	}
 
-	public void createUser(int accountType, String email, String legal_first_name, String legal_last_name, String address,
-							  LocalDate dob) {
-		String account;
-		switch (accountType){
-			case 1:
-				account = "PATIENT";
-			case 2:
-				account = "DOCTOR";
-			case 3:
-				account = "DSA";
-			case 4:
-				account = "DPO";
-			case 5:
-				account = "SA";
-			default:
-				account = "USER";
+	/**
+	 * Choose account type to create (include user prompt)
+	 * @param scanner
+	 * @return
+	 */
+	protected static User.Account selectAccountType(Scanner scanner) {
+		int accountType = 0;
+		while (accountType < 1 || accountType > 5) {
+			System.out.println("Select an account type 1. Patient 2. Doctor 3. Data Science Analyst 4. Data Protection Officer 5. Super Admin: ");
+			try {
+				accountType = Integer.parseInt(scanner.nextLine());
+				if (accountType < 1 || accountType > 5) {
+					System.out.println("Invalid account type. Please select a number between 1 and 5.");
+				}
+			} catch (NumberFormatException e) {
+				System.out.println("Invalid input. Please enter a number.");
+			}
 		}
-		Instant timestamp = Instant.now(); // This captures the current moment in UTC.
-		String message = String.format("CREATE %s %s %s %s %s %s %s", account, email, legal_first_name, legal_last_name, address, dob, timestamp.toString());
-		String serverResponse = ServerCommunicator.communicateWithAccountServer(message);
-		System.out.println("Server response: " + serverResponse);
+		return switch (accountType) {
+			case 1 -> User.Account.DOCTOR;
+			case 2 -> User.Account.PATIENT;
+			case 3 -> User.Account.DATA_ANALYST;
+			case 4 -> User.Account.DPO;
+			case 5 -> User.Account.SUPERADMIN;
+			default -> User.Account.NONE;
+		};
 	}
 
-	public void viewAccountList(int serverPort){
+	/**
+	 * Print out the account list
+	 */
+	public void viewAccountList(){
 		String message = "VIEW ACCOUNT";
+		System.out.println("Message: " + message);
 		String serverResponse = ServerCommunicator.communicateWithAccountServer(message);
 		System.out.println("Server response: " + serverResponse);
 	}
@@ -96,11 +113,14 @@ public class Superadmin extends User {
 					break;
 				case 2:
 					System.out.println("Accessing the account list");
-					viewAccountList(8888);
+					viewAccountList();
 					break;
 				case 3:
 					System.out.println("Creating a new user");
-					User newUser = AccountCreationService.createAccount(scanner, Account.SUPERADMIN);
+					// Here, call a method to handle account creation
+					User.Account userType = selectAccountType(scanner);
+					User newUser = AccountCreationService.createAccount(scanner, userType);
+					break;
 				case 4:
 					// Exit the method
 					System.out.println("Exiting...");

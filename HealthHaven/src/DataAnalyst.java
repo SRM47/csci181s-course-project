@@ -15,6 +15,7 @@ public class DataAnalyst extends User {
 	private static Account ACCOUNT_TYPE = Account.DATA_ANALYST;
 
 	/**
+	 * New Data Analyst
 	 * @param email
 	 * @param legal_first_name
 	 * @param legal_last_name
@@ -27,14 +28,28 @@ public class DataAnalyst extends User {
 
 	}
 
+	/**
+	 * Existing Data Analyst
+	 * @param userID
+	 * @param email
+	 * @param password
+	 * @param legal_first_name
+	 * @param legal_last_name
+	 * @param address
+	 * @param dob
+	 */
 	public DataAnalyst(double userID, String email, String password, String legal_first_name, String legal_last_name, String address,
 					   LocalDate dob) {
 		super(userID, email, password, legal_first_name, legal_last_name, address, dob);
-		// TODO Auto-generated constructor stub
 	}
 
-	private void performDataAnalysis(Scanner scanner){
+	/**
+	 * Get and print the data summary
+	 * @param scanner
+	 */
+	protected void performDataAnalysis(Scanner scanner){
 		String message = "REQUEST_PATIENT_DATA_SUMMARY";
+		System.out.println("message");
 		String ServerResponse = ServerCommunicator.communicateWithMedicalServer(message);
 		System.out.println(ServerResponse);
 	}
@@ -42,12 +57,11 @@ public class DataAnalyst extends User {
 	@Override
 	protected void generateUserID() {
 		Random rnd = new Random();
-
 		// Generate a random number where the first digit is 3 and the rest 11 digits are random
 		// This is done by starting at 3_000_000_000_000L (the smallest 12-digit number starting with 3)
 		// and adding a random number up to 8_999_999_999_999L to ensure the first digit remains 3
 		// and we have a total of 12 digits.
-		long randomNumber = 3_000_000_000_000L + (long)(rnd.nextDouble() * 8_999_999_999_999L);
+		long randomNumber = 3_000_000_000L + (long)(rnd.nextDouble() * 9_000_000_000L);
 
 		this.setUserID(randomNumber);
 	}
@@ -64,22 +78,10 @@ public class DataAnalyst extends User {
 			System.out.println("Enter your choice: ");
 
 			int choice = scanner.nextInt();
-			int subChoice;
+			scanner.nextLine();
 			switch (choice){
 				case 1:
-					System.out.println(this);
-					System.out.print("Do you want to update your record? 1 (yes) 2 (no): ");
-					subChoice = scanner.nextInt();
-					switch(subChoice){
-						case 1:
-							updatePersonalRecord(scanner);
-							break;
-						case 2:
-							System.out.print("Not updating any personal data.");
-							break;
-						default:
-							System.out.println("Invalid option. Please try again");
-					}
+					accessPersonalRecord(scanner);
 					break;
 				case 2:
 					System.out.println("Accessing the medical data.");
@@ -96,5 +98,11 @@ public class DataAnalyst extends User {
 
 
 	}
+
+	public static void main(String [] args){
+		DataAnalyst newDSA = new DataAnalyst("Sae@pomona.edu", "password", "Sae", "Furukawa", "Claremont", LocalDate.of(2002, 10, 05));
+		newDSA.userInput();
+	}
+
 
 }
