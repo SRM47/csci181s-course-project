@@ -48,8 +48,8 @@ public class DataAnalyst extends User {
 	 * @param scanner
 	 */
 	protected void performDataAnalysis(Scanner scanner){
-		long userID = this.getUserID();
-//		long userID = 300;
+//		long userID = this.getUserID();
+		long userID = 300;
 		String message = "REQUEST_PATIENT_DATA_SUMMARY " + userID;
 //		System.out.println("message");
 		String ServerResponse = ServerCommunicator.communicateWithMedicalServer(message);

@@ -1,0 +1,64 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>HealthHaven</groupId>
+    <artifactId>HealthHaven</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+
+    <dependencies>
+        <!-- JUnit Jupiter API for writing tests -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.7.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- JUnit Jupiter Engine for running tests -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.7.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Mockito for mocking in tests -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>3.9.0</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+	    <sourceDirectory>src</sourceDirectory>
+	    <resources>
+	        <resource>
+	            <directory>src</directory>
+	            <excludes>
+	                <exclude>**/*.java</exclude>
+	            </excludes>
+	        </resource>
+	    </resources>
+	    <testSourceDirectory>tests</testSourceDirectory> <!-- Specify custom test directory -->
+	    <testResources>
+	        <testResource>
+	            <directory>tests</directory> <!-- Assuming you also have non-Java resources for tests here -->
+	            <includes>
+	                <include>**/*.java</include> <!-- You typically wouldn't include .java files in testResources -->
+	            </includes>
+	        </testResource>
+	    </testResources>
+	    <plugins>
+	        <plugin>
+	            <artifactId>maven-compiler-plugin</artifactId>
+	            <version>3.8.1</version>
+	            <configuration>
+	                <release>14</release>
+	            </configuration>
+	        </plugin>
+	    </plugins>
+	</build>
+</project>
