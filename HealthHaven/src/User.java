@@ -14,7 +14,7 @@ public class User {
 
 	private String password;
 	// The format of the userID will correspond to the account type
-	private double userID;
+	private long userID;
 	private String email;
 	private String legal_first_name;
 	private String legal_last_name;
@@ -69,7 +69,7 @@ public class User {
 	 * @param address
 	 * @param dob
 	 */
-	public User(double userID, String email, String password, String legal_first_name, String legal_last_name, String address, LocalDate dob) {
+	public User(long userID, String email, String password, String legal_first_name, String legal_last_name, String address, LocalDate dob) {
 		this.userID = userID;
 		this.password = password;
 		this.email = email;
@@ -100,14 +100,14 @@ public class User {
 	/**
 	 * @return the userID
 	 */
-	protected double getUserID() {
+	protected long getUserID() {
 		return userID;
 	}
 
 	/**
 	 * @param userID the userID to set
 	 */
-	protected void setUserID(double userID) {
+	protected void setUserID(long userID) {
 		this.userID = userID;
 	}
 

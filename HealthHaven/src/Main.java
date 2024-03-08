@@ -39,7 +39,7 @@ public class Main {
 	 * @param dob
 	 * @return
 	 */
-	private static User createUserInstance(String accountType, double userID, String email, String password, String legalFirstName, String legalLastName,
+	private static User createUserInstance(String accountType, long userID, String email, String password, String legalFirstName, String legalLastName,
 										   String address, LocalDate dob){
 		return switch (accountType) {
 			case "DOCTOR" -> new Doctor(userID, email, password, legalFirstName, legalLastName, address, dob);
@@ -101,7 +101,7 @@ public class Main {
 
 			String [] data = serverResponse.split(",");
 			String accountType = data[0];
-			double userID = Double.parseDouble(data[1]);
+			long userID = Long.parseLong(data[1]);
 			String legalFirstName = data[4];
 			String legalLastName = data[5];
 			String address = data[6];

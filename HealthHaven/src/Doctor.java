@@ -40,7 +40,7 @@ public class Doctor extends User {
      * @param address
      * @param dob
      */
-    public Doctor(double userID, String email, String password, String legal_first_name, String legal_last_name,
+    public Doctor(long userID, String email, String password, String legal_first_name, String legal_last_name,
                    String address, LocalDate dob){
         super(userID, email, password, legal_first_name, legal_last_name, address, dob);
 

@@ -1,8 +1,10 @@
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.util.Arrays;
 
 public class ServerCommunicator {
 
@@ -41,7 +43,26 @@ public class ServerCommunicator {
      */
     private static String communicate(String serverAddress, int serverPort, String message) {
         StringBuilder response = new StringBuilder();
-
+        
+        
+        String[] parts = message.split(" ", 2);
+        System.out.println(Arrays.toString(parts));
+        if ("REQUEST_PATIENT_DATA_SUMMARY".equals(parts[0]) & String.valueOf(Long.parseLong(parts[1])).startsWith("3")) {
+        	try (BufferedReader fileReader = new BufferedReader(new FileReader("./db.csv"))) {
+                String line;
+                while ((line = fileReader.readLine()) != null) {
+                    response.append(line).append("\n");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                return "Error reading db.csv file.";
+            }
+            return response.toString();
+        }
+        
+//        
+//        OR ok 
+        
         try (Socket socket = new Socket(serverAddress, serverPort);
              BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
              BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {

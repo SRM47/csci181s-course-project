@@ -38,7 +38,7 @@ public class DataAnalyst extends User {
 	 * @param address
 	 * @param dob
 	 */
-	public DataAnalyst(double userID, String email, String password, String legal_first_name, String legal_last_name, String address,
+	public DataAnalyst(long userID, String email, String password, String legal_first_name, String legal_last_name, String address,
 					   LocalDate dob) {
 		super(userID, email, password, legal_first_name, legal_last_name, address, dob);
 	}
@@ -48,8 +48,10 @@ public class DataAnalyst extends User {
 	 * @param scanner
 	 */
 	protected void performDataAnalysis(Scanner scanner){
-		String message = "REQUEST_PATIENT_DATA_SUMMARY";
-		System.out.println("message");
+		long userID = this.getUserID();
+//		long userID = 300;
+		String message = "REQUEST_PATIENT_DATA_SUMMARY " + userID;
+//		System.out.println("message");
 		String ServerResponse = ServerCommunicator.communicateWithMedicalServer(message);
 		System.out.println(ServerResponse);
 	}
@@ -86,6 +88,7 @@ public class DataAnalyst extends User {
 				case 2:
 					System.out.println("Accessing the medical data.");
 					performDataAnalysis(scanner);
+					break;
 				case 3:
 					System.out.println("Existing...");
 					scanner.close();
