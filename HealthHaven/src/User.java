@@ -224,7 +224,7 @@ public class User {
 		System.out.println(this);
 
 		// Communicate with the server to update
-		String updateMessage = String.format("UPDATE %f %s %s %s", getUserID(), newEmail, newPassword, newAddress);
+		String updateMessage = String.format("UPDATE_ACCOUNT %f %s %s %s", getUserID(), newEmail, newPassword, newAddress);
 		System.out.println("Message: " + updateMessage);
 		return ServerCommunicator.communicateWithAccountServer(updateMessage);
 	}

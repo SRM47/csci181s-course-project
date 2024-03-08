@@ -19,7 +19,7 @@ public class Main {
 	 */
 	private static String authenticateExistingUser(String email, String password){
 		Instant timestamp = Instant.now(); // This captures the current moment in UTC.
-		String message = String.format("EXISTING ACCOUNT %s %s %s", email, password, timestamp.toString());
+		String message = String.format("AUTHENTICATE_ACCOUNT %s %s %s", email, password, timestamp.toString());
 		System.out.println("Message: " + message);
 		String serverResponse = ServerCommunicator.communicateWithAccountServer(message);
 		System.out.println("Server response: " + serverResponse);

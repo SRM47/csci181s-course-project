@@ -99,7 +99,7 @@ public class AccountCreationService {
     }
 
     private static boolean authenticateNewUser(String email){
-        String message = String.format("NEW ACCOUNT %s", email);
+        String message = String.format("NEW_ACCOUNT %s", email);
         System.out.println("Message: " + message);
         String serverResponse = ServerCommunicator.communicateWithAccountServer(message);
         System.out.println("Server response: " + serverResponse);
@@ -110,7 +110,7 @@ public class AccountCreationService {
     private static String updateAccountDB(User.Account userType, String email, String password, String first_name, String last_name, String address, LocalDate dob){
         Instant timestamp = Instant.now();
         String account = userType.getAccountName();
-        String message = String.format(("CREATE ACCOUNT %s %s %s %s %s %s %s %s"), account, email, password, first_name, last_name, address, dob, timestamp.toString());
+        String message = String.format(("CREATE_ACCOUNT %s %s %s %s %s %s %s %s"), account, email, password, first_name, last_name, address, dob, timestamp.toString());
         return ServerCommunicator.communicateWithAccountServer(message);
     }
 

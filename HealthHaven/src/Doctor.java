@@ -97,7 +97,7 @@ public class Doctor extends User {
         Instant timestamp = Instant.now(); // This captures the current moment in UTC.
 
         // Construct a message to send to the server
-        String message = String.format("UPDATE %d %s %s %s", userID, height, weight, timestamp.toString());
+        String message = String.format("UPDATE_RECORD %d %s %s %s", userID, height, weight, timestamp.toString());
         System.out.println("message: "+ message);
         return ServerCommunicator.communicateWithMedicalServer(message);
     }
