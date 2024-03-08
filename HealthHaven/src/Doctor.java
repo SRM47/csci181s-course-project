@@ -33,7 +33,7 @@ public class Doctor extends User {
 	public Doctor(String email, String password, String legal_first_name, String legal_last_name, String address,
 			LocalDate dob) {
 		super(email, password, legal_first_name, legal_last_name, address, dob);
-		generateUserID();
+
 	}
 
     public Doctor(double userID, String email, String password, String legal_first_name, String legal_last_name,
@@ -127,7 +127,7 @@ public class Doctor extends User {
                 case 3:
                     //Create a new patient account
                     System.out.println("Creating a new patient's account");
-                    User newPatient = AccountCreationService.createAccount(scanner, ACCOUNT_TYPE);
+                    Patient newPatient = (Patient) AccountCreationService.createAccount(scanner, Account.PATIENT);
                     break;
                 case 4:
                     // Exit the method
