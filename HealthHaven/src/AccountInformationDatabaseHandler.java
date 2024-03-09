@@ -14,13 +14,13 @@ public class AccountInformationDatabaseHandler {
 	private static String databaseName = "user_accounts.csv";
 
 	public static String createAccount(String userId, String email, String password, String legal_first_name,
-			String legal_last_name, String address, String dob, String timestamp) {
+			String legal_last_name, String address, String dob, String timestamp, String accountType) {
 		if (accountExistsById(userId)) {
-			return "ERROR_ACCOUNT_EXISTS";
+			return "FAILURE";
 		}
 		
 		String[] newData = { userId, email, password,  legal_first_name,
-				 legal_last_name,  address,  dob,  timestamp };
+				 legal_last_name,  address,  dob,  timestamp , accountType};
 		boolean success = CSVHandler.appendToCSV(databaseName, newData);
 		return success ? "SUCCESS" : "FAILURE";
 
@@ -52,9 +52,14 @@ public class AccountInformationDatabaseHandler {
 	
 	public static String authenticateAccount(String email, String password, String timestamp) {
 		if (!accountExistsByEmail(email)) {
-			return "INVALID";
+			return "FAILURE";
 		}
-		return "This is the account information";
+		ArrayList<String> userEmails = CSVHandler.readColumnValue(databaseName, 1);
+		int index = userEmails.indexOf(email);
+		String information = CSVHandler.readRowByIndex(databaseName, index);
+		String[] parts = information.split(",");
+		return parts[2].equals(password) ? information : "FAILURE";
+		
 	}
 	
 	public static String getUserAccountInformation(String userId) {

@@ -100,12 +100,12 @@ public class Main {
 		try{
 
 			String [] data = serverResponse.split(",");
-			String accountType = data[0];
-			long userID = Long.parseLong(data[1]);
-			String legalFirstName = data[4];
-			String legalLastName = data[5];
-			String address = data[6];
-			LocalDate dob = LocalDate.parse(data[7], DateTimeFormatter.ISO_LOCAL_DATE);
+			long userID = Long.parseLong(data[0]);
+			String legalFirstName = data[3];
+			String legalLastName = data[4];
+			String address = data[5];
+			LocalDate dob = LocalDate.parse(data[6], DateTimeFormatter.ISO_LOCAL_DATE);
+			String accountType = data[8];
 
             return createUserInstance(accountType, userID, email, password, legalFirstName, legalLastName, address, dob);
 

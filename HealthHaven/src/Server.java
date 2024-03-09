@@ -102,14 +102,14 @@ public class Server {
 				break;
 			case "CREATE_ACCOUNT":
 				// Create new account by creating entry in database
-				response = AccountInformationDatabaseHandler.createAccount(commands[1], commands[2], commands[3], commands[4], commands[5], commands[6], commands[7], commands[8]);
+				response = AccountInformationDatabaseHandler.createAccount(commands[1], commands[2], commands[3], commands[4], commands[5], commands[6], commands[7], commands[8], commands[9]);
 				break;
 			case "AUTHENTICATE_ACCOUNT":
 				// Check if account associated with an email matches password
 				response = AccountInformationDatabaseHandler.authenticateAccount(commands[1], commands[2], commands[3]);
 				break;
 			case "EXISTING_ACCOUNT":
-				// Check if account associated with an email matches password
+				// Check if account associated with an email exists
 				response = AccountInformationDatabaseHandler.accountExistsByEmail(commands[1]) ? "VALID" : "INVALID";
 				break;
 			case "UPDATE_ACCOUNT":

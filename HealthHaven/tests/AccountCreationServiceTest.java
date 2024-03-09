@@ -61,7 +61,7 @@ public class AccountCreationServiceTest {
             mockedStatic.when(() -> ServerCommunicator.communicateWithAccountServer(anyString())).thenReturn("SUCCESS");
 
             // Call the method under test
-            String response = AccountCreationService.authenticateNewUser("email@example.com");
+            String response = AccountCreationService.doesAccountExist("email@example.com");
 
             // Assertions
             Assertions.assertEquals("SUCCESS", response);

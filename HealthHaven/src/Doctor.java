@@ -144,7 +144,7 @@ public class Doctor extends User {
                 case 3:
                     // Create a new patient account
                     System.out.println("Creating a new patient's account");
-                    Doctor newPatient = (Doctor) AccountCreationService.createAccount(scanner, Account.PATIENT);
+                    Patient newPatient = (Patient) AccountCreationService.createAccount(scanner, Account.PATIENT);
                     break;
                 case 4:
                     // Exit the method
