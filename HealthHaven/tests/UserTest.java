@@ -49,6 +49,24 @@ public abstract class UserTest<T extends User> {
     public void testGetDob() {
         assertEquals(LocalDate.of(1980, 1, 1), user.getDob(), "Date of birth should match the one set in createUser");
     }
+
+    @Test
+    public void testSetEmail(){
+        user.setEmail("newEmail@gmail.com");
+        assertEquals("newEmail@gmail.com", user.getEmail(), "The user should be able to update the password");
+    }
+    @Test
+    public void testSetPassword(){
+        user.setPassword("newpassword");
+        assertEquals("newpassword", user.getAddress(), "The user should be able to update the password");
+    }
+
+    @Test
+    public void testSetAddress(){
+        user.setAddress("New York, NY");
+        assertEquals("New York, NY", user.getAddress(), "The user should be able to update the password");
+    }
+
     
 //    @Test
 //    public void testAccessPersonalRecord() {

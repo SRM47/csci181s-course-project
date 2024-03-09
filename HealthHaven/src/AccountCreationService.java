@@ -21,7 +21,7 @@ public class AccountCreationService {
 //        }
 
         // First communication with the server to check if the email already exists
-        if (authenticateNewUser(email)) {
+        if (authenticateNewUser(email).equals("SUCCESS")) {
             System.out.print("Enter the first name: ");
             String firstName = scanner.nextLine();
             System.out.print("Enter the last name: ");
@@ -67,7 +67,7 @@ public class AccountCreationService {
 
     }
 
-    private static int selectAccountType(Scanner scanner) {
+    protected static int selectAccountType(Scanner scanner) {
         int accountType = 0;
         while (accountType < 1 || accountType > 5) {
             System.out.println("Select an account type 1. Patient 2. Doctor 3. Data Science Analyst 4. Data Protection Officer 5. Super Admin: ");
@@ -84,7 +84,7 @@ public class AccountCreationService {
     }
 
 
-    private static User createUserInstance(User.Account userType, String email, String password, String legal_first_name, String legal_last_name, String address,
+    protected static User createUserInstance(User.Account userType, String email, String password, String legal_first_name, String legal_last_name, String address,
                                            LocalDate dob) {
 
 
@@ -98,20 +98,22 @@ public class AccountCreationService {
         };
     }
 
-    private static boolean authenticateNewUser(String email){
+    protected static String authenticateNewUser(String email){
         String message = String.format("NEW_ACCOUNT %s", email);
         System.out.println("Message: " + message);
         String serverResponse = ServerCommunicator.communicateWithAccountServer(message);
         System.out.println("Server response: " + serverResponse);
 
-        return (serverResponse.equals("VALID"));
+        return serverResponse;
     }
 
-    private static String updateAccountDB(User.Account userType, String email, String password, String first_name, String last_name, String address, LocalDate dob){
+    protected static String updateAccountDB(User.Account userType, String email, String password, String first_name, String last_name, String address, LocalDate dob){
         Instant timestamp = Instant.now();
         String account = userType.getAccountName();
         String message = String.format(("CREATE_ACCOUNT %s %s %s %s %s %s %s %s"), account, email, password, first_name, last_name, address, dob, timestamp.toString());
         return ServerCommunicator.communicateWithAccountServer(message);
     }
+
+
 
 }

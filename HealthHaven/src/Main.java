@@ -17,7 +17,7 @@ public class Main {
 	 * @param password
 	 * @return
 	 */
-	private static String authenticateExistingUser(String email, String password){
+	protected static String authenticateExistingUser(String email, String password){
 		Instant timestamp = Instant.now(); // This captures the current moment in UTC.
 		String message = String.format("AUTHENTICATE_ACCOUNT %s %s %s", email, password, timestamp.toString());
 		System.out.println("Message: " + message);
@@ -39,7 +39,7 @@ public class Main {
 	 * @param dob
 	 * @return
 	 */
-	private static User createUserInstance(String accountType, long userID, String email, String password, String legalFirstName, String legalLastName,
+	protected static User createUserInstance(String accountType, long userID, String email, String password, String legalFirstName, String legalLastName,
 										   String address, LocalDate dob){
 		return switch (accountType) {
 			case "DOCTOR" -> new Doctor(userID, email, password, legalFirstName, legalLastName, address, dob);
@@ -57,7 +57,7 @@ public class Main {
 	 * @param scanner
 	 * @return
 	 */
-	private static User.Account selectAccountType(Scanner scanner) {
+	protected static User.Account selectAccountType(Scanner scanner) {
 		int accountType = 0;
 		while (accountType < 1 || accountType > 5) {
 			System.out.println("Select an account type 1. Patient 2. Doctor 3. Data Science Analyst 4. Data Protection Officer 5. Super Admin: ");
@@ -85,7 +85,7 @@ public class Main {
 	 * @param scanner
 	 * @return
 	 */
-	private static User login(Scanner scanner) {
+	protected static User login(Scanner scanner) {
 		System.out.print("Email: ");
 		String email = scanner.nextLine().trim();
 
@@ -93,7 +93,7 @@ public class Main {
 		String password = scanner.nextLine().trim();
 
 		String serverResponse = authenticateExistingUser(email, password);
-		if (serverResponse.equals("INVALID")){
+		if (serverResponse.equals("FAILURE")){
 			System.out.println("Login failed.");
 			return null;
 		}
