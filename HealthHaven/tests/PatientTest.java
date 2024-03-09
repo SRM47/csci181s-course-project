@@ -24,4 +24,10 @@ public class PatientTest extends UserTest<Patient> {
         long userID = user.getUserID();
         assertTrue(String.valueOf(userID).startsWith("2"), "Patient userID should start with 2.");
     }
+
+    //TODO: Figure this out
+    @Test
+    public void testViewPatientRecord(){
+
+    }
 }

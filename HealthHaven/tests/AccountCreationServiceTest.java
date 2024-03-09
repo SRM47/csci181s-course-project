@@ -58,7 +58,7 @@ public class AccountCreationServiceTest {
     void testAuthenticateNewUser() {
         try (MockedStatic<ServerCommunicator> mockedStatic = Mockito.mockStatic(ServerCommunicator.class)) {
             // Define the behavior for the static method
-            mockedStatic.when(() -> ServerCommunicator.communicateWithAccountServer(anyString())).thenReturn("Success");
+            mockedStatic.when(() -> ServerCommunicator.communicateWithAccountServer(anyString())).thenReturn("SUCCESS");
 
             // Call the method under test
             String response = AccountCreationService.authenticateNewUser("email@example.com");

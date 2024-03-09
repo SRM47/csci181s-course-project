@@ -58,13 +58,19 @@ public abstract class UserTest<T extends User> {
     @Test
     public void testSetPassword(){
         user.setPassword("newpassword");
-        assertEquals("newpassword", user.getAddress(), "The user should be able to update the password");
+        assertEquals("newpassword", user.getPassword(), "The user should be able to update the password");
     }
 
     @Test
     public void testSetAddress(){
         user.setAddress("New York, NY");
         assertEquals("New York, NY", user.getAddress(), "The user should be able to update the password");
+    }
+
+    //TODO: Figure out this
+    @Test
+    public void testUpdatePersonalAccountOnDb(){
+
     }
 
     
