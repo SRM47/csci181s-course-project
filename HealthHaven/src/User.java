@@ -57,6 +57,7 @@ public class User {
 		this.legal_last_name = legal_last_name;
 		this.address = address;
 		this.dob = dob;
+		this.generateUserID();
 	}
 
 	/**
@@ -77,7 +78,7 @@ public class User {
 		this.legal_last_name = legal_last_name;
 		this.address = address;
 		this.dob = dob;
-		this.generateUserID();
+		
 	}
 
 	/**
