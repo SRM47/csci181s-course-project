@@ -113,8 +113,8 @@ public class Doctor extends User {
     }
 
     @Override
-    protected void userInput() {
-        Scanner scanner = new Scanner(System.in);
+    protected void userInput(Scanner scanner) {
+        // Scanner scanner = new Scanner(System.in);
 
         while (true) {
             System.out.println("\nPlease choose an option:");
@@ -158,7 +158,7 @@ public class Doctor extends User {
 
     public static void main(String[] args) {
         Doctor newDoctor = new Doctor("Sae@pomona.edu", "password", "Sae", "Furukawa", "Claremont", LocalDate.of(2002, 10, 05));
-        newDoctor.userInput();
+        newDoctor.userInput(new Scanner(System.in));
     }
 
 }

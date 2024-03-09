@@ -69,8 +69,8 @@ public class DataAnalyst extends User {
 	}
 
 	@Override
-	protected void userInput(){
-		Scanner scanner = new Scanner(System.in);
+	protected void userInput(Scanner scanner){
+		// Scanner scanner = new Scanner(System.in);
 
 		while (true){
 			System.out.println("\nPlease choose an option: ");
@@ -86,12 +86,12 @@ public class DataAnalyst extends User {
 					accessPersonalRecord(scanner);
 					break;
 				case 2:
-					System.out.println("Accessing the medical data.");
+					System.out.println("Accessing the medical data...");
 					performDataAnalysis(scanner);
 					break;
 				case 3:
 					System.out.println("Existing...");
-					scanner.close();
+					// scanner.close();
 					return;
 				default:
 					System.out.println("Invalid option. Please try again");
@@ -104,7 +104,7 @@ public class DataAnalyst extends User {
 
 	public static void main(String [] args){
 		DataAnalyst newDSA = new DataAnalyst("Sae@pomona.edu", "password", "Sae", "Furukawa", "Claremont", LocalDate.of(2002, 10, 05));
-		newDSA.userInput();
+		newDSA.userInput(new Scanner(System.in));
 	}
 
 

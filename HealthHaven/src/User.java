@@ -81,6 +81,13 @@ public class User {
 		this.dob = dob;
 		
 	}
+	
+	/**
+	 * @return the account type
+	 */
+	public Account getAccountType() {
+		return ACCOUNT_TYPE;
+	}
 
 	/**
 	 * @return the password
@@ -283,17 +290,16 @@ public class User {
 	}
 
 
-	protected void userInput(){
+	protected void userInput(Scanner scanner){
 		System.out.println("Default Behaviour. Please Override");
 
 	}
 
 	@Override
 	public String toString() {
-		return "User [password=" + password + ", userID=" + userID + ", email=" + email + ", legal_first_name="
-				+ legal_first_name + ", legal_last_name=" + legal_last_name + ", address=" + address + ", dob=" + dob
-				+ ", Account Type=" + ACCOUNT_TYPE.getAccountName() + "]";
+		return getAccountType().getAccountName() + " [password=" + password + ", userID=" + userID + ", email=" + email
+				+ ", legal_first_name=" + legal_first_name + ", legal_last_name=" + legal_last_name + ", address="
+				+ address + ", dob=" + dob + "]";
 	}
-
 	
 }

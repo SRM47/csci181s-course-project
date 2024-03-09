@@ -4,6 +4,7 @@
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 /**
@@ -20,9 +21,9 @@ public class Main {
 	protected static String authenticateExistingUser(String email, String password){
 		Instant timestamp = Instant.now(); // This captures the current moment in UTC.
 		String message = String.format("AUTHENTICATE_ACCOUNT %s %s %s", email, password, timestamp.toString());
-		System.out.println("Message: " + message);
+		// System.out.println("Message: " + message);
 		String serverResponse = ServerCommunicator.communicateWithAccountServer(message);
-		System.out.println("Server response: " + serverResponse);
+		// System.out.println("Server response: " + serverResponse);
 
 		return serverResponse;
 	}
@@ -60,7 +61,7 @@ public class Main {
 	protected static User.Account selectAccountType(Scanner scanner) {
 		int accountType = 0;
 		while (accountType < 1 || accountType > 5) {
-			System.out.println("Select an account type 1. Patient 2. Doctor 3. Data Science Analyst 4. Data Protection Officer 5. Super Admin: ");
+			System.out.println("Select an account type\n[1] Patient\n[2] Doctor\n[3] Data Science Analyst\n[4] Data Protection Officer\n[5] Super Admin\n Your Choice: ");
 			try {
 				accountType = Integer.parseInt(scanner.nextLine());
 				if (accountType < 1 || accountType > 5) {
@@ -71,8 +72,8 @@ public class Main {
 			}
 		}
         return switch (accountType) {
-            case 1 -> User.Account.DOCTOR;
-            case 2 -> User.Account.PATIENT;
+            case 1 -> User.Account.PATIENT;
+            case 2 -> User.Account.DOCTOR;
             case 3 -> User.Account.DATA_ANALYST;
             case 4 -> User.Account.DPO;
             case 5 -> User.Account.SUPERADMIN;
@@ -94,7 +95,6 @@ public class Main {
 
 		String serverResponse = authenticateExistingUser(email, password);
 		if (serverResponse.equals("FAILURE")){
-			System.out.println("Login failed.");
 			return null;
 		}
 		try{
@@ -114,6 +114,10 @@ public class Main {
 			return null;
 		}
 	}
+	
+	public static void clearConsole() {
+		System.out.println("\n");
+	}
 
 	/**
 	 * @param args
@@ -125,31 +129,39 @@ public class Main {
 		boolean running = true;
 
 		while (running) {
-			System.out.println("Welcome!");
+			System.out.println("Welcome to HealthHaven!");
 			System.out.println("1. Create an account");
 			System.out.println("2. Login");
 			System.out.println("3. Quit");
 			System.out.print("Select an option: ");
 
 			try{
+				scanner.reset();
 				String input = scanner.nextLine().trim(); // Read the input as String and trim whitespace
 				option = Integer.parseInt(input);
 				switch(option) {
 					case 1:
 						// Here, call a method to handle account creation
 						User.Account userType = selectAccountType(scanner);
+						System.out.println("\nCreating a "+userType.getAccountName()+" account...");
 
 						User newUser = AccountCreationService.createAccount(scanner, userType);
 						if (newUser != null) {
-							newUser.userInput();
+							newUser.userInput(scanner);
+						} else {
+							clearConsole();
+							System.out.println("Email address already exists or error connecting with the server.");
 						}
 						break;
 					case 2:
 						// Handle login
 						User existingUser = login(scanner);
-						System.out.println("Existing User: " + existingUser);
+						clearConsole();
 						if (existingUser != null) {
-							existingUser.userInput();
+							System.out.println("Successfully Logged In!\nUser Information: " + existingUser);
+							existingUser.userInput(scanner);
+						} else {
+							System.out.println("Unable to authenticate user.");
 						}
 						break;
 					case 3:
@@ -158,11 +170,14 @@ public class Main {
 						running = false; // Exit the while loop
 						return;
 					default:
+						clearConsole();
 						System.out.println("Invalid option selected. Please try again.");
 						break;
 				}
 			} catch (NumberFormatException e){
 				System.out.println("Please enter a valid number.");
+			} catch (NoSuchElementException nse) {
+				scanner.reset();
 			}
 		}
 

@@ -6,11 +6,11 @@ import java.util.Scanner;
 
 public class AccountCreationService {
     public static User createAccount(Scanner scanner, User.Account userType) {
-        System.out.print("Enter the email: ");
+        System.out.print("Enter your email: ");
         String email = scanner.nextLine();
 
         String password = "";
-        System.out.print("Enter the password: ");
+        System.out.print("Enter your password: ");
         password = scanner.nextLine();
 
 //        if (userType == User.Account.DOCTOR || userType == User.Account.SUPERADMIN){
@@ -22,19 +22,18 @@ public class AccountCreationService {
 
         // First communication with the server to check if the email already exists
 		if (doesAccountExist(email).equals("VALID")) {
-			System.out.println("Email address already exists or error connecting with the server.");
 			return null;
 		}
 
-		System.out.print("Enter the first name: ");
+		System.out.print("Enter your LEGAL first name: ");
 		String firstName = scanner.nextLine();
-		System.out.print("Enter the last name: ");
+		System.out.print("Enter your LEGAL name: ");
 		String lastName = scanner.nextLine();
-		System.out.print("Enter the address: ");
+		System.out.print("Enter your permanent address: ");
 		String address = scanner.nextLine();
 		LocalDate dateOfBirth = null;
 		while (dateOfBirth == null) {
-			System.out.print("Enter the date of birth (yyyy-mm-dd): ");
+			System.out.print("Enter your date of birth (yyyy-mm-dd): ");
 			String dobInput = scanner.nextLine();
 			try {
 				dateOfBirth = LocalDate.parse(dobInput, DateTimeFormatter.ISO_LOCAL_DATE);
@@ -46,7 +45,7 @@ public class AccountCreationService {
 		// Account creation
 		boolean proceed = false;
 		while (!proceed) {
-			System.out.println("Do you want to create a new account? 1. Save 2. Quit: ");
+			System.out.println("Do you want to proceed with creating a new account?\n1. Save account\n2. Quit: ");
 			int subChoice = scanner.nextInt();
 			scanner.nextLine(); // Consume the newline left by nextInt()
 
@@ -107,9 +106,9 @@ public class AccountCreationService {
 
     protected static String doesAccountExist(String email){
         String message = String.format("EXISTING_ACCOUNT %s", email);
-        System.out.println("Message: " + message);
+        // System.out.println("Message: " + message);
         String serverResponse = ServerCommunicator.communicateWithAccountServer(message);
-        System.out.println("Server response: " + serverResponse);
+        // System.out.println("Server response: " + serverResponse);
 
         return serverResponse;
     }

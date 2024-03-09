@@ -82,8 +82,8 @@ public class Superadmin extends User {
 		System.out.println("Server response: " + serverResponse);
 	}
 	@Override
-	public void userInput(){
-		Scanner scanner = new Scanner(System.in);
+	public void userInput(Scanner scanner){
+		// Scanner scanner = new Scanner(System.in);
 
 		while(true){
 			System.out.println("\nPlease choose an option:");
@@ -124,7 +124,7 @@ public class Superadmin extends User {
 				case 4:
 					// Exit the method
 					System.out.println("Exiting...");
-					scanner.close();
+					// scanner.close();
 					return;
 				default:
 					System.out.println("Invalid option. Please try again.");
@@ -135,7 +135,7 @@ public class Superadmin extends User {
 
 	public static void main(String[] args) {
 		Superadmin newSuperadmin = new Superadmin("Sae@pomona.edu", "password", "Sae", "Furukawa", "Claremont", LocalDate.of(2002, 10, 05));
-		newSuperadmin.userInput();
+		newSuperadmin.userInput(new Scanner(System.in));
 	}
 
 

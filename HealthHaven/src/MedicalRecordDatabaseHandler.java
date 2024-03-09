@@ -33,5 +33,23 @@ public class MedicalRecordDatabaseHandler {
 	public static String getAllRecords() {
 		return CSVHandler.readAll(databaseName);
 	}
+	
+	public static String getMeans() {
+		ArrayList<String> heights = CSVHandler.readColumnValue(databaseName, 1);
+		float mean_height = 0;
+		for(String s: heights) {
+			mean_height += Float.parseFloat(s);
+		}
+		mean_height /= heights.size();
+		
+		ArrayList<String> weights = CSVHandler.readColumnValue(databaseName, 2);
+		float mean_weight = 0;
+		for(String s: weights) {
+			mean_weight += Float.parseFloat(s);
+		}
+		mean_weight /= weights.size();
+		
+		return "Mean Height: " + mean_height + "\nMean Weight: " + mean_weight + "\n";
+	}
 
 }

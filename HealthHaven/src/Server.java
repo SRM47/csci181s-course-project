@@ -107,7 +107,8 @@ public class Server {
 				break;
 			case "REQUEST_PATIENT_DATA_SUMMARY":
 				// Data Analyst Requesting Data from CSV
-				response = MedicalRecordDatabaseHandler.getAllRecords();
+				// response = MedicalRecordDatabaseHandler.getAllRecords();
+				response = MedicalRecordDatabaseHandler.getMeans();
 				break;
 			case "CREATE_ACCOUNT":
 				// Create new account by creating entry in database

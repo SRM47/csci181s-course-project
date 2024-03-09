@@ -64,13 +64,13 @@ public class Patient extends User {
 
 	}
 	@Override
-	protected void userInput() {
-		Scanner scanner = new Scanner(System.in);
+	protected void userInput(Scanner scanner) {
+		// Scanner scanner = new Scanner(System.in);
 
 		while (true) {
 			System.out.println("\nPlease choose an option:");
 			System.out.println("1. View my personal data");
-			System.out.println("2. View patient record");
+			System.out.println("2. View my personal records");
 			System.out.println("3. Exit");
 			System.out.print("Enter your choice: ");
 
@@ -89,7 +89,7 @@ public class Patient extends User {
 				case 3:
 					// Exit the method
 					System.out.println("Exiting...");
-					scanner.close();
+					// scanner.close();
 					return;
 				default:
 					System.out.println("Invalid option. Please try again.");
@@ -99,7 +99,7 @@ public class Patient extends User {
 
 	public static void main(String[] args) {
 		Patient newPatient = new Patient("Sae@pomona.edu", "password", "Sae", "Furukawa", "Claremont", LocalDate.of(2002, 10, 05));
-		newPatient.userInput();
+		newPatient.userInput(new Scanner(System.in));
 	}
 	
 	

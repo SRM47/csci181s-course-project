@@ -52,7 +52,7 @@ public class ServerCommunicator {
             writer.newLine();
             writer.flush();
             
-            System.out.println(message);
+            // System.out.println(message);
             boolean responseReceived = false;
 
             
