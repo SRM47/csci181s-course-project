@@ -39,7 +39,7 @@ public class Server {
 		this.MAX_REQUESTS = maxRequests;
 	}
 
-	public void start() throws Exception {
+	public void start() throws IOException {
 		// Create the thread pool. With a CachedThreadPoo, the number of threads will
 		// grow as needed, and unused threads will be terminated.
 		ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
@@ -72,6 +72,10 @@ public class Server {
 		}
 
 	}
+	
+	public void stop() throws IOException {
+        server.close();
+    }
 
 	private void handleClientConnection(Socket client) {
 		System.out.println("Client connected!");
@@ -93,7 +97,6 @@ public class Server {
 			switch (commands[0]) {
 
 			case "UPDATE_RECORD":
-				
 				// Update a Patient's Medical Record (height, weight data)
 				response = MedicalRecordDatabaseHandler.updatePatientMedicalRecords(commands[1], commands[2],
 						commands[3], commands[4]);

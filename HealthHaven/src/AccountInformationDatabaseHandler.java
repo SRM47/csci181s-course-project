@@ -15,7 +15,7 @@ public class AccountInformationDatabaseHandler {
 
 	public static String createAccount(String userId, String email, String password, String legal_first_name,
 			String legal_last_name, String address, String dob, String timestamp, String accountType) {
-		if (accountExistsById(userId)) {
+		if (accountExistsById(userId) || accountExistsByEmail(email)) {
 			return "FAILURE";
 		}
 		

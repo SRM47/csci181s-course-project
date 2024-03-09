@@ -13,6 +13,7 @@ class MainTest {
      */
     @Test
     void testAuthenticateValidExistingUser() {
+    	
         try (MockedStatic<ServerCommunicator> mocked = Mockito.mockStatic(ServerCommunicator.class)) {
             String expectedResponse = "SUCCESS";
             mocked.when(() -> ServerCommunicator.communicateWithAccountServer(Mockito.anyString())).thenReturn(expectedResponse);
