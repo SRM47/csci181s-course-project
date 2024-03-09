@@ -117,7 +117,7 @@ public class AccountCreationService {
     protected static String insertNewAccountIntoDB(User.Account userType, long userId, String email, String password, String first_name, String last_name, String address, LocalDate dob){
         Instant timestamp = Instant.now();
         String account = userType.getAccountName();
-        String message = String.format(("CREATE_ACCOUNT %f %s %s %s %s %s %s %s %s"), userId, email, password, first_name, last_name, address, dob, timestamp.toString(), account);
+        String message = String.format(("CREATE_ACCOUNT %d %s %s %s %s %s %s %s %s"), userId, email, password, first_name, last_name, address, dob, timestamp.toString(), account);
         return ServerCommunicator.communicateWithAccountServer(message);
     }
 

@@ -21,6 +21,9 @@ public class MedicalRecordDatabaseHandler {
 	public static String viewPatientMedicalRecord(String patientId) {
 		ArrayList<String> patientIds = CSVHandler.readColumnValue(databaseName, 0);
 		int index = patientIds.indexOf(patientId);
+		System.out.println(patientIds);
+		System.out.println(patientId);
+		System.out.println(index);
 		return CSVHandler.readRowByIndex(databaseName, index);
 	}
 

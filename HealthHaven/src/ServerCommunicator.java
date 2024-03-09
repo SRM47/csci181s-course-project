@@ -9,7 +9,7 @@ import java.util.Arrays;
 public class ServerCommunicator {
 
     private static final String ACCOUNT_SERVER_ADDRESS = "localhost";
-    private static final int ACCOUNT_SERVER_PORT = 8888; // Example port for account data server
+    private static final int ACCOUNT_SERVER_PORT = 8889; // Example port for account data server
     private static final String MEDICAL_SERVER_ADDRESS = "localhost";
     private static final int MEDICAL_SERVER_PORT = 8889; // Example port for medical data server
 
@@ -51,11 +51,24 @@ public class ServerCommunicator {
             writer.write(message);
             writer.newLine();
             writer.flush();
+            
+            System.out.println(message);
+            boolean responseReceived = false;
 
-            String line;
-            while ((line = reader.readLine()) != null) {
-                response.append(line);
+            
+            while (!responseReceived) {
+            	if (reader.ready()) {
+            		String line;
+            		while ((line = reader.readLine()) != null) {
+            			if (line.equals("TERMINATE")) {
+                            responseReceived = true;
+                            break;
+                        }
+                        response.append(line);
+                    }
+            	}
             }
+            
         } catch (Exception e) {
             e.printStackTrace();
             return "Error communicating with server.";

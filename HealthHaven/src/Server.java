@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -44,7 +45,7 @@ public class Server {
 		ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
 
 		// Start the server.
-		System.out.println("Beginning process to start server");
+		System.out.println("Beginning process to start server!");
 		try {
 			System.out.println("Trying to connect to port " + PORT);
 			// Bind server to specified port.
@@ -73,28 +74,33 @@ public class Server {
 	}
 
 	private void handleClientConnection(Socket client) {
+		System.out.println("Client connected!");
 		try {
 			// Initialize input data stream.
-			DataInputStream streamIn = new DataInputStream(new BufferedInputStream(client.getInputStream()));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(client.getInputStream()));
 			// Read the incoming message.
-			String msg = streamIn.readUTF();
-			// TODO Decipher the message and perform the appropriate task.
+			String msg = reader.readLine();
 			System.out.println(msg);
 
 			// TODO Need to add validation on msg to know it's not a bogus message.
 			String[] commands = msg.split(" ");
+			for (String c: commands) {
+				System.out.println(c);
+			}
 
 			// Initialize response variable.
 			String response = "NONE";
 			switch (commands[0]) {
-			
+
 			case "UPDATE_RECORD":
+				
 				// Update a Patient's Medical Record (height, weight data)
-                response = MedicalRecordDatabaseHandler.updatePatientMedicalRecords(commands[1], commands[2], commands[3], commands[4]);
+				response = MedicalRecordDatabaseHandler.updatePatientMedicalRecords(commands[1], commands[2],
+						commands[3], commands[4]);
 				break;
 			case "VIEW":
 				// View a User's Medical Record (height, weight data)
-                response = MedicalRecordDatabaseHandler.viewPatientMedicalRecord(commands[1]);
+				response = MedicalRecordDatabaseHandler.viewPatientMedicalRecord(commands[1]);
 				break;
 			case "REQUEST_PATIENT_DATA_SUMMARY":
 				// Data Analyst Requesting Data from CSV
@@ -102,7 +108,8 @@ public class Server {
 				break;
 			case "CREATE_ACCOUNT":
 				// Create new account by creating entry in database
-				response = AccountInformationDatabaseHandler.createAccount(commands[1], commands[2], commands[3], commands[4], commands[5], commands[6], commands[7], commands[8], commands[9]);
+				response = AccountInformationDatabaseHandler.createAccount(commands[1], commands[2], commands[3],
+						commands[4], commands[5], commands[6], commands[7], commands[8], commands[9]);
 				break;
 			case "AUTHENTICATE_ACCOUNT":
 				// Check if account associated with an email matches password
@@ -114,26 +121,27 @@ public class Server {
 				break;
 			case "UPDATE_ACCOUNT":
 				// User updating existing personal data and update it in database
-				response = AccountInformationDatabaseHandler.updateAccountInformation(commands[1], commands[2], commands[3], commands[4]);
+				response = AccountInformationDatabaseHandler.updateAccountInformation(commands[1], commands[2],
+						commands[3], commands[4]);
 				break;
 
 			}
+			System.out.println(response);
+
 			// Respond to client with appropriate response.
 			// Initialize output data stream.
 			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
+
 			// Write message to output stream back to client.
-			writer.write(response);
-            writer.newLine();
-            writer.flush();
-			
+			writer.write(response+"\nTERMINATE");
+			writer.newLine();
+			writer.flush();
+
 		} catch (IOException e) {
 			// Occurs when client disconnects.
 			e.printStackTrace();
 		}
 
 	}
-	
-	
-	
 
 }

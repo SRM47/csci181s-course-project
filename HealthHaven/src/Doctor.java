@@ -27,7 +27,6 @@ public class Doctor extends User {
 	public Doctor(String email, String password, String legal_first_name, String legal_last_name, String address,
 			LocalDate dob) {
 		super(email, password, legal_first_name, legal_last_name, address, dob);
-		generateUserID();
 	}
 
     /**

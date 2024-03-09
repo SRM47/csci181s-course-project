@@ -57,8 +57,8 @@ public class Patient extends User {
 	 * Display the patient record, return the server response.
 	 * @param userID
 	 */
-	private String viewPatientRecord(double userID) {
-		String message = String.format("VIEW %s", userID);
+	private String viewPatientRecord(long userID) {
+		String message = String.format("VIEW %d", userID);
 		System.out.println("Message: " + message);
 		return ServerCommunicator.communicateWithMedicalServer(message);
 

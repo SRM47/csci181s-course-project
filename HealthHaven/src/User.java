@@ -21,12 +21,13 @@ public class User {
 	private String address;
 	private LocalDate dob;
 	
+	
 	public static enum Account{
 		DOCTOR("Doctor"), 
 		PATIENT( "Patient"),
-		DATA_ANALYST("Data Analyst"),
+		DATA_ANALYST("Data_Analyst"),
 		SUPERADMIN("Superadmin"),
-		DPO("Data Protection Officer"),
+		DPO("Data_Protection_Officer"),
 		NONE("NONE");
 		private String account_name;
 		private Account(String account_name) {
@@ -186,7 +187,7 @@ public class User {
 	 *  User accessing personal record (include user prompt)
 	 * @param scanner
 	 */
-	protected  void accessPersonalRecord(Scanner scanner){
+	protected void accessPersonalRecord(Scanner scanner){
 		// Access doctor's own info.
 		System.out.println(this);
 		System.out.print("Do you want to update your record? 1 (yes) 2 (no): ");
@@ -215,7 +216,7 @@ public class User {
 	 * @param newAddress
 	 * @return
 	 */
-	protected String updatePersonalRecordOnDB(String newEmail, String newPassword, String newAddress){
+	private String updatePersonalRecordOnDB(String newEmail, String newPassword, String newAddress){
 
 		// First set the changes to the object instance.
 		setEmail(newEmail);
@@ -225,7 +226,7 @@ public class User {
 		System.out.println(this);
 
 		// Communicate with the server to update
-		String updateMessage = String.format("UPDATE_ACCOUNT %f %s %s %s", getUserID(), newEmail, newPassword, newAddress);
+		String updateMessage = String.format("UPDATE_ACCOUNT %d %s %s %s", getUserID(), newEmail, newPassword, newAddress);
 		System.out.println("Message: " + updateMessage);
 		return ServerCommunicator.communicateWithAccountServer(updateMessage);
 	}
@@ -283,6 +284,7 @@ public class User {
 
 
 	protected void userInput(){
+		System.out.println("Default Behaviour. Please Override");
 
 	}
 

@@ -96,7 +96,7 @@ public class AccountCreationServiceTest {
             mockedStatic.when(() -> ServerCommunicator.communicateWithAccountServer(anyString())).thenReturn("SUCCESS");
 
             // Call the method under test
-            String result = AccountCreationService.updateAccountDB(userType, email, password, first_name, last_name, address, dob);
+            String result = AccountCreationService.insertNewAccountIntoDB(userType, email, password, first_name, last_name, address, dob);
 
             // Verify the server communicator was called once
             mockedStatic.verify(() -> ServerCommunicator.communicateWithAccountServer(anyString()), times(1));

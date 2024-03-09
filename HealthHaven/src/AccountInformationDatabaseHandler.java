@@ -54,10 +54,14 @@ public class AccountInformationDatabaseHandler {
 		if (!accountExistsByEmail(email)) {
 			return "FAILURE";
 		}
+		System.out.println(email+password);
 		ArrayList<String> userEmails = CSVHandler.readColumnValue(databaseName, 1);
 		int index = userEmails.indexOf(email);
 		String information = CSVHandler.readRowByIndex(databaseName, index);
 		String[] parts = information.split(",");
+		for (String s: parts) {
+			System.out.println(s);
+		}
 		return parts[2].equals(password) ? information : "FAILURE";
 		
 	}

@@ -42,12 +42,12 @@ public class Main {
 	protected static User createUserInstance(String accountType, long userID, String email, String password, String legalFirstName, String legalLastName,
 										   String address, LocalDate dob){
 		return switch (accountType) {
-			case "DOCTOR" -> new Doctor(userID, email, password, legalFirstName, legalLastName, address, dob);
-			case "PATIENT" -> new Patient(userID, email, password, legalFirstName, legalLastName, address, dob);
-			case "DSA" -> new DataAnalyst(userID, email, password, legalFirstName, legalLastName, address, dob);
-			case "DPO" ->
+			case "Doctor" -> new Doctor(userID, email, password, legalFirstName, legalLastName, address, dob);
+			case "Patient" -> new Patient(userID, email, password, legalFirstName, legalLastName, address, dob);
+			case "Data_Analyst" -> new DataAnalyst(userID, email, password, legalFirstName, legalLastName, address, dob);
+			case "Data_Protection_Officer" ->
 					new DataProtectionOfficer(userID, email, password, legalFirstName, legalLastName, address, dob);
-			case "SA" -> new Superadmin(userID, email, password, legalFirstName, legalLastName, address, dob);
+			case "Superadmin" -> new Superadmin(userID, email, password, legalFirstName, legalLastName, address, dob);
 			default -> null;
 		};
 	}
@@ -147,6 +147,7 @@ public class Main {
 					case 2:
 						// Handle login
 						User existingUser = login(scanner);
+						System.out.println("Existing User: " + existingUser);
 						if (existingUser != null) {
 							existingUser.userInput();
 						}
@@ -155,7 +156,7 @@ public class Main {
 						// Quit
 						System.out.println("Quitting program.");
 						running = false; // Exit the while loop
-						break;
+						return;
 					default:
 						System.out.println("Invalid option selected. Please try again.");
 						break;

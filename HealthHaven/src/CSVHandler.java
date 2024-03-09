@@ -61,6 +61,8 @@ public class CSVHandler{
         } catch (IOException e) {
             e.printStackTrace();
         }
+    	System.out.println(values);
+    	System.out.println("columnvalue");
         return values;
     }
     
@@ -81,8 +83,9 @@ public class CSVHandler{
 		String csvLine = null;
 		try (BufferedReader csvReader = new BufferedReader(new FileReader(filePath))) {
 
-			for (int r = 0; r < row; r++) {
+			for (int r = 0; r <= row; r++) {
 				if ((csvLine = csvReader.readLine()) == null) {
+					System.out.println(csvLine);
 					return null;
 				}
 			}
@@ -90,6 +93,8 @@ public class CSVHandler{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		System.out.println(csvLine);
+		System.out.println("row");
 		return csvLine;
 	}
     
