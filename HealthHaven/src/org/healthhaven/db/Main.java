@@ -1,7 +1,7 @@
 /**
  * 
  */
-package database;
+package org.healthhaven.db;
 
 import java.sql.SQLException;
 

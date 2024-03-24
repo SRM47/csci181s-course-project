@@ -1,4 +1,4 @@
-package gui;
+package org.healthhaven.gui;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
