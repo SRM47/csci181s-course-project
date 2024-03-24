@@ -5,6 +5,12 @@
     <groupId>HealthHaven</groupId>
     <artifactId>HealthHaven</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    
+    <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>21</maven.compiler.source>
+    <maven.compiler.target>21</maven.compiler.target>
+  </properties>
 
     <dependencies>
         <!-- JUnit Jupiter API for writing tests -->
@@ -22,6 +28,13 @@
             <version>5.7.0</version>
             <scope>test</scope>
         </dependency>
+        
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <version>5.7.0</version>
+            <scope>test</scope>
+        </dependency>
 
         <!-- Mockito for mocking in tests -->
         <dependency>
@@ -30,6 +43,19 @@
             <version>3.9.0</version>
             <scope>test</scope>
         </dependency>
+        
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>22</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-fxml</artifactId>
+            <version>22</version>
+        </dependency>
+        
     </dependencies>
 
     <build>
@@ -59,6 +85,15 @@
 	                <release>14</release>
 	            </configuration>
 	        </plugin>
+	        
+	        <plugin>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>0.0.8</version>
+                <configuration>
+                    <mainClass>gui.Main</mainClass>
+                </configuration>
+            </plugin>
 	    </plugins>
 	</build>
 </project>

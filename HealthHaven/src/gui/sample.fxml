@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+
+<VBox prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.SampleController">
+  <children>
+    <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
+      <children>
+        <Label fx:id="label" alignment="CENTER" layoutX="263.0" layoutY="126.0" style="&#10;" text="Default Text" textAlignment="CENTER" textFill="#9f9f9f" wrapText="false">
+          <font>
+            <Font size="18.0" />
+          </font>
+        </Label>
+            <TextField fx:id="textfield" layoutX="229.0" layoutY="173.0" promptText="Enter Text..." />
+            <Button fx:id="submitbutton" layoutX="282.0" layoutY="222.0" mnemonicParsing="false" onAction="#handleSubmit" text="Submit" />
+      </children>
+    </AnchorPane>
+  </children>
+</VBox>
