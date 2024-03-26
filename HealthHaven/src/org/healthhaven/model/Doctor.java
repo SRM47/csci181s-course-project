@@ -57,35 +57,6 @@ public class Doctor extends User {
 	    this.setUserID(randomNumber);
 	}
 
-    /**
-     * Display and update the patient record (include user prompt)
-     * @param scanner
-     */
-	protected void viewAndUpdatePatientRecord(Scanner scanner){
-        System.out.print("Enter patient ID: ");
-        long userIDView = scanner.nextLong();
-        System.out.println(viewPatientRecord(userIDView));
-
-        System.out.print("Do you want to update this patient record? 1 (yes) 2 (no): ");
-        int subChoice = scanner.nextInt();
-        switch (subChoice){
-            case 1:
-                System.out.println("Updating the patient record");
-                // Prompt for details needed to update a patient record
-                scanner.nextLine();
-                System.out.print("Enter height to update: ");
-                String feature = scanner.nextLine();
-                System.out.print("Enter weight to update: ");
-                String newData = scanner.nextLine();
-                System.out.println( updatePatientRecordOnDB(userIDView, feature, newData));
-                break;
-            case 2:
-                System.out.println("Not updating the patient record");
-                break;
-            default:
-                System.out.println("Invalid option. Please try again");
-        }
-    }
 
     /**
      * Update the patient record on DB, communicate with the server, return the server response.
@@ -114,53 +85,9 @@ public class Doctor extends User {
         return ServerCommunicator.communicateWithMedicalServer(message);
     }
 
-    @Override
-    protected void userInput(Scanner scanner) {
-        // Scanner scanner = new Scanner(System.in);
-
-        while (true) {
-            System.out.println("\nPlease choose an option:");
-            System.out.println("1. Access my info");
-            System.out.println("2. Access patient record");
-            System.out.println("3. Create a new client");
-            System.out.println("4. Exit");
-            System.out.print("Enter your choice: ");
-
-            String input = scanner.nextLine(); // Use nextLine to read the input as String
-            int choice;
-            try {
-                choice = Integer.parseInt(input); // Parse the input String to an integer
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid input. Please enter a number.");
-                continue;
-            }
-            switch (choice) {
-                case 1:
-                    accessPersonalRecord(scanner);
-                    break;
-                case 2:
-                    // Prompt for patient ID to view their record
-                    viewAndUpdatePatientRecord(scanner);
-                    break;
-                case 3:
-                    // Create a new patient account
-                    System.out.println("Creating a new patient's account");
-                    Patient newPatient = (Patient) AccountCreationService.createAccount(scanner, Account.PATIENT);
-                    break;
-                case 4:
-                    // Exit the method
-                    System.out.println("Exiting...");
-                    // Do not close the scanner if it's System.in as it will close System.in globally.
-                    return;
-                default:
-                    System.out.println("Invalid option. Please try again.");
-            }
-        }
-    }
 
     public static void main(String[] args) {
         Doctor newDoctor = new Doctor("Sae@pomona.edu", "password", "Sae", "Furukawa", "Claremont", LocalDate.of(2002, 10, 05));
-        newDoctor.userInput(new Scanner(System.in));
     }
 
 }
