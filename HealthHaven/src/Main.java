@@ -146,6 +146,9 @@ public class Main {
 						System.out.println("\nCreating a "+userType.getAccountName()+" account...");
 
 						User newUser = AccountCreationService.createAccount(scanner, userType);
+						System.out.println("Main class loader: " + Main.class.getClassLoader());
+						System.out.println("User class loader: " + User.class.getClassLoader());
+
 						if (newUser != null) {
 							newUser.userInput(scanner);
 						} else {
