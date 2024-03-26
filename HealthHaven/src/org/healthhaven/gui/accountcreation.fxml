@@ -18,9 +18,9 @@
             <Font name="Inter Black" size="35.0" />
           </font>
         </Label>
-            <PasswordField layoutX="38.0" layoutY="202.0" promptText="Password" />
-            <TextField layoutX="38.0" layoutY="239.0" promptText="Legal First Name" />
-            <Button layoutX="39.0" layoutY="332.0" mnemonicParsing="false" text="Submit" />
+            <PasswordField fx:id="pw" layoutX="38.0" layoutY="202.0" promptText="Password" />
+            <TextField fx:id="fn" layoutX="38.0" layoutY="239.0" promptText="Legal First Name" />
+            <Button fx:id="submitbutton" layoutX="39.0" layoutY="332.0" mnemonicParsing="false" onAction="#handleSubmit" text="Submit" />
             <Label fx:id="label1" alignment="CENTER" layoutX="36.0" layoutY="105.0" style="&#10;" text="Create Account" textAlignment="CENTER" wrapText="false">
                <font>
                   <Font name="Inter Light" size="23.0" />
@@ -32,20 +32,20 @@
                   <Font name="Inter Light" size="23.0" />
                </font>
             </Label>
-            <Button layoutX="489.0" layoutY="199.0" mnemonicParsing="false" text="Log In" />
+            <Button fx:id="loginpage" layoutX="489.0" layoutY="199.0" mnemonicParsing="false" onAction="#loginPage" text="Log In" />
             <Label layoutX="26.0" layoutY="62.0" prefHeight="17.0" prefWidth="222.0" text="version 1.0 | Secure and Encrypted" />
-            <TextField layoutX="203.0" layoutY="239.0" promptText="Legal Last  Name" />
-            <TextField layoutX="38.0" layoutY="269.0" prefHeight="27.0" prefWidth="326.0" promptText="Permanent Address" />
-            <TextField layoutX="39.0" layoutY="299.0" prefHeight="27.0" prefWidth="326.0" promptText="Date of Birth" />
-            <TextField layoutX="38.0" layoutY="172.0" promptText="Email Address" />
-            <MenuButton layoutX="38.0" layoutY="141.0" mnemonicParsing="false" text="Select Account Type">
+            <TextField fx:id="ln" layoutX="203.0" layoutY="239.0" promptText="Legal Last  Name" />
+            <TextField fx:id="address" layoutX="38.0" layoutY="269.0" prefHeight="27.0" prefWidth="326.0" promptText="Permanent Address" />
+            <TextField fx:id="email" layoutX="38.0" layoutY="172.0" promptText="Email Address" />
+            <MenuButton fx:id="atmenu" layoutX="38.0" layoutY="141.0" mnemonicParsing="false" text="Select Account Type">
               <items>
-                <MenuItem mnemonicParsing="false" text="Doctor" />
-                <MenuItem mnemonicParsing="false" text="Patient" />
-                  <MenuItem mnemonicParsing="false" text="DPO" />
-                  <MenuItem mnemonicParsing="false" text="Data Analyst" />
+                <MenuItem fx:id="atmenuDR" mnemonicParsing="false" onAction="#updateAT1" text="Doctor" />
+                <MenuItem fx:id="atmenuPA" mnemonicParsing="false" onAction="#updateAT2" text="Patient" />
+                  <MenuItem fx:id="atmenuDPO" mnemonicParsing="false" onAction="#updateAT3" text="DPO" />
+                  <MenuItem fx:id="atmenuDA" mnemonicParsing="false" onAction="#updateAT4" text="Data Analyst" />
               </items>
             </MenuButton>
+            <DatePicker fx:id="dob" layoutX="38.0" layoutY="299.0" promptText="Date of Birth" />
       </children>
     </AnchorPane>
   </children>

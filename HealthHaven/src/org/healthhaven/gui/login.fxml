@@ -18,9 +18,9 @@
             <Font name="Inter Black" size="59.0" />
           </font>
         </Label>
-            <PasswordField layoutX="134.0" layoutY="229.0" />
-            <TextField layoutX="134.0" layoutY="198.0" />
-            <Button layoutX="187.0" layoutY="265.0" mnemonicParsing="false" text="Submit" />
+            <PasswordField fx:id="password" layoutX="134.0" layoutY="229.0" promptText="Password" />
+            <TextField fx:id="email" layoutX="134.0" layoutY="198.0" promptText="Email" />
+            <Button layoutX="187.0" layoutY="265.0" mnemonicParsing="false" onAction="#handleSubmit" text="Submit" />
             <Label fx:id="label1" alignment="CENTER" layoutX="182.0" layoutY="155.0" style="&#10;" text="Log In" textAlignment="CENTER" wrapText="false">
                <font>
                   <Font name="Inter Light" size="23.0" />
@@ -32,7 +32,7 @@
                   <Font name="Inter Light" size="23.0" />
                </font>
             </Label>
-            <Button layoutX="409.0" layoutY="250.0" mnemonicParsing="false" text="Create One Here" />
+            <Button fx:id="acbutton" layoutX="409.0" layoutY="250.0" mnemonicParsing="false" onAction="#acPage" text="Create One Here" />
             <Label layoutX="128.0" layoutY="92.0" prefHeight="17.0" prefWidth="222.0" text="version 1.0 | Secure and Encrypted" />
       </children>
     </AnchorPane>
