@@ -29,7 +29,7 @@ public class Main extends Application {
         
     }
     
-    private void loadPage(String fxmlFileName) throws IOException {
+    protected void loadPage(String fxmlFileName) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFileName));
         Parent root = loader.load();
         Scene scene = new Scene(root, 600, 460);
@@ -37,8 +37,6 @@ public class Main extends Application {
         
     }
       
-   
-
     public static Stage getFirstStage() {
         return firstStage;
     }

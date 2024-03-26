@@ -1,4 +1,4 @@
-package org.healthhaven.gui;
+package org.healthhaven.controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -14,41 +14,37 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+import org.healthhaven.gui.Main;
+
 import javafx.event.ActionEvent;
 
-public class LoginController extends Main{
+public class LoginController{
 	
 	@FXML
-	private TextField textfield;
+	private TextField emailTextfield;
 	@FXML
-	private TextField email;
+	private Button submitButton;
 	@FXML
-	private Label label;
+	private PasswordField passwordTextfield;
 	@FXML
-	private Button submitbutton;
-	@FXML
-	private PasswordField password;
-	@FXML
-	private Button acbutton;
+	private Button accountCreationButton;
 	
 	
 	
 	public void handleSubmit() {
-		String lemail;
-		lemail = email.getText();
+		String email = emailTextfield.getText();
 		
-		String lpw;
-		lpw = password.getText();
+		String password = passwordTextfield.getText();
 		
-		System.out.println(lemail + lpw);
+		System.out.println(email + password);
 	}
 	
 
-	public void acPage(ActionEvent actionEvent) throws IOException {
-        loadPage("accountcreation.fxml");
+	public void loadAccountCreationPage(ActionEvent actionEvent) throws IOException {
+        loadPage("../gui/accountcreation.fxml");
     }
-
-    private void loadPage(String fxml) throws IOException {
+	
+	private void loadPage(String fxml) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource(fxml));
         Stage stage = (Stage) Main.getFirstStage().getScene().getWindow();
         stage.setScene(new Scene(root));
