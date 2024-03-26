@@ -1,7 +1,5 @@
 package org.healthhaven.controller;
 
-import org.healthhaven.model.*;
-
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.BorderPane;
@@ -12,87 +10,55 @@ import javafx.scene.control.TextField;
 public class UserController {
 	
 	@FXML
-    private BorderPane mainContentArea;
+    private BorderPane contentArea;
 	
 	@FXML
-    private Button homeButton, profileButton;
-	
-	private User currentUser; // This could be set during login
-	
+	private String mainPage;
 
     public void initialize() {
-    	homeButton.setOnAction(event -> loadHomePage());
-        profileButton.setOnAction(event -> loadProfilePage());
+        // Example user type check
+        String userType = getUserType(); // Implement this method based on your application's logic
         
-        loadHomePage();
-    }
-    
-    private void loadHomePage() {
-        try {
-            FXMLLoader loader = new FXMLLoader();
-            
-            switch (currentUser.getAccountType()) {
-	            case DOCTOR:
-	                loader.setLocation(getClass().getResource("DoctorDashboard.fxml"));
-	                mainContentArea.setCenter(loader.load());
-	                DoctorController doctorController = loader.getController();
-	                doctorController.setDoctor((Doctor) currentUser);
-	                break;
-	                
-	            case PATIENT:
-	                loader.setLocation(getClass().getResource("PatientDashboard.fxml"));
-	                mainContentArea.setCenter(loader.load());
-	                PatientController patientController = loader.getController();
-	                patientController.setPatient((Patient) currentUser);
-	                
-	                break;
-	            case SUPERADMIN:
-	                loader.setLocation(getClass().getResource("SuperAdminDashboard.fxml"));
-	                mainContentArea.setCenter(loader.load());
-	                SuperadminController superadminController = loader.getController();
-	                superadminController.setSuperadmin((Superadmin) currentUser);
-	                break;
-	                
-	            case DPO:
-	                loader.setLocation(getClass().getResource("DataProtectionOfficerDashboard.fxml"));
-	                mainContentArea.setCenter(loader.load());
-	                DPOController dpoController = loader.getController();
-	                dpoController.setDPO((DataProtectionOfficer) currentUser);
-	                break;
-	                
-	            case DATA_ANALYST:
-	                loader.setLocation(getClass().getResource("DataAnalystDashboard.fxml"));
-	                mainContentArea.setCenter(loader.load());
-	                DataAnalystController dataAnalystController = loader.getController();
-	                dataAnalystController.setDataAnalyst((DataAnalyst) currentUser);
-	                break;
-	                
-	            default:
-	                break;
-              
-            }
-            
-     
-        } catch (Exception e) {
-            e.printStackTrace();
+        if ("doctor".equals(userType)) {
+        	mainPage = "DoctorDashboard.fxml";
+        } else if ("patient".equals(userType)) {
+            mainPage = "PatientDashboard.fxml";
+        } else if ("SA".equals(userType)) {
+        	mainPage = "SuperAdminDashboard.fxml";
+        } else if ("DSA".equals(userType)) {
+        	mainPage = "DataAnalystDashboard.fxml";
         }
+        
+        loadContent(mainPage);
     }
 
-    private void loadProfilePage() {
+    private void loadContent(String fxmlPath) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("UserProfile.fxml"));
-            mainContentArea.setCenter(loader.load());
-            UserProfileController controller = loader.getController();
-            controller.setUser(currentUser);
+            contentArea.setCenter(FXMLLoader.load(getClass().getResource(fxmlPath)));
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
     
-    public void setCurrentUser(User user) {
-        this.currentUser = user;
-        initialize();
+    // Placeholder for your method to determine the user type
+    private String getUserType() {
+        // This method should return either "doctor" or "patient"
+        return "doctor"; // Example return value
     }
-    	
+    
+    // Example method handlers for navigation buttons
+    @FXML
+    private void handleHome() {
+    	loadContent(mainPage);
+        // Implement navigation logic
+    }
+    
+    @FXML
+    private void handleProfile() {
+    	loadContent("ProfileDashboard.fxml");
+        // Implement navigation logic
+    }
+	
+	
 
 }

@@ -7,61 +7,68 @@ import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
 public class AccountCreationService {
-//    public static User createAccount(Scanner scanner, User.Account userType) {
-//        System.out.print("Enter your email: ");
-//        String email = scanner.nextLine();
-//
-//        String password = "";
-//        System.out.print("Enter your password: ");
-//        password = scanner.nextLine();
-//
-//        // First communication with the server to check if the email already exists
-//		if (doesAccountExist(email).equals("VALID")) {
-//			return null;
-//		}
-//
-//		System.out.print("Enter your LEGAL first name: ");
-//		String firstName = scanner.nextLine();
-//		System.out.print("Enter your LEGAL name: ");
-//		String lastName = scanner.nextLine();
-//		System.out.print("Enter your permanent address: ");
-//		String address = scanner.nextLine();
-//		LocalDate dateOfBirth = null;
-//		while (dateOfBirth == null) {
-//			System.out.print("Enter your date of birth (yyyy-mm-dd): ");
-//			String dobInput = scanner.nextLine();
-//			try {
-//				dateOfBirth = LocalDate.parse(dobInput, DateTimeFormatter.ISO_LOCAL_DATE);
-//			} catch (DateTimeParseException e) {
-//				System.out.println("Invalid date format. Please enter the date in yyyy-mm-dd format.");
-//			}
-//		}
-//
-//		// Account creation
-//		boolean proceed = false;
-//		while (!proceed) {
-//			System.out.println("Do you want to proceed with creating a new account?\n1. Save account\n2. Quit: ");
-//			int subChoice = scanner.nextInt();
-//			scanner.nextLine(); // Consume the newline left by nextInt()
-//
-//			if (subChoice == 1) {
-//				proceed = true; // Break out of the loop and continue with account creation
-//				User newUser = createUserInstance(userType, email, password, firstName, lastName, address, dateOfBirth);
-//				if (newUser != null) {
-//					return newUser;
-//				}
-//				System.out.println("Error creating an account.");
-//				break;
-//			} else if (subChoice == 2) {
-//				System.out.println("Account creation canceled.");
-//				break;
-//			} else {
-//				System.out.println("Invalid choice. Please enter 1 to save or 2 to quit.");
-//			}
-//		}
-//		
-//		return null;
-//    }
+    public static User createAccount(Scanner scanner, User.Account userType) {
+        System.out.print("Enter your email: ");
+        String email = scanner.nextLine();
+
+        String password = "";
+        System.out.print("Enter your password: ");
+        password = scanner.nextLine();
+
+//        if (userType == User.Account.DOCTOR || userType == User.Account.SUPERADMIN){
+//            password = PasswordGenerator.generate(10);
+//        } else{
+//            System.out.print("Enter the password: ");
+//            password = scanner.nextLine();
+//        }
+
+        // First communication with the server to check if the email already exists
+		if (doesAccountExist(email).equals("VALID")) {
+			return null;
+		}
+
+		System.out.print("Enter your LEGAL first name: ");
+		String firstName = scanner.nextLine();
+		System.out.print("Enter your LEGAL name: ");
+		String lastName = scanner.nextLine();
+		System.out.print("Enter your permanent address: ");
+		String address = scanner.nextLine();
+		LocalDate dateOfBirth = null;
+		while (dateOfBirth == null) {
+			System.out.print("Enter your date of birth (yyyy-mm-dd): ");
+			String dobInput = scanner.nextLine();
+			try {
+				dateOfBirth = LocalDate.parse(dobInput, DateTimeFormatter.ISO_LOCAL_DATE);
+			} catch (DateTimeParseException e) {
+				System.out.println("Invalid date format. Please enter the date in yyyy-mm-dd format.");
+			}
+		}
+
+		// Account creation
+		boolean proceed = false;
+		while (!proceed) {
+			System.out.println("Do you want to proceed with creating a new account?\n1. Save account\n2. Quit: ");
+			int subChoice = scanner.nextInt();
+			scanner.nextLine(); // Consume the newline left by nextInt()
+
+			if (subChoice == 1) {
+				proceed = true; // Break out of the loop and continue with account creation
+				User newUser = createUserInstance(userType, email, password, firstName, lastName, address, dateOfBirth);
+				if (newUser != null) {
+					return newUser;
+				}
+				System.out.println("Error creating an account.");
+				break;
+			} else if (subChoice == 2) {
+				System.out.println("Account creation canceled.");
+				break;
+			} else {
+				System.out.println("Invalid choice. Please enter 1 to save or 2 to quit.");
+			}
+		}
+		
+		return null;
+    }
 
     protected static int selectAccountType(Scanner scanner) {
         int accountType = 0;

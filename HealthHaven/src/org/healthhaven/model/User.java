@@ -185,13 +185,39 @@ public class User {
 	}
 
 	/**
+	 *  User accessing personal record (include user prompt)
+	 * @param scanner
+	 */
+	protected void accessPersonalRecord(Scanner scanner){
+		// Access doctor's own info.
+		System.out.println(this);
+		System.out.print("Do you want to update your record? 1 (yes) 2 (no): ");
+		String input = scanner.nextLine(); // Use nextLine for subsequent inputs
+		try {
+			int subChoice = Integer.parseInt(input);
+			switch(subChoice){
+				case 1:
+					updatePersonalRecord(scanner); //update personal record on database
+					break;
+				case 2:
+					System.out.println("Not updating any personal data.");
+					break;
+				default:
+					System.out.println("Invalid option. Please try again");
+			}
+		} catch (NumberFormatException e) {
+			System.out.println("Invalid input. Please enter a number.");
+		}
+	}
+
+	/**
 	 * Update the personal record on the database, return the server response.
 	 * @param newEmail
 	 * @param newPassword
 	 * @param newAddress
 	 * @return
 	 */
-	public String updatePersonalRecordOnDB(String newEmail, String newPassword, String newAddress){
+	private String updatePersonalRecordOnDB(String newEmail, String newPassword, String newAddress){
 
 		// First set the changes to the object instance.
 		setEmail(newEmail);
@@ -204,6 +230,63 @@ public class User {
 		String updateMessage = String.format("UPDATE_ACCOUNT %d %s %s %s", getUserID(), newEmail, newPassword, newAddress);
 		System.out.println("Message: " + updateMessage);
 		return ServerCommunicator.communicateWithAccountServer(updateMessage);
+	}
+
+	/**
+	 * Update the personal record (include user prompt)
+	 * @param scanner
+	 */
+	protected void updatePersonalRecord(Scanner scanner) {
+		String newEmail = this.email; // Start with current values
+		String newAddress = this.address;
+		String newPassword = this.password;
+
+		boolean updating = true;
+		while (updating) {
+			System.out.println("What do you want to update?");
+			System.out.println("1. Email Address");
+			System.out.println("2. Address");
+			System.out.println("3. Password");
+			System.out.println("4. Save & Quit to main menu");
+			System.out.println("5. Cancel & Quit to main menu");
+			int updateChoice = scanner.nextInt();
+			scanner.nextLine(); // Consume the newline
+			switch (updateChoice) {
+				case 1:
+					System.out.print("Enter new email address: ");
+					newEmail = scanner.nextLine();
+					System.out.println("Email address set for update.");
+					break;
+				case 2:
+					System.out.print("Enter new address: ");
+					newAddress = scanner.nextLine();
+					System.out.println("Address set for update.");
+					break;
+				case 3:
+					System.out.print("Enter new password: ");
+					newPassword = scanner.nextLine();
+					System.out.println("Password set for update.");
+					break;
+				case 4:
+					//Actual updating
+					String serverResponse = updatePersonalRecordOnDB(newEmail, newPassword, newAddress);
+					System.out.println(serverResponse);
+					updating = false; // Quit to main menu
+					break;
+				case 5:
+					updating = false; // Quit to main menu without saving
+					System.out.println("Updates canceled.");
+					break;
+				default:
+					System.out.println("Invalid option. Please try again.");
+			}
+		}
+	}
+
+
+	protected void userInput(Scanner scanner){
+		System.out.println("Default Behaviour. Please Override");
+
 	}
 
 	@Override

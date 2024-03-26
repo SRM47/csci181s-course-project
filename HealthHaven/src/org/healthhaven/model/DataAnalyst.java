@@ -49,12 +49,13 @@ public class DataAnalyst extends User {
 	 * Get and print the data summary
 	 * @param scanner
 	 */
-	public String performDataAnalysis(){
+	protected void performDataAnalysis(Scanner scanner){
 //		long userID = this.getUserID();
 		long userID = 300;
 		String message = "REQUEST_PATIENT_DATA_SUMMARY " + userID;
 //		System.out.println("message");
-		return(ServerCommunicator.communicateWithMedicalServer(message));
+		String ServerResponse = ServerCommunicator.communicateWithMedicalServer(message);
+		System.out.println(ServerResponse);
 	}
 	
 	@Override
@@ -69,9 +70,43 @@ public class DataAnalyst extends User {
 		this.setUserID(randomNumber);
 	}
 
+	@Override
+	protected void userInput(Scanner scanner){
+		// Scanner scanner = new Scanner(System.in);
+
+		while (true){
+			System.out.println("\nPlease choose an option: ");
+			System.out.println("1. Access my info");
+			System.out.println("2. Get data");
+			System.out.println("3. Exit");
+			System.out.println("Enter your choice: ");
+
+			int choice = scanner.nextInt();
+			scanner.nextLine();
+			switch (choice){
+				case 1:
+					accessPersonalRecord(scanner);
+					break;
+				case 2:
+					System.out.println("Accessing the medical data...");
+					performDataAnalysis(scanner);
+					break;
+				case 3:
+					System.out.println("Existing...");
+					// scanner.close();
+					return;
+				default:
+					System.out.println("Invalid option. Please try again");
+
+			}
+		}
+
+
+	}
 
 	public static void main(String [] args){
 		DataAnalyst newDSA = new DataAnalyst("Sae@pomona.edu", "password", "Sae", "Furukawa", "Claremont", LocalDate.of(2002, 10, 05));
+		newDSA.userInput(new Scanner(System.in));
 	}
 
 
