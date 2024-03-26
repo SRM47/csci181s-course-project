@@ -4,6 +4,8 @@ package org.healthhaven.model;
 import java.time.LocalDate;
 import java.util.Random;
 
+import org.healthhaven.model.User.Account;
+
 
 /**
  * 
@@ -52,6 +54,11 @@ public class DataProtectionOfficer extends User {
 		// UserID created with random six digit number base. User class is appended as highest order digit.
 		long randomNumber = 4_000_000_000L + (long)(random.nextDouble() * 999_999_999L);
 		this.setUserID(randomNumber);
+	}
+	
+	@Override
+	public Account getAccountType() {
+		return ACCOUNT_TYPE;
 	}
 
 }

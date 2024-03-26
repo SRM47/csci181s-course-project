@@ -3,6 +3,9 @@ package org.healthhaven.model;
 import java.time.LocalDate;
 import java.util.Random;
 import java.util.Scanner;
+
+import org.healthhaven.model.User.Account;
+
 import java.time.Instant;
 
 
@@ -55,6 +58,11 @@ public class Doctor extends User {
 		Random rnd = new Random();
         long randomNumber = 1_000_000_000L + (long)(rnd.nextDouble() * 999_999_999L);
 	    this.setUserID(randomNumber);
+	}
+	
+	@Override
+	public Account getAccountType() {
+		return ACCOUNT_TYPE;
 	}
 
 

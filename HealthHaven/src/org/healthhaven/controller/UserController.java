@@ -1,6 +1,7 @@
 package org.healthhaven.controller;
 
 import java.io.IOException;
+import java.time.LocalDate;
 
 import org.healthhaven.model.*;
 
@@ -20,27 +21,32 @@ public class UserController {
 	private BorderPane entireScreen;
 	
 	@FXML
-    private Button homeButton, profileButton;
+    private Button homeButton, profileButton, logoutButton;
 	
-	private User currentUser; // This could be set during login
+	private User currentUser = new DataAnalyst(0, "password", "email", "Sae", "Furukawa", "address", LocalDate.of(2002, 10,05)); // This could be set during login
 	
 
+	@FXML
     public void initialize() {
+        // Now it's safe to use FXML-injected fields here.
     	homeButton.setOnAction(event -> loadHomePage());
         profileButton.setOnAction(event -> loadProfilePage());
+        logoutButton.setOnAction(event -> handleLogout());
         
-        loadHomePage();
+        loadHomePage(); // It's safe to call this here because initialize is called after FXML fields are injected.
     }
     
     
     @FXML
     public void loadHomePage() {
         try {
+        	System.out.println("Home Page loading");
+        	System.out.println(currentUser.getAccountType());
             FXMLLoader loader = new FXMLLoader();
             
             switch (currentUser.getAccountType()) {
 	            case DOCTOR:
-	                loader.setLocation(getClass().getResource("Doctor.fxml"));
+	                loader.setLocation(getClass().getResource("/org/healthhaven/gui/Doctor.fxml"));
 	                mainContentArea.getChildren().clear();
 	                mainContentArea.getChildren().add(loader.load());
 	                DoctorController doctorController = loader.getController();
@@ -48,7 +54,7 @@ public class UserController {
 	                break;
 	                
 	            case PATIENT:
-	                loader.setLocation(getClass().getResource("Patient.fxml"));
+	                loader.setLocation(getClass().getResource("/org/healthhaven/gui/Patient.fxml"));
 	                mainContentArea.getChildren().clear();
 	                mainContentArea.getChildren().add(loader.load());
 	                PatientController patientController = loader.getController();
@@ -56,7 +62,7 @@ public class UserController {
 	                
 	                break;
 	            case SUPERADMIN:
-	                loader.setLocation(getClass().getResource("SuperAdmin.fxml"));
+	                loader.setLocation(getClass().getResource("/org/healthhaven/gui/SuperAdmin.fxml"));
 	                mainContentArea.getChildren().clear();
 	                mainContentArea.getChildren().add(loader.load());
 	                SuperadminController superadminController = loader.getController();
@@ -64,7 +70,7 @@ public class UserController {
 	                break;
 	                
 	            case DPO:
-	                loader.setLocation(getClass().getResource("DataProtectionOfficer.fxml"));
+	                loader.setLocation(getClass().getResource("/org/healthhaven/gui/DataProtectionOfficer.fxml"));
 	                mainContentArea.getChildren().clear();
 	                mainContentArea.getChildren().add(loader.load());
 	                DPOController dpoController = loader.getController();
@@ -72,7 +78,7 @@ public class UserController {
 	                break;
 	                
 	            case DATA_ANALYST:
-	                loader.setLocation(getClass().getResource("DataAnalyst.fxml"));
+	                loader.setLocation(getClass().getResource("/org/healthhaven/gui/DataAnalyst.fxml"));
 	                mainContentArea.getChildren().clear();
 	                mainContentArea.getChildren().add(loader.load());
 	                DataAnalystController dataAnalystController = loader.getController();
@@ -93,7 +99,7 @@ public class UserController {
     @FXML
     public void loadProfilePage() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("UserProfile.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/healthhaven/gui/UserProfile.fxml"));
             mainContentArea.getChildren().clear();
             mainContentArea.getChildren().add(loader.load());
             UserProfileController controller = loader.getController();
@@ -105,7 +111,7 @@ public class UserController {
     
     public void setCurrentUser(User user) {
         this.currentUser = user;
-        initialize();
+        //initialize();
     }
     
     @FXML
@@ -113,8 +119,9 @@ public class UserController {
   
         try {
         	FXMLLoader loader = new FXMLLoader();
-        	loader.setLocation(getClass().getResource("login.fxml"));
-			entireScreen.setCenter(loader.load());
+        	loader.setLocation(getClass().getResource("/org/healthhaven/gui/login.fxml"));
+			entireScreen.getChildren().clear();
+        	entireScreen.setCenter(loader.load());
 			LoginController loginController = loader.getController();
 			
 		} catch (IOException e) {

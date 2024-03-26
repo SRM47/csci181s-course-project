@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.Random;
 import java.util.Scanner;
 
+import org.healthhaven.model.User.Account;
+
 
 /**
  * 
@@ -43,6 +45,11 @@ public class DataAnalyst extends User {
 	public DataAnalyst(long userID, String email, String password, String legal_first_name, String legal_last_name, String address,
 					   LocalDate dob) {
 		super(userID, email, password, legal_first_name, legal_last_name, address, dob);
+	}
+	
+	@Override
+	public Account getAccountType() {
+		return ACCOUNT_TYPE;
 	}
 
 	/**
