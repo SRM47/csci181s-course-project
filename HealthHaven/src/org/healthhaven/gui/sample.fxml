@@ -18,6 +18,7 @@
         </Label>
             <TextField fx:id="textfield" layoutX="229.0" layoutY="173.0" promptText="Enter Text..." />
             <Button fx:id="submitbutton" layoutX="282.0" layoutY="222.0" mnemonicParsing="false" onAction="#handleSubmit" text="Submit" />
+            <ProgressBar layoutX="43.0" layoutY="49.0" prefWidth="200.0" progress="0.0" />
       </children>
     </AnchorPane>
   </children>

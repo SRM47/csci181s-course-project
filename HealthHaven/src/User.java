@@ -34,7 +34,7 @@ public class User {
 			this.account_name = account_name;
 		}
 		
-		String getAccountName() {
+		public String getAccountName() {
 			return this.account_name;
 		}
 	}
