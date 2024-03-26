@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.healthhaven.controller.UserController">
+   <left>
+      <Pane id="navigationBar" prefWidth="150.0" style="-fx-background-color: #d6d6cd;" BorderPane.alignment="CENTER">
+         <children>
+            <VBox prefWidth="150.0">
+               <children>
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="50.0" prefWidth="200.0" text="HealthHaven">
+                     <font>
+                        <Font size="17.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                     <padding>
+                        <Insets bottom="10.0" left="3.0" right="3.0" top="10.0" />
+                     </padding>
+                  </Label>
+                  <Button id="homeButton" mnemonicParsing="false" onAction="#loadHomePage" prefHeight="50.0" prefWidth="200.0" style="-fx-background-color: d6d6cd;" text="Home" />
+                  <Button id="profileButton" layoutX="10.0" layoutY="60.0" mnemonicParsing="false" onAction="#loadProfilePage" prefHeight="50.0" prefWidth="200.0" style="-fx-background-color: d6d6cd;" text="Profile" />
+                  <Region VBox.vgrow="ALWAYS" />
+               </children>
+            </VBox>
+            <Button id="logoutButton" alignment="CENTER" contentDisplay="BOTTOM" layoutX="47.0" layoutY="353.0" mnemonicParsing="false" text="Logout" />
+         </children>
+      </Pane>
+   </left>
+   <center>
+      <StackPane id="mainContentArea" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+   </center>
+</BorderPane>

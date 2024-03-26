@@ -77,11 +77,11 @@ public class Superadmin extends User {
 	/**
 	 * Print out the account list
 	 */
-	public void viewAccountList(){
+	public String viewAccountList(){
 		String message = "VIEW ACCOUNT";
 		System.out.println("Message: " + message);
-		String serverResponse = ServerCommunicator.communicateWithAccountServer(message);
-		System.out.println("Server response: " + serverResponse);
+		return(ServerCommunicator.communicateWithAccountServer(message));
+		
 	}
 
 	public static void main(String[] args) {

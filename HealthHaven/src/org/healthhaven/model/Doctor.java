@@ -65,7 +65,7 @@ public class Doctor extends User {
      * @param weight
      * @return
      */
-	protected String updatePatientRecordOnDB(long userID, String height, String weight) {
+	public String updatePatientRecordOnDB(long userID, String height, String weight) {
         Instant timestamp = Instant.now(); // This captures the current moment in UTC.
 
         // Construct a message to send to the server
@@ -79,7 +79,7 @@ public class Doctor extends User {
      * @param userID
      * @return
      */
-	protected String viewPatientRecord(long userID) {
+	public String viewPatientRecord(long userID) {
         String message = String.format("VIEW %d", userID);
         System.out.println("Message: " + message);
         return ServerCommunicator.communicateWithMedicalServer(message);
