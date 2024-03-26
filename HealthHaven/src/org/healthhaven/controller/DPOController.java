@@ -7,12 +7,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
-public class DoctorController {
+public class DPOController {
 
-    private Doctor doctor;
+    private DataProtectionOfficer dpo;
 
-    public void setDoctor(Doctor doctor) {
-        this.doctor = doctor;
+    public void setDPO(DataProtectionOfficer dpo) {
+        this.dpo = dpo;
         // Load doctor-specific information into the dashboard
     }
 

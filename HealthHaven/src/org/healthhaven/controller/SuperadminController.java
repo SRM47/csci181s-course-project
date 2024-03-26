@@ -7,12 +7,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
-public class DoctorController {
+public class SuperadminController {
 
-    private Doctor doctor;
+    private Superadmin superadmin;
 
-    public void setDoctor(Doctor doctor) {
-        this.doctor = doctor;
+    public void setSuperadmin(Superadmin superadmin) {
+        this.superadmin = superadmin;
         // Load doctor-specific information into the dashboard
     }
 
