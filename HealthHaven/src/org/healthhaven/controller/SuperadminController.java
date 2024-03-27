@@ -12,6 +12,8 @@ import javafx.scene.control.TextArea;
 public class SuperadminController {
 
     private Superadmin superadmin;
+    
+    @FXML
     private TextArea recordTextArea;
     
 

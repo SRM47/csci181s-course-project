@@ -3,6 +3,7 @@ package org.healthhaven.controller;
 import org.healthhaven.model.*;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextArea;
@@ -17,13 +18,18 @@ public class UserProfileController {
     private PasswordField passwordField;
     @FXML
     private TextField addressField;
+    @FXML 
+    private Button updateButton;
 
     private User currentUser;
+    
+    @FXML
+    public void initialize() {
+    }
 
     public void setUser(User user) {
         this.currentUser = user;
         displayUserInfo();
-        // Update the view with user information
     }
     
     private void displayUserInfo() {
