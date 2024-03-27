@@ -23,19 +23,12 @@ public class UserController {
 	@FXML
     private Button homeButton, profileButton, logoutButton;
 	
-	private User currentUser = new DataAnalyst(0, "password", "email", "Sae", "Furukawa", "address", LocalDate.of(2002, 10,05)); // This could be set during login
-	
-
-	@FXML
-    public void initialize() {
-        // Now it's safe to use FXML-injected fields here.
-    	homeButton.setOnAction(event -> loadHomePage());
-        profileButton.setOnAction(event -> loadProfilePage());
-        logoutButton.setOnAction(event -> handleLogout());
-        
-        loadHomePage(); // It's safe to call this here because initialize is called after FXML fields are injected.
-    }
+	private User currentUser;
     
+    public void setCurrentUser(User user) {
+        this.currentUser = user;
+        loadHomePage();
+    }
     
     @FXML
     public void loadHomePage() {
@@ -109,10 +102,6 @@ public class UserController {
         }
     }
     
-    public void setCurrentUser(User user) {
-        this.currentUser = user;
-        //initialize();
-    }
     
     @FXML
     public void handleLogout() {

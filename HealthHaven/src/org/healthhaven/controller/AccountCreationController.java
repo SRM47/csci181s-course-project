@@ -1,8 +1,12 @@
 package org.healthhaven.controller;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 import org.healthhaven.gui.Main;
+import org.healthhaven.model.AccountCreationService;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -11,6 +15,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.PasswordField;
@@ -46,6 +51,9 @@ public class AccountCreationController {
 	@FXML
 	private DatePicker dobDatePicker;
 	
+	@FXML
+	private Label response;
+	
 	public void updateAccountTypeDoctor() {
 		accountTypeMenu.setText(doctorMenuItem.getText());
 	}
@@ -69,9 +77,22 @@ public class AccountCreationController {
 		String rfn = legalFirstNameTextfield.getText();
 		String rln = legalLastNameTextfield.getText();
 		String raddress = addressTextfield.getText();
-		String rdob = dobDatePicker.getValue().toString();
+		LocalDate rdob = dobDatePicker.getValue();
 		
-		System.out.println(rat + remail + rpw + rfn + rln + raddress + rdob);
+		// Input validation
+	    if (rat.isEmpty() || remail.isEmpty() || rpw.isEmpty() || rfn.isEmpty() || rln.isEmpty() || raddress.isEmpty() || dobDatePicker.getValue() == null) {
+	        response.setText("Please fill in all fields.");
+	        return; // Exit the method if any field is empty
+	    }
+	    
+		try {
+			String serverResponse = AccountCreationService.createUser(rat, remail, rpw, rfn, rln, raddress, rdob);
+			response.setText(serverResponse);
+		
+		} catch (DateTimeParseException e) {
+			response.setText("Invalid date format. Please enter the date in yyyy-mm-dd format.");
+		}	
+		
 	}
 	
 	public void loginPage(ActionEvent actionEvent) throws IOException {

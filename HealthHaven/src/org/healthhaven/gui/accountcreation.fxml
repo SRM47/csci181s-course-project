@@ -46,6 +46,7 @@
               </items>
             </MenuButton>
             <DatePicker fx:id="dobDatePicker" layoutX="38.0" layoutY="299.0" promptText="Date of Birth" />
+            <Label fx:id="response" layoutX="137.0" layoutY="337.0" textFill="#e10000" />
       </children>
     </AnchorPane>
   </children>
