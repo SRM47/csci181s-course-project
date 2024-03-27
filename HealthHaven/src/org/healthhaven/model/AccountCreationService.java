@@ -63,6 +63,8 @@ public class AccountCreationService {
         String message = String.format(("CREATE_ACCOUNT %d %s %s %s %s %s %s %s %s"), userId, email, password, first_name, last_name, address, dob, timestamp.toString(), account);
         return ServerCommunicator.communicateWithAccountServer(message);
     }
+    
+    
 
 
 

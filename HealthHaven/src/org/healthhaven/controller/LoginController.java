@@ -10,7 +10,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-
+import me.gosimple.nbvcxz.Nbvcxz;
+import me.gosimple.nbvcxz.scoring.Result;
 
 import java.io.IOException;
 
@@ -29,7 +30,7 @@ public class LoginController{
 	private Button accountCreationButton;
 	@FXML
 	private Label errorMessage;
-	
+	@FXML
 	private Login loginInstance;
 	
 	@FXML
@@ -51,6 +52,8 @@ public class LoginController{
 			loadPage("../gui/user.fxml", user);	
 			
 		}
+		
+//		
 	}
 	
 
@@ -71,6 +74,9 @@ public class LoginController{
         stage.setScene(new Scene(root));
         stage.show();
     }
+	
+	
+	
 	
 	
 }

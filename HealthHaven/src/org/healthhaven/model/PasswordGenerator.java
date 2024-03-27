@@ -1,4 +1,10 @@
+package org.healthhaven.model;
+
 import java.security.SecureRandom;
+import java.time.LocalDate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class PasswordGenerator {
 
     private static final String UPPER_CASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -51,5 +57,62 @@ public class PasswordGenerator {
             array[j] = temp;
         }
         return new String(array);
+    }
+    
+    
+    public int passwordStrength(String password, String fn, String ln, LocalDate dob) {
+    	 
+//    	// At least 10 characters
+//        if (password.length() < 10) {
+//            return false;
+//        }
+//        
+//        // At least one uppercase letter
+//        if (!password.matches(".*[A-Z].*")) {
+//            return false;
+//        }
+//        
+//        // At least one lowercase letter
+//        if (!password.matches(".*[a-z].*")) {
+//            return false;
+//        }
+//        
+//        // At least one digit
+//        if (!password.matches(".*\\d.*")) {
+//            return false;
+//        }
+//        
+//        // At least one special character
+//        Pattern specialChars = Pattern.compile("[^a-zA-Z0-9]");
+//        Matcher matcher = specialChars.matcher(password);
+//        if (!matcher.find()) {
+//            return false;
+//        }
+        
+        // first name not in password
+        if(password.toLowerCase().contains(fn.toLowerCase())) {
+        	return 2;
+        }
+        
+        // last name not in password
+        if(password.toLowerCase().contains(ln.toLowerCase())) {
+        	return 2;
+        }
+        
+        // make sure year not in password
+        if(password.contains(Integer.toString(dob.getYear()))){
+        	return 3;
+        }
+        
+        // further date of birth check
+        String bd1 = Integer.toString(dob.getMonthValue()) + Integer.toString(dob.getDayOfMonth());
+        String bd2 = Integer.toString(dob.getDayOfMonth()) + Integer.toString(dob.getMonthValue());
+        
+        if(password.contains(bd1) || password.contains(bd2)) {
+        	return 3;
+        }
+        
+        return 1;
+    	
     }
 }
