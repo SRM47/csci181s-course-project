@@ -18,7 +18,7 @@ public class Login {
 	 * @param password
 	 * @return
 	 */
-	protected static String authenticateExistingUser(String email, String password){
+	private static String authenticateExistingUser(String email, String password){
 		Instant timestamp = Instant.now(); // This captures the current moment in UTC.
 		String message = String.format("AUTHENTICATE_ACCOUNT %s %s %s", email, password, timestamp.toString());
 		// System.out.println("Message: " + message);
@@ -40,7 +40,7 @@ public class Login {
 	 * @param dob
 	 * @return
 	 */
-	protected static User createUserInstance(String accountType, long userID, String email, String password, String legalFirstName, String legalLastName,
+	private static User createUserInstance(String accountType, long userID, String email, String password, String legalFirstName, String legalLastName,
 										   String address, LocalDate dob){
 		return switch (accountType) {
 			case "Doctor" -> new Doctor(userID, email, password, legalFirstName, legalLastName, address, dob);
@@ -51,6 +51,31 @@ public class Login {
 			case "Superadmin" -> new Superadmin(userID, email, password, legalFirstName, legalLastName, address, dob);
 			default -> null;
 		};
+	}
+	
+	public User identifyUser(String email, String password) {
+		String serverResponse = authenticateExistingUser(email, password);
+				
+		if (serverResponse.equals("FAILURE")) {
+			return null;
+			//
+		} 
+		try{
+
+			String [] data = serverResponse.split(",");
+			long userID = Long.parseLong(data[0]);
+			String legalFirstName = data[3];
+			String legalLastName = data[4];
+			String address = data[5];
+			LocalDate dob = LocalDate.parse(data[6], DateTimeFormatter.ISO_LOCAL_DATE);
+			String accountType = data[8];
+
+            return createUserInstance(accountType, userID, email, password, legalFirstName, legalLastName, address, dob);
+
+		} catch (Exception e){
+			System.out.println("Error parsing the server response.");
+			return null;
+		}
 	}
 
 //	/**

@@ -19,6 +19,11 @@
           </font>
         </Label>
             <PasswordField fx:id="passwordTextfield" layoutX="134.0" layoutY="229.0" promptText="Password" />
+            <Label fx:id="errorMessage" layoutX="201.0" layoutY="185.0" prefHeight="11.0" prefWidth="20.0" textFill="#e40c16">
+               <font>
+                  <Font size="9.0" />
+               </font>
+            </Label>
             <TextField fx:id="emailTextfield" layoutX="134.0" layoutY="198.0" promptText="Email" />
             <Button fx:id="submitButton" layoutX="187.0" layoutY="265.0" mnemonicParsing="false" onAction="#handleSubmit" text="Submit" />
             <Label alignment="CENTER" layoutX="182.0" layoutY="155.0" style="&#10;" text="Log In" textAlignment="CENTER" wrapText="false">
