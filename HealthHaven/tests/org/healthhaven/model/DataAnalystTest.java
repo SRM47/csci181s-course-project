@@ -1,10 +1,15 @@
 package org.healthhaven.model;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mockStatic;
 
+import org.healthhaven.model.User.Account;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+
+import org.mockito.MockedStatic;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DataAnalystTest extends UserTest<DataAnalyst> {
 
@@ -19,12 +24,34 @@ public class DataAnalystTest extends UserTest<DataAnalyst> {
         super.setUp();
     }
     
+    @Override
+    protected Account getExpectedAccountType() {
+        return Account.DATA_ANALYST;
+    }
+    
     @Test
     public void testGenerateUserID() {
         user.generateUserID(); //use user since setUp
         long userID = user.getUserID();
         assertTrue(String.valueOf(userID).startsWith("3"), "Data Analyst userID should start with .");
     }
+    
+    @Test
+    public void testPerformDataAnalysis() {
+        // Assuming the server responds with "DATA SUMMARY" upon successful data request
+        String expectedServerResponse = "DATA SUMMARY";
+        
+        try (MockedStatic<ServerCommunicator> mockedStatic = mockStatic(ServerCommunicator.class)) {
+            // Mock the static method call to return a specific response for the expected request
+            mockedStatic.when(() -> ServerCommunicator.communicateWithMedicalServer("REQUEST_PATIENT_DATA_SUMMARY 300"))
+                    .thenReturn(expectedServerResponse);
 
-    //TODO: implement the other methods.
+            // Call the method under test
+            String response = user.performDataAnalysis();
+
+            // Assert that the method returns the expected response
+            assertEquals(expectedServerResponse, response, "The server response should match the expected data summary.");
+        }
+    }
+
 }

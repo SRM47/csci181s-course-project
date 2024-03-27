@@ -1,6 +1,8 @@
 package org.healthhaven.model;
+import org.healthhaven.model.User.Account;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import static org.mockito.Mockito.*;
 
@@ -24,6 +26,11 @@ public class SuperadminTest extends UserTest<Superadmin> {
         super.setUp();
         // Additional setup if needed.
     }
+    
+    @Override
+    protected Account getExpectedAccountType() {
+        return Account.SUPERADMIN;
+    }
 
     @Test
     void testGenerateUserID() {
@@ -31,26 +38,22 @@ public class SuperadminTest extends UserTest<Superadmin> {
         long userID = user.getUserID();
         assertTrue(String.valueOf(userID).startsWith("5"), "Superadmin userID should start with 5.");
     }
+    
+    @Test
+    public void testViewAccountList() {
+        Superadmin superadmin = createUser();
+
+        try (MockedStatic<ServerCommunicator> mockedStatic = mockStatic(ServerCommunicator.class)) {
+            // Mock the static method call to return a specific response for the "VIEW ACCOUNT" message
+            String expectedResponse = "Mocked list of accounts";
+            mockedStatic.when(() -> ServerCommunicator.communicateWithAccountServer("VIEW ACCOUNT"))
+                        .thenReturn(expectedResponse);
+
+            // Call the method under test
+            String actualResponse = superadmin.viewAccountList();
+
+            // Verify the response matches the expected mock response
+            assertEquals(expectedResponse, actualResponse, "The response from viewAccountList should match the mocked response.");
+        }
+    }
 }
-//
-//    @Test
-//    void testSelectAccountType() {
-//        // Simulate selecting a Doctor account type.
-//        String input = "1\n";
-//        System.setIn(new ByteArrayInputStream(input.getBytes()));
-//        Scanner scanner = new Scanner(System.in);
-//        
-//        User.Account selectedType = Superadmin.selectAccountType(scanner);
-//        assertEquals(User.Account.DOCTOR, selectedType, "Should select a Doctor account type.");
-//
-//        scanner.close();
-//        System.setIn(System.in); // Reset System.in to its original state.
-//    }
-//
-////    @Test
-////    void testViewAccountList() {
-////        // Assuming ServerCommunicator can be mocked or its call can be intercepted.
-////        // The actual implementation of mocking static methods or external systems
-////        // depends on the ability to inject mocks or refactor the design for testability.
-////    }
-//}
