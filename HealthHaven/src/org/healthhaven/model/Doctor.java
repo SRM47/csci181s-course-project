@@ -92,6 +92,38 @@ public class Doctor extends User {
         System.out.println("Message: " + message);
         return ServerCommunicator.communicateWithMedicalServer(message);
     }
+	
+	public String authorizeAccountCreation(String email) {
+		String serverResponse = "";
+		serverResponse = doesAccountExist(email);
+		if (!serverResponse.equals("VALID")) {
+			return serverResponse + ": Cannot create account under this email.";
+		}
+		
+		String password = PasswordGenerator.generate();
+		String message = String.format("AUTHORIZE %s %s %s", email, password, "Patient");
+		serverResponse = ServerCommunicator.communicateWithAccountServer(message);
+		
+		if (!serverResponse.equals("SUCCESS")) {
+			return serverResponse;
+		}
+		return sendEmail(email, password);
+	}
+	
+	private String sendEmail(String email, String password) {
+		String subject = "Create Account";
+		String body = String.format("This is to confirm that you are authorized to make an account as Patient. "
+	            + "Your default password is %s. Please go to the login page and use this email and password.", password);
+		return EmailSender.sendEmail(email, subject, body);
+	}
+	
+	
+	private static String doesAccountExist(String email){
+        String message = String.format("EXISTING_ACCOUNT %s", email);
+        // System.out.println("Message: " + message);
+        return  ServerCommunicator.communicateWithAccountServer(message);
+        // System.out.println("Server response: " + serverResponse);
+    }
 
 
     public static void main(String[] args) {

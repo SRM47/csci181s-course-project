@@ -19,17 +19,50 @@
                <font>
                   <Font size="18.0" />
                </font>
+               <VBox.margin>
+                  <Insets bottom="5.0" />
+               </VBox.margin>
             </Label>
-            <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="220.0">
+            <Label text="Create Patient Account">
+               <VBox.margin>
+                  <Insets bottom="5.0" top="10.0" />
+               </VBox.margin>
+            </Label>
+            <TextField fx:id="newPatientEmailField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="150.0">
+               <VBox.margin>
+                  <Insets bottom="5.0" />
+               </VBox.margin>
+            </TextField>
+            <Label fx:id="response" alignment="CENTER" contentDisplay="CENTER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="100.0" textFill="#d30909" />
+            <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" prefHeight="30.0" prefWidth="200.0">
                <children>
-                  <TextField fx:id="patientIdField" alignment="CENTER" promptText="Enter Patient ID" />
-                  <Button mnemonicParsing="false" onAction="#handleViewPatientRecord" text="Search" />
+                  <Button fx:id="createPatientButton" mnemonicParsing="false" onAction="#createNewPatient" text="Create">
+                     <HBox.margin>
+                        <Insets right="5.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#handleCancel" text="Cancel">
+                     <HBox.margin>
+                        <Insets left="5.0" />
+                     </HBox.margin>
+                  </Button>
+               </children>
+            </HBox>
+            <Label text="Update Patient Record">
+               <VBox.margin>
+                  <Insets top="10.0" />
+               </VBox.margin>
+            </Label>
+            <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="220.0">
+               <children>
+                  <TextField fx:id="patientIdField" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" promptText="Enter Patient ID" />
+                  <Button fx:id="searchButton" mnemonicParsing="false" onAction="#handleViewPatientRecord" text="Search" />
                </children>
                <padding>
-                  <Insets top="10.0" />
+                  <Insets top="5.0" />
                </padding>
             </HBox>
-            <TextArea fx:id="patientRecordArea" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="200.0" />
+            <TextArea fx:id="patientRecordArea" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="70.0" prefWidth="199.0" />
             <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="300.0">
                <children>
                   <TextField fx:id="patientHeightField" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="200.0" promptText="Update Height">
@@ -49,7 +82,7 @@
                               <Insets left="5.0" right="5.0" />
                            </HBox.margin>
                         </Button>
-                        <Button mnemonicParsing="false" onAction="#handleCancel" text="Cancel">
+                        <Button fx:id="cancelButton2" mnemonicParsing="false" onAction="#handleCancel2" text="Cancel">
                            <HBox.margin>
                               <Insets left="5.0" right="5.0" />
                            </HBox.margin>

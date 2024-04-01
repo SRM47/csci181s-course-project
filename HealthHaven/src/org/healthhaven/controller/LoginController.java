@@ -43,32 +43,44 @@ public class LoginController{
 		String email = emailTextfield.getText();
 		String password = passwordTextfield.getText();
 		
-		User user = loginInstance.identifyUser(email, password);
+		User user = loginInstance.identifyExistingUser(email, password);
 		
 		if (user.equals(null)) {
-			errorMessage.setText("Login Error");
+			//Next, check if this is a new user.
+			String serverResponse = loginInstance.identifyNewUser(email, password);
+			if (serverResponse.equals("FAILURE")) {
+				errorMessage.setText("Login Error");
+			} else {
+				errorMessage.setText("");
+				loadAccountCreationPage(email,serverResponse);
+			}
 		} else {
 			errorMessage.setText("");
-			loadPage("../gui/user.fxml", user);	
+			loadLoginPage(user);	
 			
 		}
-		
-//		
 	}
 	
 
-	public void loadAccountCreationPage(ActionEvent actionEvent) throws IOException {
-        loadPage("../gui/accountcreation.fxml", null);
+	private void loadAccountCreationPage(String email, String serverResponse) throws IOException {
+		 FXMLLoader loader = new FXMLLoader(getClass().getResource("../gui/accountcreation.fxml"));
+	        Parent root = loader.load();
+	        Stage stage = (Stage) Main.getFirstStage().getScene().getWindow();
+	        
+	        AccountCreationController accountController = loader.getController();
+	        accountController.setAccountCreation(email, serverResponse);
+	        
+	        stage.setScene(new Scene(root));
+	        stage.show();
     }
 	
-	private void loadPage(String fxml, User user) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource(fxml));
+	private void loadLoginPage(User user) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("../gui/user.fxml"));
         Parent root = loader.load();
         
-        if (user !=null) {
-        	UserController userController = loader.getController();
-            userController.setCurrentUser(user);   		
-        }
+    	UserController userController = loader.getController();
+        userController.setCurrentUser(user);   		
+        
         
         Stage stage = (Stage) Main.getFirstStage().getScene().getWindow();
         stage.setScene(new Scene(root));

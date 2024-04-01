@@ -14,6 +14,15 @@ import javafx.scene.layout.VBox;
 public class DoctorController {
 	
 	@FXML
+	private TextField newPatientEmailField;
+	@FXML
+	private Label response;
+	@FXML
+	private Button createPatientButton;
+	@FXML
+	private Button cancelButton;
+	
+	@FXML
 	private TextField patientIdField;
 	@FXML
 	private TextArea patientRecordArea;
@@ -22,6 +31,10 @@ public class DoctorController {
 	private TextField patientHeightField;
 	@FXML
 	private TextField patientWeightField;
+	@FXML
+	private Button searchButton;
+	@FXML
+	private Button cancelButton2;
 	
 	@FXML
     private VBox updateFormContainer;
@@ -32,6 +45,18 @@ public class DoctorController {
     public void setDoctor(Doctor doctor) {
         this.doctor = doctor;
         // Load doctor-specific information into the dashboard
+    }
+    
+    @FXML
+    public void createNewPatient() {
+    	String email = newPatientEmailField.getText();
+    	if (email.isEmpty()) {
+    		response.setText("Please fill out the email field.");	
+    	}
+    	
+    	String serverResponse = doctor.authorizeAccountCreation(email);
+    	
+    	response.setText(serverResponse);
     }
 
     @FXML
@@ -64,9 +89,13 @@ public class DoctorController {
         patientRecordArea.setText(response);
         
     }
-    
     @FXML
     public void handleCancel() {
+    	newPatientEmailField.setText("");
+    }
+    
+    @FXML
+    public void handleCancel2() {
     	patientHeightField.setText("");
     	patientWeightField.setText("");
     }

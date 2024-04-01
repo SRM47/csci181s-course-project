@@ -37,7 +37,7 @@
                   <Font name="Inter Light" size="23.0" />
                </font>
             </Label>
-            <Button fx:id="accountCreationbutton" layoutX="409.0" layoutY="250.0" mnemonicParsing="false" onAction="#loadAccountCreationPage" text="Create One Here" />
+            <Button fx:id="accountCreationbutton" layoutX="409.0" layoutY="250.0" mnemonicParsing="false" text="Create One Here" />
             <Label layoutX="128.0" layoutY="92.0" prefHeight="17.0" prefWidth="222.0" text="version 1.0 | Secure and Encrypted" />
       </children>
     </AnchorPane>
