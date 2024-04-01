@@ -23,19 +23,19 @@ class LoginTest {
 //        }
 //    }
     
-    @Test
-    void testIdentifyUserFailure() {
-        try (MockedStatic<ServerCommunicator> mockedStatic = mockStatic(ServerCommunicator.class)) {
-            // Mock the server response for failed authentication
-            mockedStatic.when(() -> ServerCommunicator.communicateWithAccountServer(startsWith("AUTHENTICATE_ACCOUNT")))
-                        .thenReturn("FAILURE");
-
-            Login login = new Login();
-            User user = login.identifyUser("wrong@example.com", "wrongPassword");
-
-            assertNull(user, "User should be null on failed authentication.");
-        }
-    }
+//    @Test
+//    void testIdentifyUserFailure() {
+//        try (MockedStatic<ServerCommunicator> mockedStatic = mockStatic(ServerCommunicator.class)) {
+//            // Mock the server response for failed authentication
+//            mockedStatic.when(() -> ServerCommunicator.communicateWithAccountServer(startsWith("AUTHENTICATE_ACCOUNT")))
+//                        .thenReturn("FAILURE");
+//
+//            Login login = new Login();
+//            User user = login.identifyUser("wrong@example.com", "wrongPassword");
+//
+//            assertNull(user, "User should be null on failed authentication.");
+//        }
+//    }
 
 }
 

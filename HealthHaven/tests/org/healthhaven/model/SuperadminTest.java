@@ -56,4 +56,62 @@ public class SuperadminTest extends UserTest<Superadmin> {
             assertEquals(expectedResponse, actualResponse, "The response from viewAccountList should match the mocked response.");
         }
     }
+    
+    @Test
+    public void testAuthorizeAccountCreationSuccess() {
+        String email = "newuser@example.com";
+        String userType = "ADMIN";
+        String mockPassword = "RandomPassword123";
+        Superadmin superadmin = createUser();
+
+        try (MockedStatic<ServerCommunicator> mockedServerCommunicator = mockStatic(ServerCommunicator.class);
+             MockedStatic<PasswordGenerator> mockedPasswordGenerator = mockStatic(PasswordGenerator.class);
+             MockedStatic<EmailSender> mockedEmailSender = mockStatic(EmailSender.class)) {
+             
+            mockedPasswordGenerator.when(PasswordGenerator::generate).thenReturn(mockPassword);
+            mockedServerCommunicator.when(() -> ServerCommunicator.communicateWithAccountServer(anyString()))
+                                    .thenReturn("VALID", "SUCCESS");
+            mockedEmailSender.when(() -> EmailSender.sendEmail(eq(email), anyString(), anyString()))
+                             .thenReturn("Email sent successfully");
+
+            String result = superadmin.authorizeAccountCreation(email, userType);
+
+            assertEquals("Email sent successfully", result);
+        }
+    }
+
+    @Test
+    public void testAuthorizeAccountCreationAccountExists() {
+        String email = "existinguser@example.com";
+        Superadmin superadmin = createUser();
+
+        try (MockedStatic<ServerCommunicator> mockedServerCommunicator = mockStatic(ServerCommunicator.class)) {
+            mockedServerCommunicator.when(() -> ServerCommunicator.communicateWithAccountServer(anyString()))
+                                    .thenReturn("EXISTING_ACCOUNT");
+
+            String result = superadmin.authorizeAccountCreation(email, "USER");
+
+            assertTrue(result.contains("EXISTING_ACCOUNT: Cannot create account under this email."));
+        }
+    }
+
+    @Test
+    public void testAuthorizeAccountCreationFailure() {
+        String email = "newuser@example.com";
+        String userType = "USER";
+        String mockPassword = "RandomPassword123";
+        Superadmin superadmin = createUser();
+
+        try (MockedStatic<ServerCommunicator> mockedServerCommunicator = mockStatic(ServerCommunicator.class);
+             MockedStatic<PasswordGenerator> mockedPasswordGenerator = mockStatic(PasswordGenerator.class)) {
+
+            mockedPasswordGenerator.when(PasswordGenerator::generate).thenReturn(mockPassword);
+            mockedServerCommunicator.when(() -> ServerCommunicator.communicateWithAccountServer(anyString()))
+                                    .thenReturn("VALID", "SERVER_ERROR");
+
+            String result = superadmin.authorizeAccountCreation(email, userType);
+
+            assertEquals("SERVER_ERROR", result);
+        }
+    }
 }
