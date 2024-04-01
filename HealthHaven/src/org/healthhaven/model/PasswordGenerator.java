@@ -2,8 +2,17 @@ package org.healthhaven.model;
 
 import java.security.SecureRandom;
 import java.time.LocalDate;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.List;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+
 
 public class PasswordGenerator {
 
@@ -114,5 +123,84 @@ public class PasswordGenerator {
         
         return 1;
     	
+    }
+    
+    public String[] compromiseChecker(String password) throws IOException {
+    	
+    	String sHash = sha1Hash(password);
+    	
+    	String first5 = sHash.substring(0,5);
+    	System.out.println(first5);
+    	String suffix = sHash.substring(5);
+    	
+    	String apiUrl = "https://api.pwnedpasswords.com/range/" + first5;
+    	
+    	// Create a URL object from the API URL string
+        URL url = new URL(apiUrl);
+
+        // Open a connection to the URL
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+        // Set the request method to GET
+        connection.setRequestMethod("GET");
+
+        // Read the response from the API
+//        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        
+        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        StringBuilder response = new StringBuilder();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            response.append(line);
+        }
+        
+        reader.close();
+        
+        connection.disconnect();
+        
+        String[] responseList = response.toString().split("\n");
+        
+        
+        
+        return responseList;
+        
+//        // Print the response
+//        System.out.println(responseList);
+//        System.out.println(response.toString());
+
+	      
+    }
+    	
+ 
+    
+    //ChatGPT
+    public String sha1Hash(String password) {
+    	try {
+            // Create MessageDigest instance for SHA-1
+            MessageDigest md = MessageDigest.getInstance("SHA-1");
+
+            
+            // Add the input string bytes to the digest
+            md.update(password.getBytes());
+
+            // Compute the hash
+            byte[] hashBytes = md.digest();
+
+            // Convert hash bytes to hexadecimal representation
+            StringBuilder sb = new StringBuilder();
+            for (byte b : hashBytes) {
+                sb.append(String.format("%02x", b));
+            }
+            
+            String hash = sb.toString();
+
+            return hash;
+            
+        } catch (NoSuchAlgorithmException e) {
+            System.err.println("SHA-1 algorithm not available.");
+            e.printStackTrace();
+            
+            return "";
+        }
     }
 }

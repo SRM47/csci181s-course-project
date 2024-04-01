@@ -103,9 +103,23 @@ public class AccountCreationController {
 		
 		Result result = nbvcxz.estimate(rpw);
 		PasswordGenerator passgen = new PasswordGenerator();
-		
+		 
 		Integer passCheck = passgen.passwordStrength(rpw, rfn, rln, rdob);
 		
+		String[] responseList = null;
+		
+		try {
+			responseList = passgen.compromiseChecker(rpw);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		for (String item: responseList){
+            System.out.println(item);
+        }
+		
+				
 		// Input validation
 	    if (rat.isEmpty() || remail.isEmpty() || rpw.isEmpty() || rfn.isEmpty() || rln.isEmpty() || raddress.isEmpty() || dobDatePicker.getValue() == null) {
 	        response.setText("Please fill in all fields.");
@@ -129,7 +143,7 @@ public class AccountCreationController {
 	        return; // Exit the method if any field is empty
 	    }
 	    
-//	    
+	    
 		try {
 			String serverResponse = AccountCreationService.createUser(rat, remail, rpw, rfn, rln, raddress, rdob);
 			response.setText(serverResponse);
