@@ -92,6 +92,25 @@ public class Doctor extends User {
         System.out.println("Message: " + message);
         return ServerCommunicator.communicateWithMedicalServer(message);
     }
+	
+	public String authorizeAccountCreation(String email) {
+		String serverResponse = "";
+		serverResponse = doesAccountExist(email);
+		if (!serverResponse.equals("VALID")) {
+			return serverResponse + ": Cannot create account under this email.";
+		}
+		
+		String password = PasswordGenerator.generate();
+		String message = String.format("AUTHORIZE %s %s %s", email, password, "Patient");
+		return(ServerCommunicator.communicateWithAccountServer(message));
+	}
+	
+	private static String doesAccountExist(String email){
+        String message = String.format("EXISTING_ACCOUNT %s", email);
+        // System.out.println("Message: " + message);
+        return  ServerCommunicator.communicateWithAccountServer(message);
+        // System.out.println("Server response: " + serverResponse);
+    }
 
 
     public static void main(String[] args) {

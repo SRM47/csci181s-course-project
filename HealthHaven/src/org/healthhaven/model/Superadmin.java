@@ -103,7 +103,7 @@ public class Superadmin extends User {
 		return(ServerCommunicator.communicateWithAccountServer(message));
 	}
 	
-	protected static String doesAccountExist(String email){
+	private static String doesAccountExist(String email){
         String message = String.format("EXISTING_ACCOUNT %s", email);
         // System.out.println("Message: " + message);
         return  ServerCommunicator.communicateWithAccountServer(message);

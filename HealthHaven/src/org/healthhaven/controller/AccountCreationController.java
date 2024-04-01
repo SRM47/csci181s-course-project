@@ -114,8 +114,18 @@ public class AccountCreationController {
 		String raddress = addressTextfield.getText();
 		LocalDate rdob = dobDatePicker.getValue();
 		
+		// Input validation 
+	    if (rat.isEmpty() || remail.isEmpty() || rpw.isEmpty() || rfn.isEmpty() || rln.isEmpty() || raddress.isEmpty() || dobDatePicker.getValue() == null) {
+	        response.setText("Please fill in all fields.");
+	        return; // Exit the method if any field is empty
+	    }
+		
 		Result result = nbvcxz.estimate(rpw);
+		
+		//TODO: Don't instantiate password generator, treat it as a static class.
 		PasswordGenerator passgen = new PasswordGenerator();
+		
+		//TODO: Put password checking functions in a helper so make codes cleaner.
 		 
 		Integer passCheck = passgen.passwordStrength(rpw, rfn, rln, rdob);
 		
@@ -132,12 +142,6 @@ public class AccountCreationController {
             System.out.println(item);
         }
 		
-				
-		// Input validation
-	    if (rat.isEmpty() || remail.isEmpty() || rpw.isEmpty() || rfn.isEmpty() || rln.isEmpty() || raddress.isEmpty() || dobDatePicker.getValue() == null) {
-	        response.setText("Please fill in all fields.");
-	        return; // Exit the method if any field is empty
-	    }
 
 		//check for PII in password
 		if(passCheck != 1) {
