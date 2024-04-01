@@ -100,7 +100,19 @@ public class Superadmin extends User {
 		
 		String password = PasswordGenerator.generate();
 		String message = String.format("AUTHORIZE %s %s %s", email, password, userType);
-		return(ServerCommunicator.communicateWithAccountServer(message));
+		
+		serverResponse = ServerCommunicator.communicateWithAccountServer(message);
+		if (!serverResponse.equals("SUCCESS")) {
+			return serverResponse;
+		} 
+		return sendEmail(email, password, userType);
+	}
+	
+	private String sendEmail(String email, String password, String userType) {
+		String subject = "Create Account";
+		String body = String.format("This is to confirm that you are authorized to make an account as %s. "
+	            + "Your default password is %s. Please go to the login page and use this email and password.", userType, password);
+		return EmailSender.sendEmail(email, subject, body);
 	}
 	
 	private static String doesAccountExist(String email){

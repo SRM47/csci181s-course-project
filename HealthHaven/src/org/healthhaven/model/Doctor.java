@@ -102,8 +102,21 @@ public class Doctor extends User {
 		
 		String password = PasswordGenerator.generate();
 		String message = String.format("AUTHORIZE %s %s %s", email, password, "Patient");
-		return(ServerCommunicator.communicateWithAccountServer(message));
+		serverResponse = ServerCommunicator.communicateWithAccountServer(message);
+		
+		if (!serverResponse.equals("SUCCESS")) {
+			return serverResponse;
+		}
+		return sendEmail(email, password);
 	}
+	
+	private String sendEmail(String email, String password) {
+		String subject = "Create Account";
+		String body = String.format("This is to confirm that you are authorized to make an account as Patient. "
+	            + "Your default password is %s. Please go to the login page and use this email and password.", password);
+		return EmailSender.sendEmail(email, subject, body);
+	}
+	
 	
 	private static String doesAccountExist(String email){
         String message = String.format("EXISTING_ACCOUNT %s", email);
