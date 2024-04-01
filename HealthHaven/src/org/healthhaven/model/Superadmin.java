@@ -90,6 +90,25 @@ public class Superadmin extends User {
 		return(ServerCommunicator.communicateWithAccountServer(message));
 		
 	}
+	
+	public String authorizeAccountCreation(String email, String userType) {
+		String serverResponse = "";
+		serverResponse = doesAccountExist(email);
+		if (!serverResponse.equals("VALID")) {
+			return serverResponse + ": Cannot create account under this email.";
+		}
+		
+		String password = PasswordGenerator.generate();
+		String message = String.format("AUTHORIZE %s %s %s", email, password, userType);
+		return(ServerCommunicator.communicateWithAccountServer(message));
+	}
+	
+	protected static String doesAccountExist(String email){
+        String message = String.format("EXISTING_ACCOUNT %s", email);
+        // System.out.println("Message: " + message);
+        return  ServerCommunicator.communicateWithAccountServer(message);
+        // System.out.println("Server response: " + serverResponse);
+    }
 
 	public static void main(String[] args) {
 		Superadmin newSuperadmin = new Superadmin("Sae@pomona.edu", "password", "Sae", "Furukawa", "Claremont", LocalDate.of(2002, 10, 05));

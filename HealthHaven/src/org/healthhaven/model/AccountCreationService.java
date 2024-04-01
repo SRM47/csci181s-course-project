@@ -9,9 +9,9 @@ import java.util.Scanner;
 public class AccountCreationService {
 	
 	public static String createUser(String accountType, String email, String password, String firstName, String lastName, String address, LocalDate dob) {
-		if (!doesAccountExist(email).equals("VALID")) {
-			return "Account creation failed!";
-		}
+//		if (!doesAccountExist(email).equals("VALID")) {
+//			return "Account creation failed!";
+//		}
 		
 		User.Account userType = getUserType(accountType);
 		
@@ -48,14 +48,15 @@ public class AccountCreationService {
         return serverResponse;
     }
 
-    protected static String doesAccountExist(String email){
-        String message = String.format("EXISTING_ACCOUNT %s", email);
-        // System.out.println("Message: " + message);
-        String serverResponse = ServerCommunicator.communicateWithAccountServer(message);
-        // System.out.println("Server response: " + serverResponse);
-
-        return serverResponse;
-    }
+//    protected static String doesAccountExist(String email){
+//        String message = String.format("EXISTING_ACCOUNT %s", email);
+//        // System.out.println("Message: " + message);
+//        String serverResponse = ServerCommunicator.communicateWithAccountServer(message);
+//        // System.out.println("Server response: " + serverResponse);
+//
+//        return serverResponse;
+//    }
+    
 
     protected static String insertNewAccountIntoDB(User.Account userType, long userId, String email, String password, String first_name, String last_name, String address, LocalDate dob){
         Instant timestamp = Instant.now();

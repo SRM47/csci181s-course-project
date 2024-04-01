@@ -20,9 +20,10 @@ public class PasswordGenerator {
      * @param length The desired length of the password.
      * @return A randomly generated password.
      */
-    public static String generate(int length) {
+    public static String generate() {
+    	int length = 8;
         if (length < 4) {
-            throw new IllegalArgumentException("Password length must be at least 4 characters.");
+           throw new IllegalArgumentException("Password length must be at least 4 characters.");
         }
 
         StringBuilder password = new StringBuilder(length);
@@ -60,7 +61,7 @@ public class PasswordGenerator {
     }
     
     
-    public int passwordStrength(String password, String fn, String ln, LocalDate dob) {
+    public static int passwordStrength(String password, String fn, String ln, LocalDate dob) {
     	 
 //    	// At least 10 characters
 //        if (password.length() < 10) {

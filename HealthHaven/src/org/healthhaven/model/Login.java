@@ -22,10 +22,18 @@ public class Login {
 		Instant timestamp = Instant.now(); // This captures the current moment in UTC.
 		String message = String.format("AUTHENTICATE_ACCOUNT %s %s %s", email, password, timestamp.toString());
 		// System.out.println("Message: " + message);
-		String serverResponse = ServerCommunicator.communicateWithAccountServer(message);
+		return(ServerCommunicator.communicateWithAccountServer(message));
 		// System.out.println("Server response: " + serverResponse);
 
-		return serverResponse;
+	}
+	
+	private static String authenticateNewUser(String email, String password) {
+		Instant timestamp = Instant.now(); // This captures the current moment in UTC.
+		String message = String.format("AUTHENTICATE_NEW %s %s %s", email, password, timestamp.toString());
+		// System.out.println("Message: " + message);
+		return( ServerCommunicator.communicateWithAccountServer(message));
+		// System.out.println("Server response: " + serverResponse);
+
 	}
 
 	/**
@@ -53,7 +61,11 @@ public class Login {
 		};
 	}
 	
-	public User identifyUser(String email, String password) {
+	public String identifyNewUser(String email, String password) {
+		return(authenticateNewUser(email, password));
+	}
+	
+	public User identifyExistingUser(String email, String password) {
 		String serverResponse = authenticateExistingUser(email, password);
 				
 		if (serverResponse.equals("FAILURE")) {

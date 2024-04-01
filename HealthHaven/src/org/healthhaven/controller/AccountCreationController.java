@@ -33,17 +33,21 @@ public class AccountCreationController {
 	@FXML
 	private Button loginPageButton;
 	@FXML
-	private MenuButton accountTypeMenu;
+	private MenuButton userTypeMenu;
 	@FXML
-	private MenuItem patientMenuItem;
-	@FXML
-	private MenuItem doctorMenuItem;
-	@FXML
-	private MenuItem dataProtectionOfficerMenuItem;
-	@FXML
-	private MenuItem dataAnalystMenuItem;
-	@FXML
-	private TextField emailTextfield;
+	private Label emailDisplay;
+//	@FXML
+//	private MenuButton accountTypeMenu;
+//	@FXML
+//	private MenuItem patientMenuItem;
+//	@FXML
+//	private MenuItem doctorMenuItem;
+//	@FXML
+//	private MenuItem dataProtectionOfficerMenuItem;
+//	@FXML
+//	private MenuItem dataAnalystMenuItem;
+//	@FXML
+//	private TextField emailTextfield;
 	@FXML
 	private PasswordField passwordTextfield;
 	@FXML
@@ -56,27 +60,36 @@ public class AccountCreationController {
 	private DatePicker dobDatePicker;
 	@FXML
 	private ProgressBar passwordStrengthBar;
-	
 	@FXML
 	private Label response;
 	
+	private String userType;
+	private String userEmail;
+	
 	private Nbvcxz nbvcxz = new Nbvcxz();
 	
-	public void updateAccountTypeDoctor() {
-		accountTypeMenu.setText(doctorMenuItem.getText());
+	public void setAccountCreation(String email, String userType) {
+		this.userEmail = email;
+		this.userType = userType;
+		
+		emailDisplay.setText(email);
+		userTypeMenu.setText(userType);
 	}
-	
-	public void updateAccountTypePatient() {
-		accountTypeMenu.setText(patientMenuItem.getText());
-	}
-	
-	public void updateAccountTypeDataProtectionOfficer() {
-		accountTypeMenu.setText(dataProtectionOfficerMenuItem.getText());
-	}
-	
-	public void updateAccountTypeDataAnalyst() {
-		accountTypeMenu.setText(dataAnalystMenuItem.getText());
-	}
+//	public void updateAccountTypeDoctor() {
+//		accountTypeMenu.setText(doctorMenuItem.getText());
+//	}
+//	
+//	public void updateAccountTypePatient() {
+//		accountTypeMenu.setText(patientMenuItem.getText());
+//	}
+//	
+//	public void updateAccountTypeDataProtectionOfficer() {
+//		accountTypeMenu.setText(dataProtectionOfficerMenuItem.getText());
+//	}
+//	
+//	public void updateAccountTypeDataAnalyst() {
+//		accountTypeMenu.setText(dataAnalystMenuItem.getText());
+//	}
 	
 	
 	public void realTimePWSec() {
@@ -93,8 +106,8 @@ public class AccountCreationController {
 
 	
 	public void handleSubmit() {
-		String rat = accountTypeMenu.getText();
-		String remail = emailTextfield.getText();
+		String rat = userType;
+		String remail = userEmail;
 		String rpw = passwordTextfield.getText();
 		String rfn = legalFirstNameTextfield.getText();
 		String rln = legalLastNameTextfield.getText();
@@ -129,14 +142,9 @@ public class AccountCreationController {
 	        return; // Exit the method if any field is empty
 	    }
 	    
-//	    
-		try {
-			String serverResponse = AccountCreationService.createUser(rat, remail, rpw, rfn, rln, raddress, rdob);
-			response.setText(serverResponse);
-		
-		} catch (DateTimeParseException e) {
-			response.setText("Invalid date format. Please enter the date in yyyy-mm-dd format.");
-		}	
+
+		String serverResponse = AccountCreationService.createUser(rat, remail, rpw, rfn, rln, raddress, rdob);
+		response.setText(serverResponse);
 		
 	}
 	

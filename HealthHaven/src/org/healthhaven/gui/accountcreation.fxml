@@ -19,6 +19,12 @@
           </font>
         </Label>
             <PasswordField fx:id="passwordTextfield" layoutX="38.0" layoutY="202.0" onKeyTyped="#realTimePWSec" promptText="Password" />
+            <MenuButton fx:id="userTypeMenu" layoutX="51.0" layoutY="165.0" minWidth="100.0" mnemonicParsing="false">
+              <items>
+                <MenuItem mnemonicParsing="false" text="Action 1" />
+                <MenuItem mnemonicParsing="false" text="Action 2" />
+              </items>
+            </MenuButton>
             <TextField fx:id="legalFirstNameTextfield" layoutX="38.0" layoutY="239.0" promptText="Legal First Name" />
             <Button fx:id="submitButton" layoutX="39.0" layoutY="332.0" mnemonicParsing="false" onAction="#handleSubmit" text="Submit" />
             <Label alignment="CENTER" layoutX="36.0" layoutY="105.0" style="&#10;" text="Create Account" textAlignment="CENTER" wrapText="false">
@@ -36,15 +42,7 @@
             <Label layoutX="26.0" layoutY="62.0" prefHeight="17.0" prefWidth="222.0" text="version 1.0 | Secure and Encrypted" />
             <TextField fx:id="legalLastNameTextfield" layoutX="203.0" layoutY="239.0" promptText="Legal Last  Name" />
             <TextField fx:id="addressTextfield" layoutX="38.0" layoutY="269.0" prefHeight="27.0" prefWidth="326.0" promptText="Permanent Address" />
-            <TextField fx:id="emailTextfield" layoutX="38.0" layoutY="172.0" promptText="Email Address" />
-            <MenuButton fx:id="accountTypeMenu" layoutX="38.0" layoutY="141.0" mnemonicParsing="false" text="Select Account Type">
-              <items>
-                <MenuItem fx:id="doctorMenuItem" mnemonicParsing="false" onAction="#updateAccountTypeDoctor" text="Doctor" />
-                <MenuItem fx:id="patientMenuItem" mnemonicParsing="false" onAction="#updateAccountTypePatient" text="Patient" />
-                  <MenuItem fx:id="dataProtectionOfficerMenuItem" mnemonicParsing="false" onAction="#updateAccountTypeDataProtectionOfficer" text="DPO" />
-                  <MenuItem fx:id="dataAnalystMenuItem" mnemonicParsing="false" onAction="#updateAccountTypeDataAnalyst" text="Data Analyst" />
-              </items>
-            </MenuButton>
+            <Label fx:id="emailDisplay" layoutX="211.0" layoutY="165.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="150.0" wrapText="true" />
             <DatePicker fx:id="dobDatePicker" layoutX="38.0" layoutY="299.0" promptText="Date of Birth" />
             <Label fx:id="response" layoutX="137.0" layoutY="337.0" textFill="#e10000" />
             <ProgressBar fx:id="passwordStrengthBar" layoutX="205.0" layoutY="206.0" prefHeight="20.0" prefWidth="161.0" progress="0.0" />
