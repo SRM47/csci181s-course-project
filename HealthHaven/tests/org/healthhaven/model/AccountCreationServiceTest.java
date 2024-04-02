@@ -6,6 +6,7 @@ import static org.mockito.Mockito.mockStatic;
 import org.mockito.MockedStatic;
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.healthhaven.server.ServerCommunicator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -33,8 +34,8 @@ class AccountCreationServiceTest {
     void testCreateUserSuccess() {
         try (MockedStatic<ServerCommunicator> mockedStatic = mockStatic(ServerCommunicator.class)) {
             // Mocking the server responses
-            mockedStatic.when(() -> ServerCommunicator.communicateWithAccountServer("EXISTING_ACCOUNT user@example.com")).thenReturn("VALID");
-            mockedStatic.when(() -> ServerCommunicator.communicateWithAccountServer(startsWith("CREATE_ACCOUNT"))).thenReturn("SUCCESS");
+            mockedStatic.when(() -> ServerCommunicator.communicateWithServer("EXISTING_ACCOUNT user@example.com")).thenReturn("VALID");
+            mockedStatic.when(() -> ServerCommunicator.communicateWithServer(startsWith("CREATE_ACCOUNT"))).thenReturn("SUCCESS");
 
             // Attempt to create a new user instance
             String response = AccountCreationService.createUser("Patient", "user@example.com", "password123", "John", "Doe", "123 Main St", LocalDate.of(1990, 1, 1));
@@ -57,6 +58,7 @@ class AccountCreationServiceTest {
 //        }
 //    }
     
+
 //    @Test
 //    void testCreateUserFailureDueToExistingAccount() {
 //        try (MockedStatic<ServerCommunicator> mockedStatic = mockStatic(ServerCommunicator.class)) {

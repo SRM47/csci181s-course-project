@@ -6,6 +6,7 @@ import java.util.Scanner;
 
 import org.healthhaven.model.User.Account;
 import org.json.JSONObject;
+import org.healthhaven.server.ServerCommunicator;
 
 /**
  * @author sameermalik
@@ -61,7 +62,7 @@ public class Superadmin extends User {
 	public String viewAccountList(){
 		String message = "VIEW ACCOUNT";
 		System.out.println("Message: " + message);
-		return(ServerCommunicator.communicateWithAccountServer(message));
+		return(ServerCommunicator.communicateWithServer(message));
 		
 	}
 	
@@ -73,7 +74,6 @@ public class Superadmin extends User {
 	    json.put("userType", userType);
 	    json.put("dob", dob.toString());
 	    
-	    return ServerCommunicator.communicateWithAccountServer(json.toString());
+	    return ServerCommunicator.communicateWithServer(json.toString());
 	}
-
 }

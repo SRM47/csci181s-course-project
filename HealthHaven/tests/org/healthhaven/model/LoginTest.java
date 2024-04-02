@@ -1,6 +1,9 @@
 package org.healthhaven.model;
 import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.*;
+
+import org.healthhaven.server.ServerCommunicator;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.mockito.MockedStatic;

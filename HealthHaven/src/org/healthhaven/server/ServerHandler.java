@@ -1,8 +1,9 @@
-
-
 /**
  * 
  */
+package org.healthhaven.server;
+
+
 
 /**
  * @author sameermalik
@@ -16,9 +17,9 @@ public class ServerHandler {
 	public static void main(String[] args) {
 		try {
 			// Instantiate the server.
-			Server servert = new Server(8889, 30, 100);
+			Server server = new Server(8886, 30, 100);
 			// Start the server.
-			servert.start();
+			server.start();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

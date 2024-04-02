@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.Random;
 import java.util.Scanner;
 
+import org.healthhaven.server.ServerCommunicator;
 import java.time.Instant;
 
 
@@ -86,9 +87,8 @@ public class Doctor extends User {
         json.put("weight", weight);
         json.put("timestamp", timestamp.toString());
 
-
         /// Send the JSON string to the server
-        return ServerCommunicator.communicateWithMedicalServer(json.toString());
+        return ServerCommunicator.communicateWithServer(json.toString());
     }
 
     /**
@@ -107,9 +107,9 @@ public class Doctor extends User {
 	   
 	    
 	    // Send the JSON string to the server
-	    return ServerCommunicator.communicateWithMedicalServer(json.toString());
-
-    }
+	    return ServerCommunicator.communicateWithServer(json.toString());
+	
+	}
 	
 	public String authorizeAccountCreation(String email, LocalDate dob) {
 		//Construct API call
@@ -119,9 +119,8 @@ public class Doctor extends User {
 	    json.put("userType", "Patient");
 	    json.put("dob", dob.toString());
 	    
-	    return ServerCommunicator.communicateWithAccountServer(json.toString());
+	    return ServerCommunicator.communicateWithServer(json.toString());
 	}
-	
 
 
 }

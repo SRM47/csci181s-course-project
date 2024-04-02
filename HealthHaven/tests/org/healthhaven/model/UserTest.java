@@ -6,6 +6,7 @@ import static org.mockito.Mockito.mockStatic;
 import java.time.LocalDate;
 
 import org.healthhaven.model.User.Account;
+import org.healthhaven.server.ServerCommunicator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
@@ -95,7 +96,7 @@ public abstract class UserTest<T extends User> {
             // Mock the static method call
             String expectedServerResponse = "SUCCESS";
             String expectedUpdateMessage = String.format("UPDATE_ACCOUNT %d %s %s %s", userID, newEmail, newPassword, newAddress);
-            mockedStatic.when(() -> ServerCommunicator.communicateWithAccountServer(expectedUpdateMessage))
+            mockedStatic.when(() -> ServerCommunicator.communicateWithServer(expectedUpdateMessage))
                         .thenReturn(expectedServerResponse);
 
             // Execute the method under test

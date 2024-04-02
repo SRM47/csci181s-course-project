@@ -11,6 +11,7 @@ import java.util.Scanner;
 
 import org.healthhaven.model.User.Account;
 import org.json.JSONObject;
+import org.healthhaven.server.ServerCommunicator;
 
 /**
  * @author sameermalik
@@ -77,8 +78,7 @@ public class Patient extends User {
 	   
 	    
 	    // Send the JSON string to the server
-	    return ServerCommunicator.communicateWithMedicalServer(json.toString());
-
+	    return ServerCommunicator.communicateWithServer(json.toString());
 
 	}
 	

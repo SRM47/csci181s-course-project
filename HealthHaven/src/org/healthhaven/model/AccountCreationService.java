@@ -8,6 +8,8 @@ import java.util.Scanner;
 
 import org.json.JSONObject;
 
+import org.healthhaven.server.ServerCommunicator;
+
 public class AccountCreationService {
 	
 	public static String createUser(String accountType, String email, String password, String firstName, String lastName, String address, LocalDate dob) {
@@ -50,7 +52,7 @@ public class AccountCreationService {
     protected static String insertNewAccountIntoDB(User.Account userType, long userId, String email, String password, String first_name, String last_name, String address, LocalDate dob){
         Instant timestamp = Instant.now();
         String account = userType.getAccountName();
-        
+ 
      // Create a JSONObject and populate it with account data
         JSONObject json = new JSONObject();
         json.put("action", "CREATE_ACCOUNT");
@@ -64,7 +66,8 @@ public class AccountCreationService {
         json.put("timestamp", timestamp.toString()); // Converting Instant to String
         json.put("accountType", userType.getAccountName());
        
-        return ServerCommunicator.communicateWithAccountServer(json.toString());
+        return ServerCommunicator.communicateWithServer(json.toString());
+
     }
     
     

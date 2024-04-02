@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import java.util.Scanner;
 
 import org.json.JSONObject;
+import org.healthhaven.server.ServerCommunicator;
+
 
 public class User {
 
@@ -103,7 +105,7 @@ public class User {
 	/**
 	 * @return the userID
 	 */
-	protected long getUserID() {
+	public long getUserID() {
 		return userID;
 	}
 	/**
@@ -194,13 +196,12 @@ public class User {
 
 		// First set the changes to the object instance.
 		setAddress(newAddress);
-
 		JSONObject json = new JSONObject();
 	    
 	    // Populate the JSON object with key-value pairs
 	    json.put("action", "UPDATE_ACCOUNT");
 	    json.put("address", newAddress);
-		return ServerCommunicator.communicateWithAccountServer(json.toString());
+		return ServerCommunicator.communicateWithServer(json.toString());
 	}
 
 	@Override

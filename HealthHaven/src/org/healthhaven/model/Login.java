@@ -8,6 +8,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
+import org.healthhaven.server.ServerCommunicator;
+
 /**
  * @author sameermalik
  *
@@ -29,19 +31,9 @@ public class Login {
 	    json.put("timestamp", timestamp.toString());
 	    
 		// System.out.println("Message: " + message);
-		return(ServerCommunicator.communicateWithAccountServer(json.toString()));
-		// System.out.println("Server response: " + serverResponse);
-
+		return(ServerCommunicator.communicateWithServer(json.toString()));
 	}
 	
-//	private static String authenticateNewUser(String email, String password) {
-//		Instant timestamp = Instant.now(); // This captures the current moment in UTC.
-//		String message = String.format("AUTHENTICATE_NEW %s %s %s", email, password, timestamp.toString());
-//		// System.out.println("Message: " + message);
-//		return( ServerCommunicator.communicateWithAccountServer(message));
-//		// System.out.println("Server response: " + serverResponse);
-//
-//	}
 
 	/**
 	 * Create a new user instance.
