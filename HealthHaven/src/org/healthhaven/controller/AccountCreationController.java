@@ -115,7 +115,7 @@ public class AccountCreationController {
 		LocalDate rdob = dobDatePicker.getValue();
 		
 		// Input validation 
-	    if (rat.isEmpty() || remail.isEmpty() || rpw.isEmpty() || rfn.isEmpty() || rln.isEmpty() || raddress.isEmpty() || dobDatePicker.getValue() == null) {
+	    if (rpw.isEmpty() || rfn.isEmpty() || rln.isEmpty() || raddress.isEmpty() || dobDatePicker.getValue() == null) {
 	        response.setText("Please fill in all fields.");
 	        return; // Exit the method if any field is empty
 	    }
@@ -123,25 +123,17 @@ public class AccountCreationController {
 		Result result = nbvcxz.estimate(rpw);
 		
 		//TODO: Don't instantiate password generator, treat it as a static class.
-		PasswordGenerator passgen = new PasswordGenerator();
+		//PasswordGenerator passgen = new PasswordGenerator();
 		
 		//TODO: Put password checking functions in a helper so make codes cleaner.
 		 
-		Integer passCheck = passgen.passwordStrength(rpw, rfn, rln, rdob);
-		
-		String[] responseList = null;
-		
-		try {
-			responseList = passgen.compromiseChecker(rpw);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		for (String item: responseList){
-            System.out.println(item);
-        }
-		
+		Integer passCheck = PasswordGenerator.passwordStrength(rpw, rfn, rln, rdob);
+	
+	    
+//	    if(!PasswordGenerator.isValidEmail(remail)) {
+//	    	response.setText("Please enter a valid email.");
+//	    	return;
+//	    }
 
 		//check for PII in password
 		if(passCheck != 1) {
@@ -159,12 +151,28 @@ public class AccountCreationController {
 	        response.setText("Please strengthen your password: " + result.getFeedback().getWarning());
 	        return; // Exit the method if any field is empty
 	    }
-
-		String serverResponse = AccountCreationService.createUser(rat, remail, rpw, rfn, rln, raddress, rdob);
-		response.setText(serverResponse);
-	
-	}	
-
+	    
+	    try {
+			if (PasswordGenerator.compromiseChecker(rpw)==1) {
+				response.setText("Password has been compromised. Please enter a new password");
+				return;
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    	
+	    
+	    
+		try {
+			String serverResponse = AccountCreationService.createUser(rat, remail, rpw, rfn, rln, raddress, rdob);
+			response.setText(serverResponse);
+		
+		} catch (DateTimeParseException e) {
+			response.setText("Invalid date format. Please enter the date in yyyy-mm-dd format.");
+		}	
+		
+	}
 	
 	public void loginPage(ActionEvent actionEvent) throws IOException {
         loadPage("../gui/login.fxml");
