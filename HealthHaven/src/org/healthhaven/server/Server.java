@@ -151,10 +151,21 @@ public class Server {
 			JSONObject requestData = new JSONObject(msg);
 			switch (requestData.getString("request")) {
 			case "UPDATE_ACCOUNT":
+				String newFirstName = requestData.getString("first_name");
+				String newLastName = requestData.getString("last_name");
+				String newAddress = requestData.getString("address");
+				String newEmail = requestData.getString("email");
+				String newDob = requestData.getString("dob"); //i feel like we shouldnt be changing dob but eh
+				String newAccountType = requestData.getString("accountType");
+				
+//				updateUserTable
+				
+			case "UPDATE_PASSWORD":
+				
 			case "ALLOW_ACCOUNT_CREATION":
 				String email = requestData.getString("email");
 				String dob = requestData.getString("dob");
-				String userType = requestData.getString("userType");
+				String userType = requestData.getString("userType"); //TODO this is same as accountType but accounttype is better
 				if (AccountDAO.doesAccountExist(this.conn, email)) {
 					response = "FAILURE";
 					break;
@@ -176,7 +187,7 @@ public class Server {
 			case "LOGIN":
 				response = AccountDAO.authenticateUser(this.conn, requestData.getString("email"),
 						requestData.getString("password"));
-				break;
+				break; //we should be talking twice bc otp
 			case "REQUEST_PATIENT_DATA_SUMMARY":
 			case "VIEW_RECORD":
 			case "CREATE_RECORD":

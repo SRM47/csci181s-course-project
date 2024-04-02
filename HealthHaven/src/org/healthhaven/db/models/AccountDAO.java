@@ -234,7 +234,7 @@ public class AccountDAO {
 				}
 				boolean resetValue = data_rs.getBoolean("reset");
 				if (!resetValue) {
-					return "MUST_CREATE_ACCOUNT";
+					return "MUST_CREATE_ACCOUNT"; // send email with otp
 				} else {
 					return "AUTHENTICATED";
 				}
