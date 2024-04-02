@@ -28,8 +28,7 @@ public class PasswordGenerator {
      * @param length The desired length of the password.
      * @return A randomly generated password.
      */
-    public static String generate() {
-    	int length = 8; //just a placeholder
+    public static String generate(int length) {
         if (length < 4) {
             throw new IllegalArgumentException("Password length must be at least 4 characters.");
         }

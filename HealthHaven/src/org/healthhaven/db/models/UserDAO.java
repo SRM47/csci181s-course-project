@@ -94,7 +94,7 @@ public class UserDAO {
 			User user = null;
 			if (data_rs.next()) {
 				Date dob = data_rs.getDate("dob");
-				user = new User(Long.parseLong(data_rs.getString("userid")), "email", "password",
+				user = new User(Long.parseLong(data_rs.getString("userid")), "email",
 						data_rs.getString("legalfirstname"), data_rs.getString("legallastname"),
 						data_rs.getString("address"), LocalDate.of(dob.getYear(), dob.getMonth(), dob.getDay()));
 			}
@@ -106,28 +106,5 @@ public class UserDAO {
 
 	}
 	
-	public static String authenticateUser(Connection conn, String email, String candidatePassword) {
-		// Returns the userId if user is authenticated correctly
-		String sql = "SELECT * FROM healthhaven.authentication WHERE email = '" + email + "'";
-
-		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-			ResultSet data_rs = stmt.executeQuery();
-			User user = null;
-			if (data_rs.next()) {
-				String truePassword = data_rs.getString("password");
-				// TODO: Hash this password.
-				String hashedCandidatePassword = candidatePassword;
-				if (hashedCandidatePassword.equals(truePassword)) {
-					return data_rs.getString("id");
-				}
-			} else {
-				return "EMAIL DOES NOT EXIST";
-			}
-
-		} catch (SQLException e) {
-			System.err.println("Error creating user: " + e.getMessage());
-		}
-		return null;
-	}
 
 }

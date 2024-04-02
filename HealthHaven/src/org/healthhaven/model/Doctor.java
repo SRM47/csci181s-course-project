@@ -116,7 +116,7 @@ public class Doctor extends User {
 		JSONObject json = new JSONObject();
 	    json.put("request", "ALLOW_ACCOUNT_CREATION");
 	    json.put("email", email);
-	    json.put("userType", "Patient");
+	    json.put("userType", User.Account.PATIENT.getAccountName());
 	    json.put("dob", dob.toString());
 	    
 	    return ServerCommunicator.communicateWithServer(json.toString());

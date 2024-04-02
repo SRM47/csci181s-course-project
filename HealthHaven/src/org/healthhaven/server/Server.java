@@ -28,9 +28,19 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.sql.Connection;
+
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+
+import org.healthhaven.db.DatabaseConnectionUtil;
+import org.healthhaven.db.models.AccountDAO;
+import org.healthhaven.model.EmailSender;
+import org.healthhaven.model.PasswordGenerator;
+import org.healthhaven.model.UserIdGenerator;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * 
@@ -49,6 +59,7 @@ public class Server {
 	private static final String protocol = "TLSv1.3";
 	private static final String[] cipherSuites = new String[] { "TLS_AES_128_GCM_SHA256" };
 	private static final String path_to_keystore = "src/org/healthhaven/server/cert.jks";
+	private Connection conn;
 
 	private final ReentrantLock databaseLock = new ReentrantLock();
 
@@ -59,6 +70,7 @@ public class Server {
 	}
 
 	public void start() throws Exception {
+		this.conn = DatabaseConnectionUtil.connect();
 		// Create the thread pool. With a CachedThreadPoo, the number of threads will
 		// grow as needed, and unused threads will be terminated.
 		ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
@@ -68,31 +80,31 @@ public class Server {
 		System.out.println("Trying to connect to port " + PORT);
 
 		// Keystore Configuration
-        String keystorePath = "src/org/healthhaven/server/cert.jks";
-        String keystorePassword = "healthhaven"; 
+		String keystorePath = "src/org/healthhaven/server/cert.jks";
+		String keystorePassword = "healthhaven";
 
-        // Certificate Trust Configuration (if using a self-signed certificate)
-        String truststorePath = "src/org/healthhaven/server/cert.jks"; // Contains the self-signed cert or CA
-        String truststorePassword = "healthhaven"; 
+		// Certificate Trust Configuration (if using a self-signed certificate)
+		String truststorePath = "src/org/healthhaven/server/cert.jks"; // Contains the self-signed cert or CA
+		String truststorePassword = "healthhaven";
 
-        // Load Keystore (contains server's certificate and private key)
-        KeyStore keyStore = KeyStore.getInstance("JKS"); 
-        keyStore.load(new FileInputStream(keystorePath), keystorePassword.toCharArray());
+		// Load Keystore (contains server's certificate and private key)
+		KeyStore keyStore = KeyStore.getInstance("JKS");
+		keyStore.load(new FileInputStream(keystorePath), keystorePassword.toCharArray());
 
-        // Load Truststore (contains trusted certificates)
-        KeyStore trustStore = KeyStore.getInstance("JKS");
-        trustStore.load(new FileInputStream(truststorePath), truststorePassword.toCharArray());
+		// Load Truststore (contains trusted certificates)
+		KeyStore trustStore = KeyStore.getInstance("JKS");
+		trustStore.load(new FileInputStream(truststorePath), truststorePassword.toCharArray());
 
-        // Initialize KeyManager and TrustManager
-        KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-        kmf.init(keyStore, keystorePassword.toCharArray());
+		// Initialize KeyManager and TrustManager
+		KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+		kmf.init(keyStore, keystorePassword.toCharArray());
 
-        TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-        tmf.init(trustStore);
+		TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+		tmf.init(trustStore);
 
-        // Create SSLContext
-        SSLContext sslContext = SSLContext.getInstance(protocol);
-        sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
+		// Create SSLContext
+		SSLContext sslContext = SSLContext.getInstance(protocol);
+		sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
 
 		// Create Server Socket Factory
 		SSLServerSocketFactory factory = sslContext.getServerSocketFactory();
@@ -132,55 +144,44 @@ public class Server {
 		try {
 			// Initialize input data stream.
 			BufferedReader reader = new BufferedReader(new InputStreamReader(client.getInputStream()));
-			// Read the incoming message.
+			// Read the incoming message json
 			String msg = reader.readLine();
-			System.out.println(msg);
+			String response = "";
 
-			// TODO Need to add validation on msg to know it's not a bogus message.
-			String[] commands = msg.split(" ");
-			for (String c : commands) {
-				System.out.println(c);
+			JSONObject requestData = new JSONObject(msg);
+			switch (requestData.getString("request")) {
+			case "UPDATE_ACCOUNT":
+			case "ALLOW_ACCOUNT_CREATION":
+				String email = requestData.getString("email");
+				String dob = requestData.getString("dob");
+				String userType = requestData.getString("userType");
+				if (AccountDAO.doesAccountExist(this.conn, email)) {
+					response = "FAILURE";
+					break;
+				}
+				String generatedPassword = PasswordGenerator.generate(16);
+				UserIdGenerator g = new UserIdGenerator(16);
+				String generatedUserId = g.generate();
+				AccountDAO.createTemporaryUser(this.conn, generatedUserId, email, generatedPassword, dob, userType);
+				EmailSender.sendDefaultPasswordEmail(email, generatedPassword, userType);
+				response = "SUCCESS";
+				break;
+			case "CREATE_ACCOUNT":
+				boolean success = AccountDAO.updateTemporaryUserAfterFirstLogin(this.conn,
+						requestData.getString("first_name"), requestData.getString("last_name"),
+						requestData.getString("dob"), requestData.getString("address"), requestData.getString("email"),
+						requestData.getString("password"), requestData.getString("accountType"));
+				response = success ? "SUCCESS" : "FAILURE";
+				break;
+			case "LOGIN":
+				response = AccountDAO.authenticateUser(this.conn, requestData.getString("email"),
+						requestData.getString("password"));
+				break;
+			case "REQUEST_PATIENT_DATA_SUMMARY":
+			case "VIEW_RECORD":
+			case "CREATE_RECORD":
+			default:
 			}
-
-			// Initialize response variable.
-			String response = "NONE";
-//			switch (commands[0]) {
-//
-//			case "UPDATE_RECORD":
-//				// Update a Patient's Medical Record (height, weight data)
-//				response = MedicalRecordDatabaseHandler.updatePatientMedicalRecords(commands[1], commands[2],
-//						commands[3], commands[4]);
-//				break;
-//			case "VIEW":
-//				// View a User's Medical Record (height, weight data)
-//				response = MedicalRecordDatabaseHandler.viewPatientMedicalRecord(commands[1]);
-//				break;
-//			case "REQUEST_PATIENT_DATA_SUMMARY":
-//				// Data Analyst Requesting Data from CSV
-//				// response = MedicalRecordDatabaseHandler.getAllRecords();
-//				response = MedicalRecordDatabaseHandler.getMeans();
-//				break;
-//			case "CREATE_ACCOUNT":
-//				// Create new account by creating entry in database
-//				response = AccountInformationDatabaseHandler.createAccount(commands[1], commands[2], commands[3],
-//						commands[4], commands[5], commands[6], commands[7], commands[8], commands[9]);
-//				break;
-//			case "AUTHENTICATE_ACCOUNT":
-//				// Check if account associated with an email matches password
-//				response = AccountInformationDatabaseHandler.authenticateAccount(commands[1], commands[2], commands[3]);
-//				break;
-//			case "EXISTING_ACCOUNT":
-//				// Check if account associated with an email exists
-//				response = AccountInformationDatabaseHandler.accountExistsByEmail(commands[1]) ? "VALID" : "INVALID";
-//				break;
-//			case "UPDATE_ACCOUNT":
-//				// User updating existing personal data and update it in database
-//				response = AccountInformationDatabaseHandler.updateAccountInformation(commands[1], commands[2],
-//						commands[3], commands[4]);
-//				break;
-//
-//			}
-			System.out.println(response);
 
 			// Respond to client with appropriate response.
 			// Initialize output data stream.
@@ -193,6 +194,8 @@ public class Server {
 
 		} catch (IOException e) {
 			// Occurs when client disconnects.
+			e.printStackTrace();
+		} catch (JSONException | IllegalArgumentException e) {
 			e.printStackTrace();
 		}
 
