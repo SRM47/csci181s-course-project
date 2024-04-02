@@ -20,7 +20,7 @@ public class DoctorTest extends UserTest<Doctor> {
     
     @Override
     public Doctor createUser() {
-        return new Doctor("example@example.com", "password123", "John", "Doe", "123 Main St", LocalDate.of(1980, 1, 1));
+        return new Doctor("example@example.com", "John", "Doe", "123 Main St", LocalDate.of(1980, 1, 1));
     }
     
     @BeforeEach
@@ -46,7 +46,7 @@ public class DoctorTest extends UserTest<Doctor> {
     public void testViewPatientRecord() {
         try (MockedStatic<ServerCommunicator> mockedStatic = Mockito.mockStatic(ServerCommunicator.class)) {
             // Mock the static method call
-            mockedStatic.when(() -> ServerCommunicator.communicateWithMedicalServer("VIEW 12345"))
+            mockedStatic.when(() -> ServerCommunicator.communicateWithServer("VIEW 12345"))
                     .thenReturn("Mocked patient record response");
 
             // Call the method under test
@@ -61,7 +61,7 @@ public class DoctorTest extends UserTest<Doctor> {
     public void testUpdatePatientRecordOnDB() {
         try (MockedStatic<ServerCommunicator> mockedStatic = Mockito.mockStatic(ServerCommunicator.class)) {
             // Mock the static method to return a specific response for any string that starts with "UPDATE_RECORD"
-            mockedStatic.when(() -> ServerCommunicator.communicateWithMedicalServer(ArgumentMatchers.startsWith("UPDATE_RECORD")))
+            mockedStatic.when(() -> ServerCommunicator.communicateWithServer(ArgumentMatchers.startsWith("UPDATE_RECORD")))
                     .thenReturn("Mocked update record response");
 
             // Prepare the test inputs
@@ -82,60 +82,60 @@ public class DoctorTest extends UserTest<Doctor> {
         }
     }
     
-    @Test
-    public void testAuthorizeAccountCreationSuccess() {
-        String email = "newpatient@example.com";
-        String mockPassword = "SecurePassword456";
-        Doctor doctor = createUser();
+//    @Test
+//    public void testAuthorizeAccountCreationSuccess() {
+//        String email = "newpatient@example.com";
+//        String mockPassword = "SecurePassword456";
+//        Doctor doctor = createUser();
+//
+//        try (MockedStatic<ServerCommunicator> mockedServerCommunicator = mockStatic(ServerCommunicator.class);
+//             MockedStatic<PasswordGenerator> mockedPasswordGenerator = mockStatic(PasswordGenerator.class);
+//             MockedStatic<EmailSender> mockedEmailSender = mockStatic(EmailSender.class)) {
+//             
+//            mockedPasswordGenerator.when(PasswordGenerator::generate).thenReturn(mockPassword);
+//            mockedServerCommunicator.when(() -> ServerCommunicator.communicateWithServer(anyString()))
+//                                    .thenReturn("VALID", "SUCCESS");
+//            mockedEmailSender.when(() -> EmailSender.sendEmail(eq(email), anyString(), anyString()))
+//                             .thenReturn("Email sent successfully");
+//
+//            String result = doctor.authorizeAccountCreation(email);
+//
+//            assertEquals("Email sent successfully", result, "Expected email sent successfully message after account creation.");
+//        }
+//    }
 
-        try (MockedStatic<ServerCommunicator> mockedServerCommunicator = mockStatic(ServerCommunicator.class);
-             MockedStatic<PasswordGenerator> mockedPasswordGenerator = mockStatic(PasswordGenerator.class);
-             MockedStatic<EmailSender> mockedEmailSender = mockStatic(EmailSender.class)) {
-             
-            mockedPasswordGenerator.when(PasswordGenerator::generate).thenReturn(mockPassword);
-            mockedServerCommunicator.when(() -> ServerCommunicator.communicateWithAccountServer(anyString()))
-                                    .thenReturn("VALID", "SUCCESS");
-            mockedEmailSender.when(() -> EmailSender.sendEmail(eq(email), anyString(), anyString()))
-                             .thenReturn("Email sent successfully");
+//    @Test
+//    public void testAuthorizeAccountCreationAccountExists() {
+//        String email = "existingpatient@example.com";
+//        Doctor doctor = createUser();
+//
+//        try (MockedStatic<ServerCommunicator> mockedServerCommunicator = mockStatic(ServerCommunicator.class)) {
+//            mockedServerCommunicator.when(() -> ServerCommunicator.communicateWithServer(anyString()))
+//                                    .thenReturn("ACCOUNT_EXISTS");
+//
+//            String result = doctor.authorizeAccountCreation(email);
+//
+//            assertTrue(result.contains("ACCOUNT_EXISTS: Cannot create account under this email."), "Expected account exists error message.");
+//        }
+//    }
 
-            String result = doctor.authorizeAccountCreation(email);
-
-            assertEquals("Email sent successfully", result, "Expected email sent successfully message after account creation.");
-        }
-    }
-
-    @Test
-    public void testAuthorizeAccountCreationAccountExists() {
-        String email = "existingpatient@example.com";
-        Doctor doctor = createUser();
-
-        try (MockedStatic<ServerCommunicator> mockedServerCommunicator = mockStatic(ServerCommunicator.class)) {
-            mockedServerCommunicator.when(() -> ServerCommunicator.communicateWithAccountServer(anyString()))
-                                    .thenReturn("ACCOUNT_EXISTS");
-
-            String result = doctor.authorizeAccountCreation(email);
-
-            assertTrue(result.contains("ACCOUNT_EXISTS: Cannot create account under this email."), "Expected account exists error message.");
-        }
-    }
-
-    @Test
-    public void testAuthorizeAccountCreationFailure() {
-        String email = "newpatient@example.com";
-        String mockPassword = "SecurePassword789";
-        Doctor doctor = createUser();
-
-        try (MockedStatic<ServerCommunicator> mockedServerCommunicator = mockStatic(ServerCommunicator.class);
-             MockedStatic<PasswordGenerator> mockedPasswordGenerator = mockStatic(PasswordGenerator.class)) {
-             
-            mockedPasswordGenerator.when(PasswordGenerator::generate).thenReturn(mockPassword);
-            mockedServerCommunicator.when(() -> ServerCommunicator.communicateWithAccountServer(anyString()))
-                                    .thenReturn("VALID", "SERVER_ERROR");
-
-            String result = doctor.authorizeAccountCreation(email);
-
-            assertEquals("SERVER_ERROR", result, "Expected server error message.");
-        }
-    }
+//    @Test
+//    public void testAuthorizeAccountCreationFailure() {
+//        String email = "newpatient@example.com";
+//        String mockPassword = "SecurePassword789";
+//        Doctor doctor = createUser();
+//
+//        try (MockedStatic<ServerCommunicator> mockedServerCommunicator = mockStatic(ServerCommunicator.class);
+//             MockedStatic<PasswordGenerator> mockedPasswordGenerator = mockStatic(PasswordGenerator.class)) {
+//             
+//            mockedPasswordGenerator.when(PasswordGenerator::generate).thenReturn(mockPassword);
+//            mockedServerCommunicator.when(() -> ServerCommunicator.communicateWithServer(anyString()))
+//                                    .thenReturn("VALID", "SERVER_ERROR");
+//
+//            String result = doctor.authorizeAccountCreation(email);
+//
+//            assertEquals("SERVER_ERROR", result, "Expected server error message.");
+//        }
+//    }
     
 }

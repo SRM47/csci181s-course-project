@@ -16,7 +16,7 @@ public class DataAnalystTest extends UserTest<DataAnalyst> {
 
     @Override
     public DataAnalyst createUser() {
-        return new DataAnalyst(1234567890,"example@example.com","password123", "John", "Doe", "123 Main St", LocalDate.of(1980, 1, 1));
+        return new DataAnalyst(1234567890,"example@example.com", "John", "Doe", "123 Main St", LocalDate.of(1980, 1, 1));
     }
     
     @BeforeEach
@@ -44,7 +44,7 @@ public class DataAnalystTest extends UserTest<DataAnalyst> {
         
         try (MockedStatic<ServerCommunicator> mockedStatic = mockStatic(ServerCommunicator.class)) {
             // Mock the static method call to return a specific response for the expected request
-            mockedStatic.when(() -> ServerCommunicator.communicateWithMedicalServer("REQUEST_PATIENT_DATA_SUMMARY 300"))
+            mockedStatic.when(() -> ServerCommunicator.communicateWithServer("REQUEST_PATIENT_DATA_SUMMARY 300"))
                     .thenReturn(expectedServerResponse);
 
             // Call the method under test

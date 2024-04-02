@@ -25,7 +25,7 @@ public class Login {
 		Instant timestamp = Instant.now(); // This captures the current moment in UTC.
 		// Creating a new JSONObject and populating it with data
 	    JSONObject json = new JSONObject();
-	    json.put("action", "LOGIN");
+	    json.put("request", "LOGIN");
 	    json.put("email", email);
 	    json.put("password", password);
 	    json.put("timestamp", timestamp.toString());
@@ -77,6 +77,20 @@ public class Login {
             return createUserInstance(accountType, userID, email, legalFirstName, legalLastName, address, dob);
 
 	}
+
+
+	public static String authenticateOTPLogin(String emailAddress, String otpInput) {
+		
+		JSONObject json = new JSONObject();
+	    json.put("type", "OTP");
+	    json.put("request", "login");
+	    json.put("email", emailAddress);
+	    json.put("OTP", otpInput);
+	    
+		// System.out.println("Message: " + message);
+		return(ServerCommunicator.communicateWithServer(json.toString()));
+	}
+
 
 
 }

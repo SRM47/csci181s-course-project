@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 public class DataProtectionOfficerTest extends UserTest<DataProtectionOfficer>{
 	@Override
     public DataProtectionOfficer createUser() {
-        return new DataProtectionOfficer("example@example.com", "password123", "John", "Doe", "123 Main St", LocalDate.of(1980, 1, 1));
+        return new DataProtectionOfficer("example@example.com", "John", "Doe", "123 Main St", LocalDate.of(1980, 1, 1));
     }
 	
     @Override

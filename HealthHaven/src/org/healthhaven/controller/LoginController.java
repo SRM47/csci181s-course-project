@@ -6,8 +6,10 @@ import org.json.JSONArray;
 import javafx.fxml.FXML;
 
 import javafx.scene.control.Button;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
 import javafx.scene.control.PasswordField;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -27,22 +29,40 @@ public class LoginController{
 	@FXML
 	private TextField emailTextfield;
 	@FXML
-	private Button submitButton;
-	@FXML
 	private PasswordField passwordTextfield;
 	@FXML
-	private Button accountCreationButton;
-	@FXML
 	private Label errorMessage;
+	@FXML
+	private HBox OTPSectionLogin;
+	@FXML
+	private TextField OTPLoginTextField;
+	@FXML
+	private Button OTPVerifyLoginButton;
+	@FXML
+	private Label OTPLoginMessage;
+	@FXML
+	private Button submitButton;
+	@FXML
+	private Hyperlink passwordReset;
+	
+	private String emailAddress;
+	
+	@FXML
+	public void initialize() {
+		OTPSectionLogin.setVisible(false);
+	}
 	
 	@FXML
 	public void handleSubmit() throws IOException {
+		//reset
+		OTPSectionLogin.setVisible(false);
+		
+		//get input
 		String email = emailTextfield.getText();
 		String password = passwordTextfield.getText();
 
-		//Next, check if this is a new user.
 		String serverResponse= Login.authenticateUserOnDB(email, password);
-		if (serverResponse.equals("FAILURE")) {
+		if (serverResponse.equals("FAILURE")||serverResponse.equals(null)) {
 			errorMessage.setText("Login Error");
 			
 		} else { //either new or existing user
@@ -50,10 +70,15 @@ public class LoginController{
 			// Access the value associated with the key "request"
 	        String requestValue = jsonObj.getString("request");
 	        
+	        //existing user
 	        if (requestValue.equals("EXISTING")) {
-	        	User user = Login.existingUserSession(jsonObj);
-	        	loadLoginPage(user);
 	        	errorMessage.setText("");
+	        	this.emailAddress = jsonObj.getString("email");
+	        	//Do OTP verification
+	        	OTPSectionLogin.setVisible(true);
+	        	OTPLoginMessage.setText("OTP sent to your email");
+	        	
+	        //new user, direct them to account creation
 	        } else if (requestValue.equals("NEW")) {
 	        	errorMessage.setText("");
 	        	loadAccountCreationPage(email,jsonObj.getString("userType"));
@@ -61,6 +86,36 @@ public class LoginController{
 		}
 
 	
+	}
+	
+	@FXML
+	public void handleVerifyOTPLogin() throws IOException{
+		OTPLoginMessage.setText("");
+		String otpInput = OTPLoginTextField.getText();
+		
+		String serverResponse = Login.authenticateOTPLogin(emailAddress, otpInput);
+		if (serverResponse.equals("FAILURE")||serverResponse.equals(null)) {
+			OTPLoginMessage.setText("Login Error");
+		} else {
+			//Read server response
+			JSONObject jsonObj = new JSONObject(serverResponse);
+			User user = Login.existingUserSession(jsonObj);
+	    	loadUserPage(user);
+	    	OTPLoginMessage.setText("");
+		}
+	}
+	
+	@FXML
+	public void handlePasswordReset() throws IOException {
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("../gui/PasswordReset.fxml"));
+        Parent root = loader.load();  		
+        
+        
+        Stage stage = (Stage) Main.getFirstStage().getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.show();
+		
+		
 	}
 	
 
@@ -76,7 +131,7 @@ public class LoginController{
 	        stage.show();
     }
 	
-	private void loadLoginPage(User user) throws IOException {
+	private void loadUserPage(User user) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("../gui/user.fxml"));
         Parent root = loader.load();
         
