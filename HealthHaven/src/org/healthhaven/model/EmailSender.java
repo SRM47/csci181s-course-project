@@ -6,7 +6,14 @@ import java.util.Properties;
 
 public class EmailSender {
 
-	public static String sendEmail(String toEmail, String subject, String body) {
+	public static String sendDefaultPasswordEmail(String email, String password, String userType) {
+		String subject = "Create Account";
+		String body = String.format("This is to confirm that you are authorized to make an account as. %s "
+	            + "Your default password is %s. Please go to the login page and use this email and password.", userType, password);
+		return sendEmail(email, subject, body);
+	}
+	
+	private static String sendEmail(String toEmail, String subject, String body) {
         String fromEmail = "healthhaven845@gmail.com"; //requires valid gmail id
         String password = "fsnx gvno zvwk goip"; // correct password for gmail id
 
