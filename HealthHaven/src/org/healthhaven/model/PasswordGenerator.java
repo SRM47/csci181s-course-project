@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.regex.*;
 
 public class PasswordGenerator {
 
@@ -124,14 +125,16 @@ public class PasswordGenerator {
     	
     }
     
-    public String[] compromiseChecker(String password) throws IOException {
 
+    public static int compromiseChecker(String password) throws IOException {
+    	
     	String sHash = sha1Hash(password);
 
     	String first5 = sHash.substring(0,5);
     	System.out.println(first5);
     	String suffix = sHash.substring(5);
-
+    	System.out.println(suffix);
+    	
     	String apiUrl = "https://api.pwnedpasswords.com/range/" + first5;
 
     	// Create a URL object from the API URL string
@@ -143,37 +146,36 @@ public class PasswordGenerator {
         // Set the request method to GET
         connection.setRequestMethod("GET");
 
-        // Read the response from the API
-//        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-
         BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         StringBuilder response = new StringBuilder();
         String line;
         while ((line = reader.readLine()) != null) {
-            response.append(line);
+            response.append(line+",");
         }
 
         reader.close();
 
         connection.disconnect();
-
-        String[] responseList = response.toString().split("\n");
-
-
-
-        return responseList;
-
-//        // Print the response
-//        System.out.println(responseList);
-//        System.out.println(response.toString());
-
+        
+        String[] responseList = response.toString().split(",");
+        
+        
+    	for(String item: responseList) {
+    		System.out.println("checking" + item); 
+    		if(item.contains(suffix.toUpperCase())) {
+    			System.out.println("compromised"); 
+    			return 1;
+    		}
+    	}
+    	
+    	return 2;        
 
     }
 
 
 
     //ChatGPT
-    public String sha1Hash(String password) {
+    public static String sha1Hash(String password) {
     	try {
             // Create MessageDigest instance for SHA-1
             MessageDigest md = MessageDigest.getInstance("SHA-1");
@@ -202,4 +204,13 @@ public class PasswordGenerator {
             return "";
         }
     }
+    
+    //Chat-GPT
+    public static boolean isValidEmail(String email) {
+        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+        Pattern pattern = Pattern.compile(emailRegex);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
+    }
+    
 }

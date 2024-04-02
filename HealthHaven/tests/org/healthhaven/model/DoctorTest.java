@@ -1,5 +1,8 @@
 package org.healthhaven.model;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mockStatic;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDate;
@@ -76,6 +79,62 @@ public class DoctorTest extends UserTest<Doctor> {
             // However, this verification is somewhat more complex due to the inclusion of a timestamp in the message,
             // which we cannot predict exactly in the test. If you had a way to mock the timestamp or if the message format
             // was simpler, you could add a verification step here.
+        }
+    }
+    
+    @Test
+    public void testAuthorizeAccountCreationSuccess() {
+        String email = "newpatient@example.com";
+        String mockPassword = "SecurePassword456";
+        Doctor doctor = createUser();
+
+        try (MockedStatic<ServerCommunicator> mockedServerCommunicator = mockStatic(ServerCommunicator.class);
+             MockedStatic<PasswordGenerator> mockedPasswordGenerator = mockStatic(PasswordGenerator.class);
+             MockedStatic<EmailSender> mockedEmailSender = mockStatic(EmailSender.class)) {
+             
+            mockedPasswordGenerator.when(PasswordGenerator::generate).thenReturn(mockPassword);
+            mockedServerCommunicator.when(() -> ServerCommunicator.communicateWithAccountServer(anyString()))
+                                    .thenReturn("VALID", "SUCCESS");
+            mockedEmailSender.when(() -> EmailSender.sendEmail(eq(email), anyString(), anyString()))
+                             .thenReturn("Email sent successfully");
+
+            String result = doctor.authorizeAccountCreation(email);
+
+            assertEquals("Email sent successfully", result, "Expected email sent successfully message after account creation.");
+        }
+    }
+
+    @Test
+    public void testAuthorizeAccountCreationAccountExists() {
+        String email = "existingpatient@example.com";
+        Doctor doctor = createUser();
+
+        try (MockedStatic<ServerCommunicator> mockedServerCommunicator = mockStatic(ServerCommunicator.class)) {
+            mockedServerCommunicator.when(() -> ServerCommunicator.communicateWithAccountServer(anyString()))
+                                    .thenReturn("ACCOUNT_EXISTS");
+
+            String result = doctor.authorizeAccountCreation(email);
+
+            assertTrue(result.contains("ACCOUNT_EXISTS: Cannot create account under this email."), "Expected account exists error message.");
+        }
+    }
+
+    @Test
+    public void testAuthorizeAccountCreationFailure() {
+        String email = "newpatient@example.com";
+        String mockPassword = "SecurePassword789";
+        Doctor doctor = createUser();
+
+        try (MockedStatic<ServerCommunicator> mockedServerCommunicator = mockStatic(ServerCommunicator.class);
+             MockedStatic<PasswordGenerator> mockedPasswordGenerator = mockStatic(PasswordGenerator.class)) {
+             
+            mockedPasswordGenerator.when(PasswordGenerator::generate).thenReturn(mockPassword);
+            mockedServerCommunicator.when(() -> ServerCommunicator.communicateWithAccountServer(anyString()))
+                                    .thenReturn("VALID", "SERVER_ERROR");
+
+            String result = doctor.authorizeAccountCreation(email);
+
+            assertEquals("SERVER_ERROR", result, "Expected server error message.");
         }
     }
     
