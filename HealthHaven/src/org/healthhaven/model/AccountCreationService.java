@@ -55,7 +55,7 @@ public class AccountCreationService {
  
      // Create a JSONObject and populate it with account data
         JSONObject json = new JSONObject();
-        json.put("action", "CREATE_ACCOUNT");
+        json.put("request", "CREATE_ACCOUNT");
         json.put("userId", userId);
         json.put("email", email);
         json.put("password", password);
