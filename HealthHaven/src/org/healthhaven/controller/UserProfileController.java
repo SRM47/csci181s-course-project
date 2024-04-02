@@ -18,6 +18,8 @@ public class UserProfileController {
     private PasswordField passwordField;
     @FXML
     private TextField addressField;
+    @FXML
+    private Label response;
     @FXML 
     private Button updateButton;
 
@@ -39,29 +41,24 @@ public class UserProfileController {
 
     // Methods to handle profile updates
     @FXML
-    private void handleSaveAction() {
+    public void handleSaveAction() {
         // Gather data from input fields
-        String email = emailField.getText();
-        String password = passwordField.getText();// get from input field;
         String address = addressField.getText();// get from input field;
         
-        if (email.equals("")) {
-        	email = currentUser.getEmail();
-        } if (password.equals("")) {
-        	password = currentUser.getPassword();
-        } if (address.equals("")) {
-        	address = currentUser.getAddress();
+   
+        if (address.equals("")||address.equals(currentUser.getAddress())) {
+        	response.setText("Nothing to update.");
         }
 
         // Update User model
-        currentUser.updatePersonalRecordOnDB(email, password, address);
+        currentUser.updatePersonalRecordOnDB(address);
 
         // Refresh displayed user info
         displayUserInfo();
     }
     
     @FXML
-    private void handleCancelAction() {
+    public void handleCancelAction() {
         // Clear all text fields
         emailField.setText("");
         passwordField.setText("");

@@ -26,9 +26,9 @@ public class DataAnalyst extends User {
 	 * @param address
 	 * @param dob
 	 */
-	public DataAnalyst(String email, String password, String legal_first_name, String legal_last_name, String address,
+	public DataAnalyst(String email, String legal_first_name, String legal_last_name, String address,
 			LocalDate dob) {
-		super(email, password, legal_first_name, legal_last_name, address, dob);
+		super(email, legal_first_name, legal_last_name, address, dob);
 
 	}
 
@@ -42,9 +42,9 @@ public class DataAnalyst extends User {
 	 * @param address
 	 * @param dob
 	 */
-	public DataAnalyst(long userID, String email, String password, String legal_first_name, String legal_last_name, String address,
+	public DataAnalyst(long userID, String email,  String legal_first_name, String legal_last_name, String address,
 					   LocalDate dob) {
-		super(userID, email, password, legal_first_name, legal_last_name, address, dob);
+		super(userID, email, legal_first_name, legal_last_name, address, dob);
 	}
 	
 	@Override
@@ -57,9 +57,7 @@ public class DataAnalyst extends User {
 	 * @param scanner
 	 */
 	public String performDataAnalysis(){
-//		long userID = this.getUserID();
-		long userID = 300;
-		String message = "REQUEST_PATIENT_DATA_SUMMARY " + userID;
+		String message = "REQUEST_PATIENT_DATA_SUMMARY ";
 //		System.out.println("message");
 		return(ServerCommunicator.communicateWithMedicalServer(message));
 	}
@@ -76,10 +74,6 @@ public class DataAnalyst extends User {
 		this.setUserID(randomNumber);
 	}
 
-
-	public static void main(String [] args){
-		DataAnalyst newDSA = new DataAnalyst("Sae@pomona.edu", "password", "Sae", "Furukawa", "Claremont", LocalDate.of(2002, 10, 05));
-	}
 
 
 }

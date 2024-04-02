@@ -1,6 +1,10 @@
 package org.healthhaven.controller;
 
+import org.json.JSONObject;
+import org.json.JSONArray;
+
 import javafx.fxml.FXML;
+
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -30,45 +34,43 @@ public class LoginController{
 	private Button accountCreationButton;
 	@FXML
 	private Label errorMessage;
-	@FXML
-	private Login loginInstance;
 	
 	@FXML
-	public void initialize() {
-		loginInstance = new Login();
-		
-	}
-	
 	public void handleSubmit() throws IOException {
 		String email = emailTextfield.getText();
 		String password = passwordTextfield.getText();
-		
-		User user = loginInstance.identifyExistingUser(email, password);
-		
-		if (user.equals(null)) {
-			//Next, check if this is a new user.
-			String serverResponse = loginInstance.identifyNewUser(email, password);
-			if (serverResponse.equals("FAILURE")) {
-				errorMessage.setText("Login Error");
-			} else {
-				errorMessage.setText("");
-				loadAccountCreationPage(email,serverResponse);
-			}
-		} else {
-			errorMessage.setText("");
-			loadLoginPage(user);	
+
+		//Next, check if this is a new user.
+		String serverResponse= Login.authenticateUserOnDB(email, password);
+		if (serverResponse.equals("FAILURE")) {
+			errorMessage.setText("Login Error");
 			
+		} else { //either new or existing user
+			JSONObject jsonObj = new JSONObject(serverResponse);
+			// Access the value associated with the key "request"
+	        String requestValue = jsonObj.getString("request");
+	        
+	        if (requestValue.equals("EXISTING")) {
+	        	User user = Login.existingUserSession(jsonObj);
+	        	loadLoginPage(user);
+	        	errorMessage.setText("");
+	        } else if (requestValue.equals("NEW")) {
+	        	errorMessage.setText("");
+	        	loadAccountCreationPage(email,jsonObj.getString("userType"));
+	        }
 		}
+
+	
 	}
 	
 
-	private void loadAccountCreationPage(String email, String serverResponse) throws IOException {
+	private void loadAccountCreationPage(String email, String userType) throws IOException {
 		 FXMLLoader loader = new FXMLLoader(getClass().getResource("../gui/accountcreation.fxml"));
 	        Parent root = loader.load();
 	        Stage stage = (Stage) Main.getFirstStage().getScene().getWindow();
 	        
 	        AccountCreationController accountController = loader.getController();
-	        accountController.setAccountCreation(email, serverResponse);
+	        accountController.setAccountCreation(email, userType);
 	        
 	        stage.setScene(new Scene(root));
 	        stage.show();

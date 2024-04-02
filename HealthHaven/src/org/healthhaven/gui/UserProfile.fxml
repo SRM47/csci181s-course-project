@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
-
 
 <StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.healthhaven.controller.UserProfileController">
    <children>
@@ -18,16 +18,11 @@
             <TextArea fx:id="userInfoArea" prefHeight="200.0" prefWidth="200.0" />
             <VBox alignment="CENTER" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="150.0">
                <children>
-                  <TextField fx:id="emailField" promptText="Enter Email ">
-                     <VBox.margin>
-                        <Insets bottom="5.0" top="5.0" />
-                     </VBox.margin>
-                  </TextField>
-                  <PasswordField fx:id="passwordField" promptText="Enter Password">
-                     <VBox.margin>
-                        <Insets bottom="5.0" top="5.0" />
-                     </VBox.margin>
-                  </PasswordField>
+                  <Label fx:id="response" textFill="#dd0808">
+                     <font>
+                        <Font size="9.0" />
+                     </font>
+                  </Label>
                   <TextField fx:id="addressField" promptText="Enter Address">
                      <VBox.margin>
                         <Insets bottom="5.0" top="5.0" />

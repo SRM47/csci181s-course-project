@@ -75,21 +75,6 @@ public class AccountCreationController {
 		emailDisplay.setText(email);
 		userTypeMenu.setText(userType);
 	}
-//	public void updateAccountTypeDoctor() {
-//		accountTypeMenu.setText(doctorMenuItem.getText());
-//	}
-//	
-//	public void updateAccountTypePatient() {
-//		accountTypeMenu.setText(patientMenuItem.getText());
-//	}
-//	
-//	public void updateAccountTypeDataProtectionOfficer() {
-//		accountTypeMenu.setText(dataProtectionOfficerMenuItem.getText());
-//	}
-//	
-//	public void updateAccountTypeDataAnalyst() {
-//		accountTypeMenu.setText(dataAnalystMenuItem.getText());
-//	}
 	
 	
 	public void realTimePWSec() {
@@ -104,7 +89,7 @@ public class AccountCreationController {
 	}
 	
 
-	
+	@FXML
 	public void handleSubmit() {
 		String rat = userType;
 		String remail = userEmail;
@@ -115,25 +100,15 @@ public class AccountCreationController {
 		LocalDate rdob = dobDatePicker.getValue();
 		
 		// Input validation 
-	    if (rpw.isEmpty() || rfn.isEmpty() || rln.isEmpty() || raddress.isEmpty() || dobDatePicker.getValue() == null) {
+	    if (rpw.isEmpty() || rfn.isEmpty() || rln.isEmpty() || raddress.isEmpty() || rdob == null) {
 	        response.setText("Please fill in all fields.");
 	        return; // Exit the method if any field is empty
 	    }
 		
 		Result result = nbvcxz.estimate(rpw);
-		
-		//TODO: Don't instantiate password generator, treat it as a static class.
-		//PasswordGenerator passgen = new PasswordGenerator();
-		
-		//TODO: Put password checking functions in a helper so make codes cleaner.
-		 
+
 		Integer passCheck = PasswordGenerator.passwordStrength(rpw, rfn, rln, rdob);
 	
-	    
-//	    if(!PasswordGenerator.isValidEmail(remail)) {
-//	    	response.setText("Please enter a valid email.");
-//	    	return;
-//	    }
 
 		//check for PII in password
 		if(passCheck != 1) {
@@ -164,16 +139,14 @@ public class AccountCreationController {
 	    	
 	    
 	    
-		try {
-			String serverResponse = AccountCreationService.createUser(rat, remail, rpw, rfn, rln, raddress, rdob);
-			response.setText(serverResponse);
+	    String serverResponse = AccountCreationService.createUser(rat, remail, rpw, rfn, rln, raddress, rdob);
+		response.setText(serverResponse);
 		
-		} catch (DateTimeParseException e) {
-			response.setText("Invalid date format. Please enter the date in yyyy-mm-dd format.");
-		}	
+
 		
 	}
 	
+	@FXML
 	public void loginPage(ActionEvent actionEvent) throws IOException {
         loadPage("../gui/login.fxml");
     }

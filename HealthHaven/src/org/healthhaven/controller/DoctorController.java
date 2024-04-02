@@ -1,9 +1,12 @@
 package org.healthhaven.controller;
 
+import java.time.LocalDate;
+
 import org.healthhaven.model.*;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -15,6 +18,8 @@ public class DoctorController {
 	
 	@FXML
 	private TextField newPatientEmailField;
+	@FXML
+	private DatePicker dobDatePicker;
 	@FXML
 	private Label response;
 	@FXML
@@ -50,11 +55,12 @@ public class DoctorController {
     @FXML
     public void createNewPatient() {
     	String email = newPatientEmailField.getText();
-    	if (email.isEmpty()) {
-    		response.setText("Please fill out the email field.");	
+    	LocalDate dob = dobDatePicker.getValue();
+    	if (email.isEmpty()||dob==null) {
+    		response.setText("Please fill out all fields.");	
     	}
     	
-    	String serverResponse = doctor.authorizeAccountCreation(email);
+    	String serverResponse = doctor.authorizeAccountCreation(email, dob);
     	
     	response.setText(serverResponse);
     }
@@ -62,9 +68,11 @@ public class DoctorController {
     @FXML
     public void handleViewPatientRecord() {
         long patientID = Long.parseLong(patientIdField.getText());
+        
+        //Server response
         String patientRecord = doctor.viewPatientRecord(patientID);
         
-        if (patientRecord.equals("NONE")) {
+        if (patientRecord.equals("FAILURE")) {
         	patientRecordArea.setText("Could not retrive data");
         	updateFormContainer.setVisible(false);
         	

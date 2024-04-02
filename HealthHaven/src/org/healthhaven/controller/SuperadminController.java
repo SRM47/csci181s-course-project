@@ -1,9 +1,12 @@
 package org.healthhaven.controller;
 
+import java.time.LocalDate;
+
 import org.healthhaven.model.*;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
@@ -22,6 +25,8 @@ public class SuperadminController {
     @FXML
     private Button authorizeAccountButton;
     @FXML
+    private Button cancelButton;
+    @FXML
     private Button viewAccountButton;
     @FXML
     private TextArea recordTextArea;
@@ -37,6 +42,8 @@ public class SuperadminController {
 	private MenuItem dataProtectionOfficerMenuItem;
 	@FXML
 	private MenuItem dataAnalystMenuItem;
+	@FXML
+	private DatePicker datepicker;
     
 
     public void setSuperadmin(Superadmin superadmin) {
@@ -44,36 +51,44 @@ public class SuperadminController {
         // Load doctor-specific information into the dashboard
     }
     
+    @FXML
     public void clickViewAccountList() {
     	listAccounts();
     }
+    
+    @FXML
     public void updateAccountTypeDoctor() {
 		accountTypeMenu.setText(doctorMenuItem.getText());
 	}
 	
+    @FXML
 	public void updateAccountTypePatient() {
 		accountTypeMenu.setText(patientMenuItem.getText());
 	}
-	
+    
+	@FXML
 	public void updateAccountTypeDataProtectionOfficer() {
 		accountTypeMenu.setText(dataProtectionOfficerMenuItem.getText());
 	}
 	
+	@FXML
 	public void updateAccountTypeDataAnalyst() {
 		accountTypeMenu.setText(dataAnalystMenuItem.getText());
 	}
 	
+	@FXML
 	public void authorizeAccount() {
 		response.setText(null); //clear
 		
 		String rat = accountTypeMenu.getText();
 		String remail = emailTextfield.getText();
+		LocalDate dob = datepicker.getValue();
 		
 		//Input validation
-		if (rat.isEmpty()|| remail.isEmpty()) {
+		if (rat.isEmpty()|| remail.isEmpty()||dob==null) {
 			response.setText("Please fill in all fields.");
 		}
-		String serverResponse = superadmin.authorizeAccountCreation(remail, rat);
+		String serverResponse = superadmin.authorizeAccountCreation(remail, rat, dob);
 		response.setText(serverResponse);
 		
 	}
@@ -81,6 +96,11 @@ public class SuperadminController {
     private void listAccounts() {
     	String accountRecords = superadmin.viewAccountList();;
         recordTextArea.setText(accountRecords);
+    }
+    
+    @FXML
+    public void handleCancel() {
+    	emailTextfield.setText("");
     }
     
     

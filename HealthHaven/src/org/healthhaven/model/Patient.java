@@ -10,6 +10,7 @@ import java.util.Random;
 import java.util.Scanner;
 
 import org.healthhaven.model.User.Account;
+import org.json.JSONObject;
 
 /**
  * @author sameermalik
@@ -26,9 +27,9 @@ public class Patient extends User {
 	 * @param address
 	 * @param dob
 	 */
-	public Patient(String email, String password, String legal_first_name, String legal_last_name, String address,
+	public Patient(String email, String legal_first_name, String legal_last_name, String address,
 			LocalDate dob) {
-		super(email, password, legal_first_name, legal_last_name, address, dob);
+		super(email, legal_first_name, legal_last_name, address, dob);
 	}
 
 	/**
@@ -41,9 +42,9 @@ public class Patient extends User {
 	 * @param address
 	 * @param dob
 	 */
-	public Patient(long userID, String email, String password, String legal_first_name, String legal_last_name,
+	public Patient(long userID, String email, String legal_first_name, String legal_last_name,
 				   String address, LocalDate dob){
-        super(userID, email, password, legal_first_name, legal_last_name, address, dob);
+        super(userID, email, legal_first_name, legal_last_name, address, dob);
 
     }
 
@@ -67,15 +68,18 @@ public class Patient extends User {
 	 * @param userID
 	 */
 	public String viewPatientRecord() {
-		String message = String.format("VIEW %d", getUserID());
-		System.out.println("Message: " + message);
-		return ServerCommunicator.communicateWithMedicalServer(message);
+		// Create a new JSONObject
+	    JSONObject json = new JSONObject();
+	    
+	    // Populate the JSON object with key-value pairs
+	    json.put("action", "VIEW_RECORD");
+	    json.put("patientID", getUserID());
+	   
+	    
+	    // Send the JSON string to the server
+	    return ServerCommunicator.communicateWithMedicalServer(json.toString());
 
-	}
-	
 
-	public static void main(String[] args) {
-		Patient newPatient = new Patient("Sae@pomona.edu", "password", "Sae", "Furukawa", "Claremont", LocalDate.of(2002, 10, 05));
 	}
 	
 	

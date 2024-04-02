@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
@@ -27,21 +28,40 @@
                   <TextField fx:id="emailTextfield" promptText="Enter email" />
                </children>
             </HBox>
+            <DatePicker maxWidth="-Infinity" minWidth="-Infinity" prefWidth="150.0" promptText="Enter Date of Birth">
+               <VBox.margin>
+                  <Insets top="5.0" />
+               </VBox.margin>
+            </DatePicker>
             <Label fx:id="response" textFill="#bc0d0d">
                <VBox.margin>
                   <Insets top="5.0" />
                </VBox.margin>
+               <font>
+                  <Font size="9.0" />
+               </font>
             </Label>
-            <Button fx:id="authorizeAccountButton" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#authorizeAccount" prefWidth="125.0" text="Authorize Account ">
+            <HBox alignment="TOP_CENTER" minHeight="-Infinity" prefHeight="30.0" prefWidth="200.0">
+               <children>
+                  <Button fx:id="authorizeAccountButton" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#authorizeAccount" prefWidth="125.0" text="Authorize Account " />
+                  <Button fx:id="cancel" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#handleCancel" prefWidth="120.0" text="Cancel">
+                     <HBox.margin>
+                        <Insets bottom="5.0" />
+                     </HBox.margin>
+                  </Button>
+               </children>
                <VBox.margin>
-                  <Insets bottom="5.0" top="5.0" />
+                  <Insets bottom="5.0" />
                </VBox.margin>
-            </Button>
-            <TextArea fx:id="recordTextArea" prefHeight="200.0" prefWidth="200.0">
+            </HBox>
+            <TextArea fx:id="recordTextArea" prefHeight="150.0" prefWidth="200.0">
                <VBox.margin>
                   <Insets top="5.0" />
                </VBox.margin></TextArea>
-            <Button fx:id="viewAccountButton" layoutX="51.0" layoutY="110.0" mnemonicParsing="false" onAction="#clickViewAccountList" prefWidth="125.0" text="View Account List" />
+            <Button fx:id="viewAccountButton" layoutX="51.0" layoutY="110.0" mnemonicParsing="false" onAction="#clickViewAccountList" prefWidth="125.0" text="View Account List">
+               <VBox.margin>
+                  <Insets top="5.0" />
+               </VBox.margin></Button>
          </children>
       </VBox>
    </children>

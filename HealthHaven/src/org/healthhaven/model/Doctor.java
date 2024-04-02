@@ -1,10 +1,11 @@
 package org.healthhaven.model;
 
+import org.json.JSONObject;
+import org.json.JSONArray;
+
 import java.time.LocalDate;
 import java.util.Random;
 import java.util.Scanner;
-
-import org.healthhaven.model.User.Account;
 
 import java.time.Instant;
 
@@ -29,9 +30,9 @@ public class Doctor extends User {
 	 * @param dob
 	 */
     
-	public Doctor(String email, String password, String legal_first_name, String legal_last_name, String address,
+	public Doctor(String email, String legal_first_name, String legal_last_name, String address,
 			LocalDate dob) {
-		super(email, password, legal_first_name, legal_last_name, address, dob);
+		super(email, legal_first_name, legal_last_name, address, dob);
 	}
 
     /**
@@ -44,9 +45,9 @@ public class Doctor extends User {
      * @param address
      * @param dob
      */
-    public Doctor(long userID, String email, String password, String legal_first_name, String legal_last_name,
+    public Doctor(long userID, String email, String legal_first_name, String legal_last_name,
                    String address, LocalDate dob){
-        super(userID, email, password, legal_first_name, legal_last_name, address, dob);
+        super(userID, email, legal_first_name, legal_last_name, address, dob);
 
     }
 
@@ -75,11 +76,19 @@ public class Doctor extends User {
      */
 	public String updatePatientRecordOnDB(long userID, String height, String weight) {
         Instant timestamp = Instant.now(); // This captures the current moment in UTC.
+        
+        // Create a JSONObject and populate it with data
+        JSONObject json = new JSONObject();
+        json.put("request", "CREATE_RECORD");
+        json.put("userID", userID);
+        json.put("doctorID", getUserID());
+        json.put("height", height);
+        json.put("weight", weight);
+        json.put("timestamp", timestamp.toString());
 
-        // Construct a message to send to the server
-        String message = String.format("UPDATE_RECORD %d %s %s %s", userID, height, weight, timestamp.toString());
-        System.out.println("message: "+ message);
-        return ServerCommunicator.communicateWithMedicalServer(message);
+
+        /// Send the JSON string to the server
+        return ServerCommunicator.communicateWithMedicalServer(json.toString());
     }
 
     /**
@@ -87,47 +96,32 @@ public class Doctor extends User {
      * @param userID
      * @return
      */
-	public String viewPatientRecord(long userID) {
-        String message = String.format("VIEW %d", userID);
-        System.out.println("Message: " + message);
-        return ServerCommunicator.communicateWithMedicalServer(message);
+	public String viewPatientRecord(long patientID) {
+		// Create a new JSONObject
+	    JSONObject json = new JSONObject();
+	    
+	    // Populate the JSON object with key-value pairs
+	    json.put("action", "VIEW_RECORD");
+	    json.put("patientID", patientID);
+	    json.put("doctorID", getUserID());
+	   
+	    
+	    // Send the JSON string to the server
+	    return ServerCommunicator.communicateWithMedicalServer(json.toString());
+
     }
 	
-	public String authorizeAccountCreation(String email) {
-		String serverResponse = "";
-		serverResponse = doesAccountExist(email);
-		if (!serverResponse.equals("VALID")) {
-			return serverResponse + ": Cannot create account under this email.";
-		}
-		
-		String password = PasswordGenerator.generate();
-		String message = String.format("AUTHORIZE %s %s %s", email, password, "Patient");
-		serverResponse = ServerCommunicator.communicateWithAccountServer(message);
-		
-		if (!serverResponse.equals("SUCCESS")) {
-			return serverResponse;
-		}
-		return sendEmail(email, password);
+	public String authorizeAccountCreation(String email, LocalDate dob) {
+		//Construct API call
+		JSONObject json = new JSONObject();
+	    json.put("request", "ALLOW_ACCOUNT_CREATION");
+	    json.put("email", email);
+	    json.put("userType", "Patient");
+	    json.put("dob", dob.toString());
+	    
+	    return ServerCommunicator.communicateWithAccountServer(json.toString());
 	}
 	
-	private String sendEmail(String email, String password) {
-		String subject = "Create Account";
-		String body = String.format("This is to confirm that you are authorized to make an account as Patient. "
-	            + "Your default password is %s. Please go to the login page and use this email and password.", password);
-		return EmailSender.sendEmail(email, subject, body);
-	}
-	
-	
-	private static String doesAccountExist(String email){
-        String message = String.format("EXISTING_ACCOUNT %s", email);
-        // System.out.println("Message: " + message);
-        return  ServerCommunicator.communicateWithAccountServer(message);
-        // System.out.println("Server response: " + serverResponse);
-    }
 
-
-    public static void main(String[] args) {
-        Doctor newDoctor = new Doctor("Sae@pomona.edu", "password", "Sae", "Furukawa", "Claremont", LocalDate.of(2002, 10, 05));
-    }
 
 }

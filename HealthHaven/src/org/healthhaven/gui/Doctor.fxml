@@ -25,15 +25,19 @@
             </Label>
             <Label text="Create Patient Account">
                <VBox.margin>
-                  <Insets bottom="5.0" top="10.0" />
+                  <Insets bottom="5.0" top="5.0" />
                </VBox.margin>
             </Label>
-            <TextField fx:id="newPatientEmailField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="150.0">
+            <TextField fx:id="newPatientEmailField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="150.0" promptText="Enter email">
                <VBox.margin>
-                  <Insets bottom="5.0" />
+                  <Insets bottom="2.0" />
                </VBox.margin>
             </TextField>
-            <Label fx:id="response" alignment="CENTER" contentDisplay="CENTER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="100.0" textFill="#d30909" />
+            <DatePicker fx:id="dobDatePicker" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="150.0" promptText="Pick date of birth" />
+            <Label fx:id="response" alignment="CENTER" contentDisplay="CENTER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="100.0" textFill="#d30909">
+               <font>
+                  <Font size="9.0" />
+               </font></Label>
             <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" prefHeight="30.0" prefWidth="200.0">
                <children>
                   <Button fx:id="createPatientButton" mnemonicParsing="false" onAction="#createNewPatient" text="Create">
@@ -50,7 +54,7 @@
             </HBox>
             <Label text="Update Patient Record">
                <VBox.margin>
-                  <Insets top="10.0" />
+                  <Insets top="5.0" />
                </VBox.margin>
             </Label>
             <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="220.0">

@@ -26,9 +26,9 @@ public class DataProtectionOfficer extends User {
 	 * @param address
 	 * @param dob
 	 */
-	public DataProtectionOfficer(String email, String password, String legal_first_name, String legal_last_name,
+	public DataProtectionOfficer(String email, String legal_first_name, String legal_last_name,
 			String address, LocalDate dob) {
-		super(email, password, legal_first_name, legal_last_name, address, dob);
+		super(email, legal_first_name, legal_last_name, address, dob);
 
 	}
 
@@ -42,9 +42,9 @@ public class DataProtectionOfficer extends User {
 	 * @param address
 	 * @param dob
 	 */
-	public DataProtectionOfficer(long userID, String email, String password, String legal_first_name, String legal_last_name,
+	public DataProtectionOfficer(long userID, String email, String legal_first_name, String legal_last_name,
 								 String address, LocalDate dob) {
-		super(userID, email, password, legal_first_name, legal_last_name, address, dob);
+		super(userID, email, legal_first_name, legal_last_name, address, dob);
 	}
 	
 	@Override

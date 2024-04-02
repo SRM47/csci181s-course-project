@@ -6,12 +6,11 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
+import org.json.JSONObject;
+
 public class AccountCreationService {
 	
 	public static String createUser(String accountType, String email, String password, String firstName, String lastName, String address, LocalDate dob) {
-//		if (!doesAccountExist(email).equals("VALID")) {
-//			return "Account creation failed!";
-//		}
 		
 		User.Account userType = getUserType(accountType);
 		
@@ -34,35 +33,38 @@ public class AccountCreationService {
 
 
         User newUser = switch (userType) {
-            case DOCTOR -> new Doctor(email, password, legal_first_name, legal_last_name, address, dob);
-            case PATIENT -> new Patient(email, password, legal_first_name, legal_last_name, address, dob);
-            case DATA_ANALYST -> new DataAnalyst(email, password, legal_first_name, legal_last_name, address, dob);
-            case DPO -> new DataProtectionOfficer(email, password, legal_first_name, legal_last_name, address, dob);
-            case SUPERADMIN -> new Superadmin(email, password, legal_first_name, legal_last_name, address, dob);
+            case DOCTOR -> new Doctor(email, legal_first_name, legal_last_name, address, dob);
+            case PATIENT -> new Patient(email, legal_first_name, legal_last_name, address, dob);
+            case DATA_ANALYST -> new DataAnalyst(email, legal_first_name, legal_last_name, address, dob);
+            case DPO -> new DataProtectionOfficer(email, legal_first_name, legal_last_name, address, dob);
+            case SUPERADMIN -> new Superadmin(email, legal_first_name, legal_last_name, address, dob);
             default -> null;
         };
         
-        String serverResponse = insertNewAccountIntoDB(userType, newUser.getUserID(), email, password, legal_first_name, legal_last_name, address,
-        		dob);
-        
-        return serverResponse;
+        return(insertNewAccountIntoDB(userType, newUser.getUserID(), email, password, legal_first_name, legal_last_name, address,
+        		dob));
     }
 
-//    protected static String doesAccountExist(String email){
-//        String message = String.format("EXISTING_ACCOUNT %s", email);
-//        // System.out.println("Message: " + message);
-//        String serverResponse = ServerCommunicator.communicateWithAccountServer(message);
-//        // System.out.println("Server response: " + serverResponse);
-//
-//        return serverResponse;
-//    }
     
 
     protected static String insertNewAccountIntoDB(User.Account userType, long userId, String email, String password, String first_name, String last_name, String address, LocalDate dob){
         Instant timestamp = Instant.now();
         String account = userType.getAccountName();
-        String message = String.format(("CREATE_ACCOUNT %d %s %s %s %s %s %s %s %s"), userId, email, password, first_name, last_name, address, dob, timestamp.toString(), account);
-        return ServerCommunicator.communicateWithAccountServer(message);
+        
+     // Create a JSONObject and populate it with account data
+        JSONObject json = new JSONObject();
+        json.put("action", "CREATE_ACCOUNT");
+        json.put("userId", userId);
+        json.put("email", email);
+        json.put("password", password);
+        json.put("first_name", first_name);
+        json.put("last_name", last_name);
+        json.put("address", address);
+        json.put("dob", dob.toString()); // Converting LocalDate to String
+        json.put("timestamp", timestamp.toString()); // Converting Instant to String
+        json.put("accountType", userType.getAccountName());
+       
+        return ServerCommunicator.communicateWithAccountServer(json.toString());
     }
     
     

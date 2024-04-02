@@ -23,7 +23,7 @@ public class UserController {
 	@FXML
     private Button homeButton, profileButton, logoutButton;
 	
-	private User currentUser = new DataAnalyst(0, "password", "email", "Sae", "Furukawa", "address", LocalDate.of(2002, 10,05)); // This could be set during login
+	private User currentUser;// This could be set during login
 	
 
 	@FXML
@@ -111,7 +111,6 @@ public class UserController {
     
     public void setCurrentUser(User user) {
         this.currentUser = user;
-        //initialize();
     }
     
     @FXML

@@ -4,9 +4,10 @@ package org.healthhaven.model;
 import java.time.LocalDate;
 import java.util.Scanner;
 
+import org.json.JSONObject;
+
 public class User {
 
-	private String password;
 	// The format of the userID will correspond to the account type
 	private long userID;
 	private String email;
@@ -43,11 +44,10 @@ public class User {
 	 * @param address
 	 * @param dob
 	 */
-	public User(String email, String password, String legal_first_name, String legal_last_name, String address,
+	public User(String email, String legal_first_name, String legal_last_name, String address,
 			LocalDate dob) {
 		super();
 		this.email = email;
-		this.password = password;
 		this.legal_first_name = legal_first_name;
 		this.legal_last_name = legal_last_name;
 		this.address = address;
@@ -65,9 +65,8 @@ public class User {
 	 * @param address
 	 * @param dob
 	 */
-	public User(long userID, String email, String password, String legal_first_name, String legal_last_name, String address, LocalDate dob) {
+	public User(long userID, String email, String legal_first_name, String legal_last_name, String address, LocalDate dob) {
 		this.userID = userID;
-		this.password = password;
 		this.email = email;
 		this.legal_first_name = legal_first_name;
 		this.legal_last_name = legal_last_name;
@@ -83,30 +82,30 @@ public class User {
 		return ACCOUNT_TYPE;
 	}
 
-	/**
-	 * @return the password
-	 */
-	public String getPassword() {
-		return password;
-	}
+//	/**
+//	 * @return the password
+//	 */
+//	public String getPassword() {
+//		return password;
+//	}
 
-	/**
-	 * @param password the password to set
-	 */
-	public void setPassword(String password) {
-		this.password = password;
-	}
+//	/**
+//	 * @param password the password to set
+//	 */
+//	public void setPassword(String password) {
+//		this.password = password;
+//	}
 
 	protected void generateUserID() {
 	}
 
+	
 	/**
 	 * @return the userID
 	 */
 	protected long getUserID() {
 		return userID;
 	}
-
 	/**
 	 * @param userID the userID to set
 	 */
@@ -191,24 +190,22 @@ public class User {
 	 * @param newAddress
 	 * @return
 	 */
-	public String updatePersonalRecordOnDB(String newEmail, String newPassword, String newAddress){
+	public String updatePersonalRecordOnDB(String newAddress){
 
 		// First set the changes to the object instance.
-		setEmail(newEmail);
 		setAddress(newAddress);
-		setPassword(newPassword);
 
-		System.out.println(this);
-
-		// Communicate with the server to update
-		String updateMessage = String.format("UPDATE_ACCOUNT %d %s %s %s", getUserID(), newEmail, newPassword, newAddress);
-		System.out.println("Message: " + updateMessage);
-		return ServerCommunicator.communicateWithAccountServer(updateMessage);
+		JSONObject json = new JSONObject();
+	    
+	    // Populate the JSON object with key-value pairs
+	    json.put("action", "UPDATE_ACCOUNT");
+	    json.put("address", newAddress);
+		return ServerCommunicator.communicateWithAccountServer(json.toString());
 	}
 
 	@Override
 	public String toString() {
-		return getAccountType().getAccountName() + " [password=" + password + ", userID=" + userID + ", email=" + email
+		return getAccountType().getAccountName() +  ", userID=" + userID + ", email=" + email
 				+ ", legal_first_name=" + legal_first_name + ", legal_last_name=" + legal_last_name + ", address="
 				+ address + ", dob=" + dob + "]";
 	}
