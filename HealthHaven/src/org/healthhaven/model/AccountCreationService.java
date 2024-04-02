@@ -6,6 +6,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
+import org.healthhaven.server.ServerCommunicator;
+
 public class AccountCreationService {
 	
 	public static String createUser(String accountType, String email, String password, String firstName, String lastName, String address, LocalDate dob) {
@@ -62,7 +64,7 @@ public class AccountCreationService {
         Instant timestamp = Instant.now();
         String account = userType.getAccountName();
         String message = String.format(("CREATE_ACCOUNT %d %s %s %s %s %s %s %s %s"), userId, email, password, first_name, last_name, address, dob, timestamp.toString(), account);
-        return ServerCommunicator.communicateWithAccountServer(message);
+        return ServerCommunicator.communicateWithServer(message);
     }
     
     

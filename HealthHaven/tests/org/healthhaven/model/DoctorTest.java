@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.Random;
 
 import org.healthhaven.model.User.Account;
+import org.healthhaven.server.ServerCommunicator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;

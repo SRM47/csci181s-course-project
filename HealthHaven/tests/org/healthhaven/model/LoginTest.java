@@ -1,6 +1,9 @@
 package org.healthhaven.model;
 import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.*;
+
+import org.healthhaven.server.ServerCommunicator;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.mockito.MockedStatic;
@@ -27,7 +30,7 @@ class LoginTest {
     void testIdentifyUserFailure() {
         try (MockedStatic<ServerCommunicator> mockedStatic = mockStatic(ServerCommunicator.class)) {
             // Mock the server response for failed authentication
-            mockedStatic.when(() -> ServerCommunicator.communicateWithAccountServer(startsWith("AUTHENTICATE_ACCOUNT")))
+            mockedStatic.when(() -> ServerCommunicator.communicateWithServer(startsWith("AUTHENTICATE_ACCOUNT")))
                         .thenReturn("FAILURE");
 
             Login login = new Login();

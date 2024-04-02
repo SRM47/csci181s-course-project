@@ -5,6 +5,7 @@ import java.util.Random;
 import java.util.Scanner;
 
 import org.healthhaven.model.User.Account;
+import org.healthhaven.server.ServerCommunicator;
 
 /**
  * @author sameermalik
@@ -87,7 +88,7 @@ public class Superadmin extends User {
 	public String viewAccountList(){
 		String message = "VIEW ACCOUNT";
 		System.out.println("Message: " + message);
-		return(ServerCommunicator.communicateWithAccountServer(message));
+		return(ServerCommunicator.communicateWithServer(message));
 		
 	}
 	
@@ -101,7 +102,7 @@ public class Superadmin extends User {
 		String password = PasswordGenerator.generate();
 		String message = String.format("AUTHORIZE %s %s %s", email, password, userType);
 		
-		serverResponse = ServerCommunicator.communicateWithAccountServer(message);
+		serverResponse = ServerCommunicator.communicateWithServer(message);
 		if (!serverResponse.equals("SUCCESS")) {
 			return serverResponse;
 		} 
@@ -118,7 +119,7 @@ public class Superadmin extends User {
 	private static String doesAccountExist(String email){
         String message = String.format("EXISTING_ACCOUNT %s", email);
         // System.out.println("Message: " + message);
-        return  ServerCommunicator.communicateWithAccountServer(message);
+        return  ServerCommunicator.communicateWithServer(message);
         // System.out.println("Server response: " + serverResponse);
     }
 

@@ -5,6 +5,7 @@ import java.util.Random;
 import java.util.Scanner;
 
 import org.healthhaven.model.User.Account;
+import org.healthhaven.server.ServerCommunicator;
 
 
 /**
@@ -61,7 +62,7 @@ public class DataAnalyst extends User {
 		long userID = 300;
 		String message = "REQUEST_PATIENT_DATA_SUMMARY " + userID;
 //		System.out.println("message");
-		return(ServerCommunicator.communicateWithMedicalServer(message));
+		return(ServerCommunicator.communicateWithServer(message));
 	}
 	
 	@Override

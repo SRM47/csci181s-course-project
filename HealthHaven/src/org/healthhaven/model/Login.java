@@ -7,6 +7,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
+import org.healthhaven.server.ServerCommunicator;
+
 /**
  * @author sameermalik
  *
@@ -22,7 +24,7 @@ public class Login {
 		Instant timestamp = Instant.now(); // This captures the current moment in UTC.
 		String message = String.format("AUTHENTICATE_ACCOUNT %s %s %s", email, password, timestamp.toString());
 		// System.out.println("Message: " + message);
-		return(ServerCommunicator.communicateWithAccountServer(message));
+		return(ServerCommunicator.communicateWithServer(message));
 		// System.out.println("Server response: " + serverResponse);
 
 	}
@@ -31,7 +33,7 @@ public class Login {
 		Instant timestamp = Instant.now(); // This captures the current moment in UTC.
 		String message = String.format("AUTHENTICATE_NEW %s %s %s", email, password, timestamp.toString());
 		// System.out.println("Message: " + message);
-		return( ServerCommunicator.communicateWithAccountServer(message));
+		return( ServerCommunicator.communicateWithServer(message));
 		// System.out.println("Server response: " + serverResponse);
 
 	}

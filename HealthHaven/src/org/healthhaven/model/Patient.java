@@ -10,6 +10,7 @@ import java.util.Random;
 import java.util.Scanner;
 
 import org.healthhaven.model.User.Account;
+import org.healthhaven.server.ServerCommunicator;
 
 /**
  * @author sameermalik
@@ -69,7 +70,7 @@ public class Patient extends User {
 	public String viewPatientRecord() {
 		String message = String.format("VIEW %d", getUserID());
 		System.out.println("Message: " + message);
-		return ServerCommunicator.communicateWithMedicalServer(message);
+		return ServerCommunicator.communicateWithServer(message);
 
 	}
 	

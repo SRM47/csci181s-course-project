@@ -4,6 +4,8 @@ package org.healthhaven.model;
 import java.time.LocalDate;
 import java.util.Scanner;
 
+import org.healthhaven.server.ServerCommunicator;
+
 public class User {
 
 	private String password;
@@ -103,7 +105,7 @@ public class User {
 	/**
 	 * @return the userID
 	 */
-	protected long getUserID() {
+	public long getUserID() {
 		return userID;
 	}
 
@@ -203,7 +205,7 @@ public class User {
 		// Communicate with the server to update
 		String updateMessage = String.format("UPDATE_ACCOUNT %d %s %s %s", getUserID(), newEmail, newPassword, newAddress);
 		System.out.println("Message: " + updateMessage);
-		return ServerCommunicator.communicateWithAccountServer(updateMessage);
+		return ServerCommunicator.communicateWithServer(updateMessage);
 	}
 
 	@Override

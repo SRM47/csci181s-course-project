@@ -1,5 +1,6 @@
 package org.healthhaven.model;
 import org.healthhaven.model.User.Account;
+import org.healthhaven.server.ServerCommunicator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
@@ -46,7 +47,7 @@ public class SuperadminTest extends UserTest<Superadmin> {
         try (MockedStatic<ServerCommunicator> mockedStatic = mockStatic(ServerCommunicator.class)) {
             // Mock the static method call to return a specific response for the "VIEW ACCOUNT" message
             String expectedResponse = "Mocked list of accounts";
-            mockedStatic.when(() -> ServerCommunicator.communicateWithAccountServer("VIEW ACCOUNT"))
+            mockedStatic.when(() -> ServerCommunicator.communicateWithServer("VIEW ACCOUNT"))
                         .thenReturn(expectedResponse);
 
             // Call the method under test

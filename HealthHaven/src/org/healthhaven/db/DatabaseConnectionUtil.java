@@ -8,7 +8,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 
-public class DB {
+public class DatabaseConnectionUtil {
     public static Connection connect() throws SQLException {
 
         try {

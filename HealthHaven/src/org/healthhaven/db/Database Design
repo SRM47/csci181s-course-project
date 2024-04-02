@@ -1,0 +1,13 @@
+User Table: Stores the data of all users 
+UserID (PK), first name, last name, email, date of birth, etc… 
+
+Account Table: Stores UserID and Account type
+
+Authentication Table: Stores the login details of the users of the system
+UserID (FK), email, password
+*Email and passwords will be stored securely and hashed*
+
+Doctor Patient Table: Stores the patients each doctor is allowed to see information for.  Which doctor is allowed to see which patient’s data.  and what data
+
+Medical information Database:  Stores the medical record information for all patients. Each entry will have a unique ID so that we can say what doctors are allowed to see what pieces of information
+Entry ID (Primary Key), Patient User ID (Foreign Key) patient id of data, Doctor User ID (foreign key) of the doctor who entered the information, Timestamp, Height, Weight

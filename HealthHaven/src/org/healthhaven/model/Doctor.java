@@ -5,6 +5,7 @@ import java.util.Random;
 import java.util.Scanner;
 
 import org.healthhaven.model.User.Account;
+import org.healthhaven.server.ServerCommunicator;
 
 import java.time.Instant;
 
@@ -79,7 +80,7 @@ public class Doctor extends User {
         // Construct a message to send to the server
         String message = String.format("UPDATE_RECORD %d %s %s %s", userID, height, weight, timestamp.toString());
         System.out.println("message: "+ message);
-        return ServerCommunicator.communicateWithMedicalServer(message);
+        return ServerCommunicator.communicateWithServer(message);
     }
 
     /**
@@ -90,7 +91,7 @@ public class Doctor extends User {
 	public String viewPatientRecord(long userID) {
         String message = String.format("VIEW %d", userID);
         System.out.println("Message: " + message);
-        return ServerCommunicator.communicateWithMedicalServer(message);
+        return ServerCommunicator.communicateWithServer(message);
     }
 	
 	public String authorizeAccountCreation(String email) {
@@ -102,7 +103,7 @@ public class Doctor extends User {
 		
 		String password = PasswordGenerator.generate();
 		String message = String.format("AUTHORIZE %s %s %s", email, password, "Patient");
-		serverResponse = ServerCommunicator.communicateWithAccountServer(message);
+		serverResponse = ServerCommunicator.communicateWithServer(message);
 		
 		if (!serverResponse.equals("SUCCESS")) {
 			return serverResponse;
@@ -121,7 +122,7 @@ public class Doctor extends User {
 	private static String doesAccountExist(String email){
         String message = String.format("EXISTING_ACCOUNT %s", email);
         // System.out.println("Message: " + message);
-        return  ServerCommunicator.communicateWithAccountServer(message);
+        return  ServerCommunicator.communicateWithServer(message);
         // System.out.println("Server response: " + serverResponse);
     }
 
