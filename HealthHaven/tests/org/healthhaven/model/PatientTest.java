@@ -16,7 +16,7 @@ public class PatientTest extends UserTest<Patient> {
 
     @Override
     public Patient createUser() {
-        return new Patient(1234567890,"example@example.com","password123", "John", "Doe", "123 Main St", LocalDate.of(1980, 1, 1));
+        return new Patient(1234567890,"example@example.com", "John", "Doe", "123 Main St", LocalDate.of(1980, 1, 1));
     }
     
     @BeforeEach
@@ -48,7 +48,7 @@ public class PatientTest extends UserTest<Patient> {
             // Assuming getUserID returns a fixed value or is mocked to return a fixed value
             String expectedMessage = "VIEW " + patient.getUserID();
             String expectedResponse = "Mocked patient record content";
-            mockedStatic.when(() -> ServerCommunicator.communicateWithMedicalServer(expectedMessage))
+            mockedStatic.when(() -> ServerCommunicator.communicateWithServer(expectedMessage))
                         .thenReturn(expectedResponse);
             
 

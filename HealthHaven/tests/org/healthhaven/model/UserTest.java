@@ -35,10 +35,10 @@ public abstract class UserTest<T extends User> {
 	
 	protected abstract Account getExpectedAccountType();
 	
-	@Test
-	public void testGetPassword() {
-		assertEquals("password123", user.getPassword(), "Password should match the one set in createUser");
-	}
+//	@Test
+//	public void testGetPassword() {
+//		assertEquals("password123", user.getPassword(), "Password should match the one set in createUser");
+//	}
 
     @Test
     public void testGetEmail() {
@@ -70,11 +70,11 @@ public abstract class UserTest<T extends User> {
         user.setEmail("newEmail@gmail.com");
         assertEquals("newEmail@gmail.com", user.getEmail(), "The user should be able to update the password");
     }
-    @Test
-    public void testSetPassword(){
-        user.setPassword("newpassword");
-        assertEquals("newpassword", user.getPassword(), "The user should be able to update the password");
-    }
+//    @Test
+//    public void testSetPassword(){
+//        user.setPassword("newpassword");
+//        assertEquals("newpassword", user.getPassword(), "The user should be able to update the password");
+//    }
 
     @Test
     public void testSetAddress(){
@@ -82,33 +82,33 @@ public abstract class UserTest<T extends User> {
         assertEquals("New York, NY", user.getAddress(), "The user should be able to update the password");
     }
 
-    @Test
-    public void testUpdatePersonalRecordOnDB() {
-        User user = createUser();
-        long userID = 12345L; // Set this to match your user's ID setup
-        user.setUserID(userID); // Assuming there's a method to set the user's ID. If not, adjust as needed.
-
-        String newEmail = "newemail@example.com";
-        String newPassword = "newPassword123";
-        String newAddress = "456 New St";
-
-        try (MockedStatic<ServerCommunicator> mockedStatic = mockStatic(ServerCommunicator.class)) {
-            // Mock the static method call
-            String expectedServerResponse = "SUCCESS";
-            String expectedUpdateMessage = String.format("UPDATE_ACCOUNT %d %s %s %s", userID, newEmail, newPassword, newAddress);
-            mockedStatic.when(() -> ServerCommunicator.communicateWithServer(expectedUpdateMessage))
-                        .thenReturn(expectedServerResponse);
-
-            // Execute the method under test
-            String actualResponse = user.updatePersonalRecordOnDB(newEmail, newPassword, newAddress);
-
-            // Verify the method's behavior
-            assertEquals(newEmail, user.getEmail(), "Email should be updated in the user object.");
-            assertEquals(newPassword, user.getPassword(), "Password should be updated in the user object.");
-            assertEquals(newAddress, user.getAddress(), "Address should be updated in the user object.");
-            assertEquals(expectedServerResponse, actualResponse, "The server response should match the expected response.");
-        }
-    }
+//    @Test
+//    public void testUpdatePersonalRecordOnDB() {
+//        User user = createUser();
+//        long userID = 12345L; // Set this to match your user's ID setup
+//        user.setUserID(userID); // Assuming there's a method to set the user's ID. If not, adjust as needed.
+//
+//        String newEmail = "newemail@example.com";
+//        String newPassword = "newPassword123";
+//        String newAddress = "456 New St";
+//
+//        try (MockedStatic<ServerCommunicator> mockedStatic = mockStatic(ServerCommunicator.class)) {
+//            // Mock the static method call
+//            String expectedServerResponse = "SUCCESS";
+//            String expectedUpdateMessage = String.format("UPDATE_ACCOUNT %d %s %s %s", userID, newEmail, newPassword, newAddress);
+//            mockedStatic.when(() -> ServerCommunicator.communicateWithServer(expectedUpdateMessage))
+//                        .thenReturn(expectedServerResponse);
+//
+//            // Execute the method under test
+//            String actualResponse = user.updatePersonalRecordOnDB(newEmail, newPassword, newAddress);
+//
+//            // Verify the method's behavior
+//            assertEquals(newEmail, user.getEmail(), "Email should be updated in the user object.");
+//            assertEquals(newPassword, user.getPassword(), "Password should be updated in the user object.");
+//            assertEquals(newAddress, user.getAddress(), "Address should be updated in the user object.");
+//            assertEquals(expectedServerResponse, actualResponse, "The server response should match the expected response.");
+//        }
+//    }
 
     
 //    @Test

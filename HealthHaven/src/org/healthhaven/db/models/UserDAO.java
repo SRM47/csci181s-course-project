@@ -94,7 +94,7 @@ public class UserDAO {
 			User user = null;
 			if (data_rs.next()) {
 				Date dob = data_rs.getDate("dob");
-				user = new User(Long.parseLong(data_rs.getString("userid")), "email", "password",
+				user = new User(Long.parseLong(data_rs.getString("userid")), "email",
 						data_rs.getString("legalfirstname"), data_rs.getString("legallastname"),
 						data_rs.getString("address"), LocalDate.of(dob.getYear(), dob.getMonth(), dob.getDay()));
 			}
