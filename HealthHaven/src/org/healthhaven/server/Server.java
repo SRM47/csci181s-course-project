@@ -202,10 +202,14 @@ public class Server {
 					case "PASSWORD":						
 						response = AccountDAO.authenticateUser(this.conn, requestData.getString("email"),
 								requestData.getString("password"));
+						break;
+						
 					case "OTP":
 						response = AccountDAO.authenticateOTP(this.conn, requestData.getString("email"),
 								requestData.getString("OTP"));
+					    break;
 				}
+				
 //				check if type is password or otp (will havet to store in db)
 //				for otp: success, email, userid, first_name, last_name, address, dob, account type TODO
 				break; //we should be talking twice bc otp
