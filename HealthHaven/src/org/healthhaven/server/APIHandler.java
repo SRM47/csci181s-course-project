@@ -1,10 +1,12 @@
 package org.healthhaven.server;
 
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 
 import org.healthhaven.db.models.AccountDAO;
 import org.healthhaven.model.EmailSender;
 import org.healthhaven.model.PasswordGenerator;
+import org.healthhaven.model.TOTP;
 import org.healthhaven.model.UserIdGenerator;
 import org.json.JSONObject;
 
@@ -59,12 +61,11 @@ public class APIHandler{
 	}
 
 	private static JSONObject handleCreateAccount(JSONObject json, Connection cnn) {
-		boolean success = AccountDAO.updateTemporaryUserAfterFirstLogin(cnn,
+		return AccountDAO.updateTemporaryUserAfterFirstLogin(cnn,
 		json.getString("first_name"), json.getString("last_name"),
 		json.getString("dob"), json.getString("address"), json.getString("email"),
 		json.getString("password"), json.getString("accountType"));
-		String response = success ? "SUCCESS" : "FAILURE";
-		return null;
+
 	}
 
 	private static JSONObject handleAccountCreation(JSONObject json, Connection cnn) {
@@ -88,44 +89,58 @@ public class APIHandler{
 	}
 
 	private static JSONObject handlePasswordReset(JSONObject json, Connection cnn) {
+		JSONObject serverResponse = new JSONObject();
 		switch(json.getString("type")) {
 		case "EMAIL_CHECK":
-			if (AccountDAO.accountExistsByEmail(cnn, json.getString("email"))) {
-				JSONObject serverResponse = new JSONObject();
-				serverResponse.put("result", "SUCCESS");
-				serverResponse.put("userID", "12345"); //TODO
-				return serverResponse;
-			} 
+			
+			String result = "SUCCESS";
+			String reason = "";
+			if (!AccountDAO.accountExistsByEmail(cnn, json.getString("email"))) {
+				result = "FAILURE";
+				reason = "Account doesn't exist";
+			} else {
+				// Send email with OTP to person only if email is verified.
+				try {
+					String OTP = TOTP.secretKey().toString();
+					EmailSender.sendDefaultPasswordEmail(json.getString("email"), OTP, "None");
+				} catch (NoSuchAlgorithmException e) {
+					result = "FAILURE";
+					reason = "Error generating OTP";
+				}
+				
+			}
+			serverResponse.put("result", result);
+			serverResponse.put("reason", reason);
+			return serverResponse;
+			
 		case "VERIFY_OTP":
-			String jj = AccountDAO.authenticateOTP(cnn, json.getString("email"), json.getString("otp"));
-			return null;
+			return AccountDAO.authenticateOTP(cnn, json.getString("email"), json.getString("otp"));
 				
 		case "UPDATE_PASSWORD":
 			return AccountDAO.updatePassword(cnn, json.getString("password"),
-					json.getString("userId"));
+					json.getString("email"));
 		default:
-			JSONObject serverResponse = new JSONObject();
 			serverResponse.put("result", "FAILURE");
 			serverResponse.put("reason", "incorrect request");
 			return serverResponse;	
 			
+			
 		}
+		
 	}
 
 	private static JSONObject handleLoginRequest(JSONObject json, Connection cnn) {
 		switch (json.getString("type")) {
 		case "PASSWORD":						
-			String response = AccountDAO.authenticateUser(cnn, json.getString("email"),
+			return AccountDAO.authenticateUser(cnn, json.getString("email"),
 					json.getString("password"));
-			return null;
 		case "OTP":
-			String response1 = AccountDAO.authenticateOTP(cnn, json.getString("email"),
-					json.getString("OTP"));
-			return null;
+			return AccountDAO.authenticateOTP(cnn, json.getString("email"),
+					json.getString("otp"));
 		default:
 			JSONObject serverResponse = new JSONObject();
 			serverResponse.put("result", "FAILURE");
-			serverResponse.put("reason", "incorrect request");
+			serverResponse.put("reason", "Invalid Request");
 			return serverResponse;	
 		} 
 	}

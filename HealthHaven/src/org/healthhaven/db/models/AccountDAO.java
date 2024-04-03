@@ -93,42 +93,50 @@ public class AccountDAO {
 	    return true;
 	}
 	
-	public static boolean updateTemporaryUserAfterFirstLogin(Connection conn, String legalfirstname, String legallastname, String dob, String address, String email, String password, String accountType) {
-
+	public static JSONObject updateTemporaryUserAfterFirstLogin(Connection conn, String legalfirstname, String legallastname, String dob, String address, String email, String password, String accountType) {
+		JSONObject serverResponse = new JSONObject();
+		String result = "SUCCESS";
+		String reason = "";
 	    // Step 1: Get userId from authentication table based on email
 	    String userId = getUserIdFromEmail(conn, email);
 	    if (userId == null) {
-	        System.err.println("Error: User not found with email: " + email);
-	        return false;
+	    	result = "FAILURE";
+	    	reason = "User does not exist";
 	    }
 	    
 	    // Step 1.5: Verify DOB
 	    if (!verifyDOB(conn, userId, dob)) {
-	        System.err.println("Error: Provided DOB does not match existing DOB.");
-	        return false; 
+	        result = "FAILURE";
+	        reason = "Provided DOB does not match existing DOB";
 	    }
 
 	    // Step 3: Update users table
 	    String usersUpdateSql = "UPDATE healthhaven.users SET legalfirstname = ?, legallastname = ?, address = ? WHERE userid = ?";
 	    if (!updateUserTable(conn, usersUpdateSql, legalfirstname, legallastname, address, userId)) {
-	        return false;
+	    	result = "FAILURE";
+	    	reason = "Database Entry Error";
 	    } 
 
 	    // Step 5: Update authentication table (with password update)
 	    String authenticationUpdateSql = "UPDATE healthhaven.authentication SET password = ? WHERE userid = ?";
 	    if (!updateAuthenticationTable(conn, authenticationUpdateSql, password, userId)) { 
-	        return false; 
+	    	result = "FAILURE";
+	    	reason = "Database Entry Error";
 	    } 
 
-	    return true; 
+	    serverResponse.put("result", result);
+	    serverResponse.put("reason", reason);
+	    return serverResponse;
 	}
 	
 	public static JSONObject updateUserInformation(Connection conn, String address, String userId) {
 		JSONObject serverResponse = new JSONObject();
+		String result = "SUCCESS";
+		String reason = "";
+		
 		if (!accountExistsById(conn, userId)) {
-			serverResponse.put("result", "FAILURE");
-			serverResponse.put("reason", "No account found");
-			return serverResponse;
+			result = "FAILURE";
+			reason = "Account does not exist";
 		}
 		
 		String usersUpdateSql = "UPDATE healthhaven.users SET address = ? WHERE userid = ?";
@@ -137,19 +145,18 @@ public class AccountDAO {
 	        stmt.setString(2, userId);
 
 	        int rowsUpdated = stmt.executeUpdate();
-	        if (rowsUpdated > 0) {
-	        	serverResponse.put("result", "SUCCESS");
-				return serverResponse;
-	        } else {
-	        	serverResponse.put("result", "FAILURE");
-				serverResponse.put("reason", ""); //TODO: need better reason
-				return serverResponse;
+	        if (rowsUpdated <= 0) {
+	        	result = "FAILURE";
+				reason = "Database entry error"; //TODO: need better reason
 	        }
 	    } catch (SQLException e) {
-	    	serverResponse.put("result", "FAILURE");
-			serverResponse.put("reason", e.getMessage());
-			return serverResponse;
+			result = "FAILURE";
+			reason = e.getMessage(); 
 	    }
+		
+		serverResponse.put("result", result);
+	    serverResponse.put("reason", reason);
+	    return serverResponse;
 	}
 	
 	private static boolean updateUserTable(Connection conn, String sql, String legalfirstname, String legallastname, String address, String userId) {
@@ -169,20 +176,20 @@ public class AccountDAO {
 	
 	public static JSONObject updatePassword(Connection conn, String newPassword, String userId) {
 		JSONObject serverResponse = new JSONObject();
+		String result = "SUCCESS";
+		String reason = "";
 		if (!accountExistsById(conn, userId)) {
-			serverResponse.put("result", "FAILURE");
-			serverResponse.put("reason", "No account found");
-			return serverResponse;
+			result = "FAILURE";
+			reason = "Account does not exist";
 		}
 		String authenticationUpdateSql = "UPDATE healthhaven.authentication SET password = ? WHERE userid = ?";
 	    if (!updateAuthenticationTable(conn, authenticationUpdateSql, newPassword, userId)) { 
-	    	serverResponse.put("result", "FAILURE");
-			serverResponse.put("reason", "Error during updating the database.");
-			return serverResponse;
+	    	result = "FAILURE";
+			reason = "Database Entry Error";
 
 	    } 
-	    serverResponse.put("result", "SUCCESS");
-	    
+	    serverResponse.put("result", result);
+	    serverResponse.put("reason", reason);
 	    return serverResponse;
 		
 	}
@@ -289,7 +296,11 @@ public class AccountDAO {
 	    return false; // Default to account not existing if an error occurs or no match is found
 	}
 	
-	public static String authenticateUser(Connection conn, String email, String candidatePassword) {
+	public static JSONObject authenticateUser(Connection conn, String email, String candidatePassword) {
+		JSONObject serverResponse = new JSONObject();
+		String result = "SUCCESS";
+		String reason = "";
+
 		// Returns the userId if user is authenticated correctly
 		String sql = "SELECT * FROM healthhaven.authentication WHERE email = '" + email + "'";
 
@@ -301,38 +312,34 @@ public class AccountDAO {
 				// TODO: Hash this password.
 				String hashedCandidatePassword = candidatePassword;
 				if (!hashedCandidatePassword.equals(truePassword)) {
-					JSONObject json = new JSONObject();
-					json.put("result", "FAILURE");
-					json.put("reason", "INCORRECT_PASSWORD");
-				    return json.toString();
+					result = "FAILURE";
+					reason = "Incorrect Password";
 				}
 				boolean resetValue = data_rs.getBoolean("reset");
 				if (!resetValue) {
-					JSONObject json = new JSONObject();
-					json.put("result", "FAILURE");
-					json.put("reason", "MUST_CREATE_ACCOUNT");
-				    return json.toString();   					// send email with otp
+					result = "SUCCESS";
+					reason = "NEW"; 
 				} else {
-					JSONObject json = new JSONObject();
-					json.put("result", "SUCCESS");
-					json.put("reason", "AUTHENTICATED");
-				    return json.toString();   
+					result = "SUCCESS";
+					reason = "EXISTING";  
 				}
 			} else {
-				JSONObject json = new JSONObject();
-				json.put("result", "FAILURE");
-				json.put("reason", "EMAIL_DOES_NOT_EXIST");
-			    return json.toString(); 
+				result = "FAILURE";
+				reason = "Account does not exist"; 
 			}
 
 		} catch (SQLException e) {
-			System.err.println("Error creating user: " + e.getMessage());
-			return null;
+			result = "FAILURE";
+			reason = "Error Authenticating User"; 
 		}
+		
+		serverResponse.put("result", result);
+		serverResponse.put(result.equals("SUCCESS") ? "type" : "reason", reason);
+		return serverResponse;
 	}
 	
-	public static String authenticateOTP(Connection conn, String email, String otp) {
-		return "";
+	public static JSONObject authenticateOTP(Connection conn, String email, String otp) {
+		return null;
 //		// Returns the userId if user is authenticated correctly
 //		String sql = "SELECT * FROM healthhaven.authentication WHERE email = '" + email + "'";
 //
