@@ -69,23 +69,25 @@ public class APIHandler{
 	}
 
 	private static JSONObject handleAccountCreation(JSONObject json, Connection cnn) {
+		JSONObject serverResponse = new JSONObject();
 		String email = json.getString("email");
 		String dob = json.getString("dob");
 		String userType = json.getString("userType"); //TODO this is same as accountType but accounttype is better
 		if (AccountDAO.accountExistsByEmail(cnn, email)) {
-			String response = "FAILURE";
-			return null;
+			serverResponse.put("result", "FAILURE");
+			serverResponse.put("reason", "Email already exists");
+			return serverResponse;
 		}
 		String generatedPassword = PasswordGenerator.generate(16);
 		UserIdGenerator g = new UserIdGenerator(16);
 		String generatedUserId = g.generate();
-		AccountDAO.createTemporaryUser(cnn, generatedUserId, email, generatedPassword, dob, userType);
+		serverResponse = AccountDAO.createTemporaryUser(cnn, generatedUserId, email, generatedPassword, dob, userType);
+		if (serverResponse.get("result").equals("FAILURE")) {
+			// If there was an error in updating the database, do not send email and return failure right away.
+			return serverResponse;
+		}
 		EmailSender.sendDefaultPasswordEmail(email, generatedPassword, userType);
-//		result:
-//		type: NEW or EXISTING
-//		if new, usertype: DOCTOR, etc TODO
-		String response = "SUCCESS";
-		return null;
+		return serverResponse;
 	}
 
 	private static JSONObject handlePasswordReset(JSONObject json, Connection cnn) {
