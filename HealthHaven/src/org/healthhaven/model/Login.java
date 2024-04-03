@@ -26,6 +26,7 @@ public class Login {
 		// Creating a new JSONObject and populating it with data
 	    JSONObject json = new JSONObject();
 	    json.put("request", "LOGIN");
+	    json.put("type", "PASSWORD");
 	    json.put("email", email);
 	    json.put("password", password);
 	    json.put("timestamp", timestamp.toString());
