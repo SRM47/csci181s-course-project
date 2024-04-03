@@ -123,9 +123,12 @@ public class AccountDAO {
 	    return true; 
 	}
 	
-	public static String updateUserInformation(Connection conn, String address, String userId) {
+	public static JSONObject updateUserInformation(Connection conn, String address, String userId) {
+		JSONObject serverResponse = new JSONObject();
 		if (!accountExistsById(conn, userId)) {
-			return "NO_ACCOUNT";
+			serverResponse.put("result", "FAILURE");
+			serverResponse.put("reason", "No account found");
+			return serverResponse;
 		}
 		
 		String usersUpdateSql = "UPDATE healthhaven.users SET address = ? WHERE userid = ?";
@@ -134,10 +137,18 @@ public class AccountDAO {
 	        stmt.setString(2, userId);
 
 	        int rowsUpdated = stmt.executeUpdate();
-	        return rowsUpdated > 0 ? "SUCCESS" : "FAILURE";
+	        if (rowsUpdated > 0) {
+	        	serverResponse.put("result", "SUCCESS");
+				return serverResponse;
+	        } else {
+	        	serverResponse.put("result", "FAILURE");
+				serverResponse.put("reason", ""); //TODO: need better reason
+				return serverResponse;
+	        }
 	    } catch (SQLException e) {
-	        System.err.println("Error during table update: " + e.getMessage());
-	        return "FAILURE";
+	    	serverResponse.put("result", "FAILURE");
+			serverResponse.put("reason", e.getMessage());
+			return serverResponse;
 	    }
 	}
 	
@@ -156,15 +167,23 @@ public class AccountDAO {
 	    }
 	}
 	
-	public static String updatePassword(Connection conn, String newPassword, String userId) {
+	public static JSONObject updatePassword(Connection conn, String newPassword, String userId) {
+		JSONObject serverResponse = new JSONObject();
 		if (!accountExistsById(conn, userId)) {
-			return "NO_ACCOUNT";
+			serverResponse.put("result", "FAILURE");
+			serverResponse.put("reason", "No account found");
+			return serverResponse;
 		}
 		String authenticationUpdateSql = "UPDATE healthhaven.authentication SET password = ? WHERE userid = ?";
 	    if (!updateAuthenticationTable(conn, authenticationUpdateSql, newPassword, userId)) { 
-	        return "FAILURE"; 
+	    	serverResponse.put("result", "FAILURE");
+			serverResponse.put("reason", "Error during updating the database.");
+			return serverResponse;
+
 	    } 
-	    return "SUCCESS";
+	    serverResponse.put("result", "SUCCESS");
+	    
+	    return serverResponse;
 		
 	}
 	
@@ -250,6 +269,7 @@ public class AccountDAO {
 	
 	
 	public static boolean accountExistsByEmail(Connection conn, String email) {
+		//TODO: Need to give back userID if successful
 	    String sql = "SELECT COUNT(*) FROM healthhaven.authentication WHERE email = ?";
 
 	    try (PreparedStatement stmt = conn.prepareStatement(sql)) {

@@ -9,6 +9,7 @@ import org.healthhaven.model.UserIdGenerator;
 import org.json.JSONObject;
 
 public class APIHandler{
+	
 	public static JSONObject processAPIRequest(JSONObject json, Connection cnn) {
 		switch(json.getString("request")) {
 			case "LOGIN":
@@ -54,8 +55,7 @@ public class APIHandler{
 		String newAddress = json.getString("address");
 		String userId = json.getString("userId");
 		//TODO: needs to be json file
-		String response = AccountDAO.updateUserInformation(cnn, newAddress, userId);
-		return null;
+		return AccountDAO.updateUserInformation(cnn, newAddress, userId);
 	}
 
 	private static JSONObject handleCreateAccount(JSONObject json, Connection cnn) {
@@ -91,17 +91,23 @@ public class APIHandler{
 		switch(json.getString("type")) {
 		case "EMAIL_CHECK":
 			if (AccountDAO.accountExistsByEmail(cnn, json.getString("email"))) {
-				String response = "SUCCESS"; //TODO
-				return null;
+				JSONObject serverResponse = new JSONObject();
+				serverResponse.put("result", "SUCCESS");
+				serverResponse.put("userID", "12345"); //TODO
+				return serverResponse;
 			} 
-			return null;
 		case "VERIFY_OTP":
+			String jj = AccountDAO.authenticateOTP(cnn, json.getString("email"), json.getString("otp"));
+			return null;
+				
 		case "UPDATE_PASSWORD":
-			String response = AccountDAO.updatePassword(cnn, json.getString("password"),
+			return AccountDAO.updatePassword(cnn, json.getString("password"),
 					json.getString("userId"));
-			return null;
 		default:
-			return null;
+			JSONObject serverResponse = new JSONObject();
+			serverResponse.put("result", "FAILURE");
+			serverResponse.put("reason", "incorrect request");
+			return serverResponse;	
 			
 		}
 	}
@@ -117,7 +123,10 @@ public class APIHandler{
 					json.getString("OTP"));
 			return null;
 		default:
-			return null;
+			JSONObject serverResponse = new JSONObject();
+			serverResponse.put("result", "FAILURE");
+			serverResponse.put("reason", "incorrect request");
+			return serverResponse;	
 		} 
 	}
 }
