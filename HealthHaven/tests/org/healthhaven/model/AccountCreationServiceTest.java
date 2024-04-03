@@ -1,170 +1,66 @@
 package org.healthhaven.model;
 
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.startsWith;
-import static org.mockito.Mockito.mockStatic;
-import org.mockito.MockedStatic;
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.healthhaven.server.ServerCommunicator;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.time.LocalDate;
-import java.util.Scanner;
 
-class AccountCreationServiceTest {
-	
-    private final InputStream systemIn = System.in;
-    private ByteArrayInputStream testIn;
-    
-//    private void provideInput(String data) {
-//        testIn = new ByteArrayInputStream(data.getBytes());
-//        System.setIn(testIn);
-//    }
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
 
-    @AfterEach
-    public void restoreSystemInputOutput() {
-        System.setIn(systemIn);
+public class AccountCreationServiceTest {
+    private MockedStatic<ServerCommunicator> mockedServerCommunicator;
+
+    @BeforeEach
+    public void setUp() {
+        // Initialize the mocked static method before each test
+        mockedServerCommunicator = Mockito.mockStatic(ServerCommunicator.class);
+        mockedServerCommunicator.when(() -> ServerCommunicator.communicateWithServer(anyString())).thenReturn("Mock Response");
     }
 
     @Test
-    void testCreateUserSuccess() {
-        try (MockedStatic<ServerCommunicator> mockedStatic = mockStatic(ServerCommunicator.class)) {
-            // Mocking the server responses
-            mockedStatic.when(() -> ServerCommunicator.communicateWithServer("EXISTING_ACCOUNT user@example.com")).thenReturn("VALID");
-            mockedStatic.when(() -> ServerCommunicator.communicateWithServer(startsWith("CREATE_ACCOUNT"))).thenReturn("SUCCESS");
-
-            // Attempt to create a new user instance
-            String response = AccountCreationService.createUser("Patient", "user@example.com", "password123", "John", "Doe", "123 Main St", LocalDate.of(1990, 1, 1));
-
-            // Verify successful account creation
-            assertEquals("SUCCESS", response, "The account should be successfully created.");
+    public void testCreateUserForAllUserTypes() {
+        // An array of all user types to test, including an undefined type to trigger the default case
+        String[] userTypes = {"PATIENT", "DOCTOR", "DATA_ANALYST", "DPO", "SUPERADMIN", "UNDEFINED"};
+        for (String userType : userTypes) {
+            String result = AccountCreationService.createUser(userType, "test@example.com", "password", "John", "Doe", "123 Main St", LocalDate.of(1980, 1, 1));
+            assertEquals("Mock Response", result, "The response for userType " + userType + " should be 'Mock Response'");
         }
     }
 
+    @Test
+    public void testCreateUserWithInvalidUserType() {
+        // Testing with an explicitly invalid user type to ensure the method handles it gracefully
+        String result = AccountCreationService.createUser("INVALID_TYPE", "test@example.com", "password", "John", "Doe", "123 Main St", LocalDate.of(1980, 1, 1));
+        assertEquals("Mock Response", result, "The response for an invalid userType should be 'Mock Response'");
+    }
 
-//    @Test
-//    void testDoesAccountExist() {
-//        try (MockedStatic<ServerCommunicator> mockedStatic = mockStatic(ServerCommunicator.class)) {
-//            // Mocking the server response for an existing account
-//            mockedStatic.when(() -> ServerCommunicator.communicateWithAccountServer("EXISTING_ACCOUNT user@example.com")).thenReturn("EXISTS");
-//
-//            // Testing for an existing account
-//            String response = AccountCreationService.doesAccountExist("user@example.com");
-//            assertEquals("EXISTS", response);
-//        }
-//    }
-    
+    @Test
+    public void testDetailsForPatientAccountCreation() {
+        // Using ArgumentCaptor to capture the JSON string sent to ServerCommunicator
+        ArgumentCaptor<String> argumentCaptor = ArgumentCaptor.forClass(String.class);
+        
+        // Perform the operation to capture the argument
+        AccountCreationService.createUser("PATIENT", "jane.doe@example.com", "securepassword", "Jane", "Doe", "456 Elm Street", LocalDate.of(1990, 5, 15));
+        
+        // Capture the argument passed to communicateWithServer
+        mockedServerCommunicator.verify(() -> ServerCommunicator.communicateWithServer(argumentCaptor.capture()));
+        String capturedArgument = argumentCaptor.getValue();
 
-//    @Test
-//    void testCreateUserFailureDueToExistingAccount() {
-//        try (MockedStatic<ServerCommunicator> mockedStatic = mockStatic(ServerCommunicator.class)) {
-//            // Mocking the server response for an existing account
-//            mockedStatic.when(() -> ServerCommunicator.communicateWithAccountServer("EXISTING_ACCOUNT user@example.com")).thenReturn("EXISTS");
-//
-//            // Attempt to create a new user instance
-//            String response = AccountCreationService.createUser("Doctor", "user@example.com", "password123", "Alice", "Smith", "456 Clinic Ave", LocalDate.of(1985, 5, 15));
-//
-//            // Verify that account creation failed due to the existing account
-//            assertEquals("Account creation failed!", response, "Account creation should fail due to an existing account.");
-//        }
-//    }
+        // Assertions can be expanded to check for specific JSON fields
+        assertEquals(true, capturedArgument.contains("\"accountType\":\"Patient\""), "The JSON must contain the patient account type.");
+        assertEquals(true, capturedArgument.contains("\"email\":\"jane.doe@example.com\""), "The JSON must contain the correct email.");
+    }
 
-//    @Test
-//    void testCreateUserFailureDueToServerError() {
-//        try (MockedStatic<ServerCommunicator> mockedStatic = mockStatic(ServerCommunicator.class)) {
-//            // Mocking the server responses
-//            mockedStatic.when(() -> ServerCommunicator.communicateWithAccountServer("EXISTING_ACCOUNT user@example.com")).thenReturn("VALID");
-//            mockedStatic.when(() -> ServerCommunicator.communicateWithAccountServer(startsWith("CREATE_ACCOUNT"))).thenReturn("FAILURE");
-//
-//            // Attempt to create a new user instance
-//            String response = AccountCreationService.createUser("Data_Analyst", "analyst@example.com", "securePass", "Max", "Smith", "789 Data Blvd", LocalDate.of(1980, 10, 20));
-//
-//            // Verify that account creation failed due to a server error
-//            assertNotEquals("SUCCESS", response, "Account creation should fail due to a server error.");
-//        }
-//    }
 
-//
-//    @Test
-//    void testCreateUserInstanceSuccess() {
-//        try (MockedStatic<ServerCommunicator> mockedStatic = mockStatic(ServerCommunicator.class)) {
-//            // Mocking the server response for a successful account creation
-//            mockedStatic.when(() -> ServerCommunicator.communicateWithAccountServer(anyString())).thenReturn("SUCCESS");
-//
-//            // Attempt to create a new user instance
-//            User newUser = AccountCreationService.createUserInstance(User.Account.PATIENT, "user@example.com", "password123", "John", "Doe", "123 Main St", LocalDate.of(1990, 1, 1));
-//
-//            // Verify that a new user instance is created successfully
-//            assertNotNull(newUser, "A new user instance should be created on successful account creation.");
-//            assertTrue(newUser instanceof Patient, "The created user instance should be of type Patient.");
-//        }
-//    }
-    
-//    @Test
-//    void testCreateDoctorInstanceSuccess() {
-//        try (MockedStatic<ServerCommunicator> mockedStatic = mockStatic(ServerCommunicator.class)) {
-//            mockedStatic.when(() -> ServerCommunicator.communicateWithAccountServer(anyString())).thenReturn("SUCCESS");
-//            
-//            User newUser = AccountCreationService.createUserInstance(User.Account.DOCTOR, "doctor@example.com", "password123", "Jane", "Doe", "456 Clinic Ave", LocalDate.of(1985, 5, 15));
-//            
-//            assertNotNull(newUser, "A new user instance should be created on successful account creation.");
-//            assertTrue(newUser instanceof Doctor, "The created user instance should be of type Doctor.");
-//        }
-//    }
-//
-//    @Test
-//    void testCreateDataAnalystInstanceSuccess() {
-//        try (MockedStatic<ServerCommunicator> mockedStatic = mockStatic(ServerCommunicator.class)) {
-//            mockedStatic.when(() -> ServerCommunicator.communicateWithAccountServer(anyString())).thenReturn("SUCCESS");
-//            
-//            User newUser = AccountCreationService.createUserInstance(User.Account.DATA_ANALYST, "analyst@example.com", "securePass", "Max", "Smith", "789 Data Blvd", LocalDate.of(1980, 10, 20));
-//            
-//            assertNotNull(newUser, "A new user instance should be created on successful account creation.");
-//            assertTrue(newUser instanceof DataAnalyst, "The created user instance should be of type Data Analyst.");
-//        }
-//    }
-//
-//    @Test
-//    void testCreateDPOInstanceSuccess() {
-//        try (MockedStatic<ServerCommunicator> mockedStatic = mockStatic(ServerCommunicator.class)) {
-//            mockedStatic.when(() -> ServerCommunicator.communicateWithAccountServer(anyString())).thenReturn("SUCCESS");
-//            
-//            User newUser = AccountCreationService.createUserInstance(User.Account.DPO, "dpo@example.com", "password456", "Sam", "Taylor", "123 Privacy St", LocalDate.of(1975, 3, 5));
-//            
-//            assertNotNull(newUser, "A new user instance should be created on successful account creation.");
-//            assertTrue(newUser instanceof DataProtectionOfficer, "The created user instance should be of type Data Protection Officer.");
-//        }
-//    }
-//
-//    @Test
-//    void testCreateSuperadminInstanceSuccess() {
-//        try (MockedStatic<ServerCommunicator> mockedStatic = mockStatic(ServerCommunicator.class)) {
-//            mockedStatic.when(() -> ServerCommunicator.communicateWithAccountServer(anyString())).thenReturn("SUCCESS");
-//            
-//            User newUser = AccountCreationService.createUserInstance(User.Account.SUPERADMIN, "superadmin@example.com", "adminPass123", "Alex", "Johnson", "1 Admin Road", LocalDate.of(1982, 7, 22));
-//            
-//            assertNotNull(newUser, "A new user instance should be created on successful account creation.");
-//            assertTrue(newUser instanceof Superadmin, "The created user instance should be of type Superadmin.");
-//        }
-//    }
-//
-//    @Test
-//    void testCreateUserInstanceFailure() {
-//        try (MockedStatic<ServerCommunicator> mockedStatic = mockStatic(ServerCommunicator.class)) {
-//            // Mocking the server response for a failed account creation
-//            mockedStatic.when(() -> ServerCommunicator.communicateWithAccountServer(anyString())).thenReturn("FAILURE");
-//
-//            // Attempt to create a new user instance
-//            User newUser = AccountCreationService.createUserInstance(User.Account.PATIENT, "user@example.com", "password123", "John", "Doe", "123 Main St", LocalDate.of(1990, 1, 1));
-//
-//            // Verify that no user instance is created on failure
-//            assertNull(newUser, "No user instance should be created on failed account creation.");
-//        }
-//    }
-
-    // Additional tests can follow the same pattern for different scenarios
+    @AfterEach
+    public void tearDown() {
+        // Close the mocked static method after each test
+        mockedServerCommunicator.close();
+    }
 }

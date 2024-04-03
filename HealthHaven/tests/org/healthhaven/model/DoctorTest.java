@@ -1,141 +1,63 @@
 package org.healthhaven.model;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mockStatic;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.time.LocalDate;
-import java.util.Random;
 
 import org.healthhaven.model.User.Account;
 import org.healthhaven.server.ServerCommunicator;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.mockito.ArgumentMatchers;
+
+import java.time.LocalDate;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
 
 public class DoctorTest extends UserTest<Doctor> {
-    
+
     @Override
     public Doctor createUser() {
-        return new Doctor("example@example.com", "John", "Doe", "123 Main St", LocalDate.of(1980, 1, 1));
+        // Ensure this matches exactly with the UserTest setup for consistency
+        return new Doctor("userId123", "example@example.com", "John", "Doe", "123 Main St", LocalDate.of(1980, 1, 1));
     }
-    
-    @BeforeEach
-    @Override
-    public void setUp() {
-        super.setUp();
-    }
-    
+
     @Override
     protected Account getExpectedAccountType() {
+        // Specifies the expected account type for instances of Doctor
         return Account.DOCTOR;
     }
 
     @Test
-    public void testGenerateUserID() {
-        // Ensuring that the generated userID starts with '1', indicating a Doctor's userID
-        user.generateUserID();
-        long userID = user.getUserID();
-        assertTrue(Long.toString(userID).startsWith("1"), "Doctor userID should start with 1.");
+    public void testUpdatePatientRecordOnDB() {
+        String expectedResponse = "Record Updated";
+        try (MockedStatic<ServerCommunicator> mockedStatic = Mockito.mockStatic(ServerCommunicator.class)) {
+            mockedStatic.when(() -> ServerCommunicator.communicateWithServer(anyString())).thenReturn(expectedResponse);
+
+            // Example patient ID, height, and weight
+            String response = user.updatePatientRecordOnDB(12345L, "180cm", "75kg");
+            assertEquals(expectedResponse, response, "The response should indicate that the record was updated.");
+        }
     }
-    
+
     @Test
     public void testViewPatientRecord() {
+        String expectedResponse = "Patient Record Details";
         try (MockedStatic<ServerCommunicator> mockedStatic = Mockito.mockStatic(ServerCommunicator.class)) {
-            // Mock the static method call
-            mockedStatic.when(() -> ServerCommunicator.communicateWithServer("VIEW 12345"))
-                    .thenReturn("Mocked patient record response");
+            mockedStatic.when(() -> ServerCommunicator.communicateWithServer(anyString())).thenReturn(expectedResponse);
 
-            // Call the method under test
-            String response = user.viewPatientRecord(12345);
-
-            // Assert the expected behavior or outcome
-            assertEquals("Mocked patient record response", response, "The response should match the mocked one.");
+            // Example patient ID
+            String response = user.viewPatientRecord(12345L);
+            assertEquals(expectedResponse, response, "The response should contain the patient record details.");
         }
     }
-    
+
     @Test
-    public void testUpdatePatientRecordOnDB() {
+    public void testAuthorizeAccountCreation() {
+        String expectedResponse = "Account Creation Authorized";
         try (MockedStatic<ServerCommunicator> mockedStatic = Mockito.mockStatic(ServerCommunicator.class)) {
-            // Mock the static method to return a specific response for any string that starts with "UPDATE_RECORD"
-            mockedStatic.when(() -> ServerCommunicator.communicateWithServer(ArgumentMatchers.startsWith("UPDATE_RECORD")))
-                    .thenReturn("Mocked update record response");
+            mockedStatic.when(() -> ServerCommunicator.communicateWithServer(anyString())).thenReturn(expectedResponse);
 
-            // Prepare the test inputs
-            long testUserID = 12345L;
-            String testHeight = "180";
-            String testWeight = "75";
-
-            // Call the method under test with the prepared inputs
-            String response = user.updatePatientRecordOnDB(testUserID, testHeight, testWeight);
-
-            // Assert that the response is as expected
-            assertEquals("Mocked update record response", response, "The response should match the mocked one.");
-
-            // Additionally, you might want to verify that the method was called with an argument that matches the expected format.
-            // However, this verification is somewhat more complex due to the inclusion of a timestamp in the message,
-            // which we cannot predict exactly in the test. If you had a way to mock the timestamp or if the message format
-            // was simpler, you could add a verification step here.
+            // New patient email and dob
+            String response = user.authorizeAccountCreation("newpatient@example.com", LocalDate.of(1990, 1, 1));
+            assertEquals(expectedResponse, response, "The response should indicate that the account creation was authorized.");
         }
     }
-    
-//    @Test
-//    public void testAuthorizeAccountCreationSuccess() {
-//        String email = "newpatient@example.com";
-//        String mockPassword = "SecurePassword456";
-//        Doctor doctor = createUser();
-//
-//        try (MockedStatic<ServerCommunicator> mockedServerCommunicator = mockStatic(ServerCommunicator.class);
-//             MockedStatic<PasswordGenerator> mockedPasswordGenerator = mockStatic(PasswordGenerator.class);
-//             MockedStatic<EmailSender> mockedEmailSender = mockStatic(EmailSender.class)) {
-//             
-//            mockedPasswordGenerator.when(PasswordGenerator::generate).thenReturn(mockPassword);
-//            mockedServerCommunicator.when(() -> ServerCommunicator.communicateWithServer(anyString()))
-//                                    .thenReturn("VALID", "SUCCESS");
-//            mockedEmailSender.when(() -> EmailSender.sendEmail(eq(email), anyString(), anyString()))
-//                             .thenReturn("Email sent successfully");
-//
-//            String result = doctor.authorizeAccountCreation(email);
-//
-//            assertEquals("Email sent successfully", result, "Expected email sent successfully message after account creation.");
-//        }
-//    }
-
-//    @Test
-//    public void testAuthorizeAccountCreationAccountExists() {
-//        String email = "existingpatient@example.com";
-//        Doctor doctor = createUser();
-//
-//        try (MockedStatic<ServerCommunicator> mockedServerCommunicator = mockStatic(ServerCommunicator.class)) {
-//            mockedServerCommunicator.when(() -> ServerCommunicator.communicateWithServer(anyString()))
-//                                    .thenReturn("ACCOUNT_EXISTS");
-//
-//            String result = doctor.authorizeAccountCreation(email);
-//
-//            assertTrue(result.contains("ACCOUNT_EXISTS: Cannot create account under this email."), "Expected account exists error message.");
-//        }
-//    }
-
-//    @Test
-//    public void testAuthorizeAccountCreationFailure() {
-//        String email = "newpatient@example.com";
-//        String mockPassword = "SecurePassword789";
-//        Doctor doctor = createUser();
-//
-//        try (MockedStatic<ServerCommunicator> mockedServerCommunicator = mockStatic(ServerCommunicator.class);
-//             MockedStatic<PasswordGenerator> mockedPasswordGenerator = mockStatic(PasswordGenerator.class)) {
-//             
-//            mockedPasswordGenerator.when(PasswordGenerator::generate).thenReturn(mockPassword);
-//            mockedServerCommunicator.when(() -> ServerCommunicator.communicateWithServer(anyString()))
-//                                    .thenReturn("VALID", "SERVER_ERROR");
-//
-//            String result = doctor.authorizeAccountCreation(email);
-//
-//            assertEquals("SERVER_ERROR", result, "Expected server error message.");
-//        }
-//    }
-    
 }

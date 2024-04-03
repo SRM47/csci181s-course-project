@@ -1,62 +1,39 @@
 package org.healthhaven.model;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mockStatic;
-
 import org.healthhaven.model.User.Account;
 import org.healthhaven.server.ServerCommunicator;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 import java.time.LocalDate;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
 
 public class PatientTest extends UserTest<Patient> {
 
     @Override
     public Patient createUser() {
-        return new Patient(1234567890,"example@example.com", "John", "Doe", "123 Main St", LocalDate.of(1980, 1, 1));
+        // Ensure this matches exactly with the UserTest setup for consistency
+        return new Patient("patientID123", "example@example.com", "John", "Doe", "123 Main St", LocalDate.of(1980, 1, 1));
     }
-    
-    @BeforeEach
-    @Override
-    public void setUp() {
-        super.setUp();
-    }
-    
+
     @Override
     protected Account getExpectedAccountType() {
-        return Account.PATIENT; // Return the expected Account type for Patient
-    }
-    
-    @Test
-    public void testGenerateUserID() {
-        user.generateUserID(); //use user since setUp
-        long userID = user.getUserID();
-        assertTrue(String.valueOf(userID).startsWith("2"), "Patient userID should start with 2.");
+        // Specifies the expected account type for instances of Patient
+        return Account.PATIENT;
     }
 
     @Test
     public void testViewPatientRecord() {
-        Patient patient = createUser();
-        // Set a specific userID for the patient, if your user class allows it. Otherwise, ensure it's set in the constructor.
-        // patient.setUserID(12345L); // Only if your design allows setting the userID outside the constructor
+        String expectedResponse = "Patient Record Details";
+        try (MockedStatic<ServerCommunicator> mockedStatic = Mockito.mockStatic(ServerCommunicator.class)) {
+            mockedStatic.when(() -> ServerCommunicator.communicateWithServer(anyString())).thenReturn(expectedResponse);
 
-        try (MockedStatic<ServerCommunicator> mockedStatic = mockStatic(ServerCommunicator.class)) {
-            // Mock the static method to return a specific response for the expected request
-            // Assuming getUserID returns a fixed value or is mocked to return a fixed value
-            String expectedMessage = "VIEW " + patient.getUserID();
-            String expectedResponse = "Mocked patient record content";
-            mockedStatic.when(() -> ServerCommunicator.communicateWithServer(expectedMessage))
-                        .thenReturn(expectedResponse);
-            
-
-            // Call the method under test
-            String actualResponse = patient.viewPatientRecord();
-
-            // Verify the response matches the expected mock response
-            assertEquals(expectedResponse, actualResponse);
+            // Execute the method under test
+            String response = user.viewPatientRecord();
+            assertEquals(expectedResponse, response, "The response should contain the patient record details.");
         }
     }
 }

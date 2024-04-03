@@ -1,14 +1,17 @@
 package org.healthhaven.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mockStatic;
 
 import java.time.LocalDate;
 
 import org.healthhaven.model.User.Account;
 import org.healthhaven.server.ServerCommunicator;
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
 
 public abstract class UserTest<T extends User> {
@@ -81,41 +84,48 @@ public abstract class UserTest<T extends User> {
         user.setAddress("New York, NY");
         assertEquals("New York, NY", user.getAddress(), "The user should be able to update the password");
     }
+    
+    @Test
+    public void testUpdatePersonalRecordOnDB() {
+        try (MockedStatic<ServerCommunicator> mockedStatic = mockStatic(ServerCommunicator.class)) {
+            // Prepare the mock to return a dummy response
+            String expectedResponse = "Server response";
+            mockedStatic.when(() -> ServerCommunicator.communicateWithServer(anyString())).thenReturn(expectedResponse);
 
-//    @Test
-//    public void testUpdatePersonalRecordOnDB() {
-//        User user = createUser();
-//        long userID = 12345L; // Set this to match your user's ID setup
-//        user.setUserID(userID); // Assuming there's a method to set the user's ID. If not, adjust as needed.
-//
-//        String newEmail = "newemail@example.com";
-//        String newPassword = "newPassword123";
-//        String newAddress = "456 New St";
-//
-//        try (MockedStatic<ServerCommunicator> mockedStatic = mockStatic(ServerCommunicator.class)) {
-//            // Mock the static method call
-//            String expectedServerResponse = "SUCCESS";
-//            String expectedUpdateMessage = String.format("UPDATE_ACCOUNT %d %s %s %s", userID, newEmail, newPassword, newAddress);
-//            mockedStatic.when(() -> ServerCommunicator.communicateWithServer(expectedUpdateMessage))
-//                        .thenReturn(expectedServerResponse);
-//
-//            // Execute the method under test
-//            String actualResponse = user.updatePersonalRecordOnDB(newEmail, newPassword, newAddress);
-//
-//            // Verify the method's behavior
-//            assertEquals(newEmail, user.getEmail(), "Email should be updated in the user object.");
-//            assertEquals(newPassword, user.getPassword(), "Password should be updated in the user object.");
-//            assertEquals(newAddress, user.getAddress(), "Address should be updated in the user object.");
-//            assertEquals(expectedServerResponse, actualResponse, "The server response should match the expected response.");
-//        }
+            // Update the address
+            String newAddress = "456 Elm St";
+            String actualResponse = user.updatePersonalRecordOnDB(newAddress);
+
+            // Capture the JSON payload sent to the server
+            ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+            mockedStatic.verify(() -> ServerCommunicator.communicateWithServer(captor.capture()));
+            String capturedJson = captor.getValue();
+
+            // Assert the local change
+            assertEquals(newAddress, user.getAddress(), "Address should be updated in the User object");
+
+            // Assert the server communication
+            assertEquals(expectedResponse, actualResponse, "Should return the server response");
+
+            // Validate the JSON payload
+            JSONObject json = new JSONObject(capturedJson);
+            assertEquals("UPDATE_ACCOUNT", json.getString("action"));
+            assertEquals(newAddress, json.getString("address"));
+        }
+    }
+
+//    @Override
+//    public User createUser() {
+//        return new User("userId", "example@example.com", "John", "Doe", "123 Main St", LocalDate.of(1980, 1, 1));
 //    }
+//
+//    @Override
+//    protected Account getExpectedAccountType() {
+//        // Return the expected Account type for the specific test subclass
+//        return Account.NONE; // Or the appropriate Account type for this test
+//    }
+
+
 
     
-//    @Test
-//    public void testAccessPersonalRecord() {
-//        // Mock the server response if possible or simulate the effect of calling this method
-//        // Assuming a mock server response setup...
-//        String serverResponse = user.updatePersonalRecordOnDB("newemail@gmail.com", "password123", "newAddress");
-//        // Assert something about serverResponse or the state change in the user object
-//    }
 }
