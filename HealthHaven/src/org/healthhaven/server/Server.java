@@ -210,6 +210,7 @@ public class Server {
 			case "VIEW_RECORD":
 			case "CREATE_RECORD":
 			default:
+			
 			}
 
 			// Respond to client with appropriate response.

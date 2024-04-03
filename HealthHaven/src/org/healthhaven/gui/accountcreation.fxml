@@ -27,7 +27,7 @@
             </MenuButton>
             <TextField fx:id="legalFirstNameTextfield" layoutX="38.0" layoutY="239.0" promptText="Legal First Name" />
             <Button fx:id="submitButton" layoutX="39.0" layoutY="332.0" mnemonicParsing="false" onAction="#handleSubmit" text="Submit" />
-            <Label alignment="CENTER" layoutX="36.0" layoutY="105.0" style="&#10;" text="Create Account" textAlignment="CENTER" wrapText="false">
+            <Label alignmement="CENTER" layoutX="36.0" layoutY="105.0" style="&#10;" text="Create Account" textAlignment="CENTER" wrapText="false">
                <font>
                   <Font name="Inter Light" size="23.0" />
                </font>
