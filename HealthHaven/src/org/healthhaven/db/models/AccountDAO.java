@@ -11,7 +11,10 @@ import org.healthhaven.model.User;
 import org.json.JSONObject;
 
 public class AccountDAO {
-	public static boolean createTemporaryUser(Connection conn, String userId, String email, String password, String dob, String accountType) {
+	public static JSONObject createTemporaryUser(Connection conn, String userId, String email, String password, String dob, String accountType) {
+		JSONObject serverResponse = new JSONObject();
+		String result = "SUCCESS";
+		String reason = "";
 		int rowsInserted = 0;
 		// Set the 'dob' column to the dob to verify later
         // Convert the String dob into a java.sql.Date
@@ -42,12 +45,13 @@ public class AccountDAO {
 			stmt.setString(5, "NONE");
 
 			rowsInserted = stmt.executeUpdate();
-			if (rowsInserted == 0) {
-				return false;
+			if (rowsInserted <= 0) {
+				result = "FAILURE";
+				reason = "Database entry error";
 			}
 		} catch (SQLException e) {
-			System.err.println("Error creating user: " + e.getMessage());
-			return false;
+			result = "FAILURE";
+			reason = e.getMessage();
 		}
 
 		// Insert account type into account information.
@@ -59,12 +63,13 @@ public class AccountDAO {
 			stmt.setString(2, accountType);
 
 			rowsInserted = stmt.executeUpdate();
-			if (rowsInserted == 0) {
-				return false;
+			if (rowsInserted <= 0) {
+				result = "FAILURE";
+				reason = "Database entry error";
 			}
 		} catch (SQLException e) {
-			System.err.println("Error creating user: " + e.getMessage());
-			return false;
+			result = "FAILURE";
+			reason = e.getMessage();
 		}
 		
 		sql = "INSERT INTO healthhaven.authentication (userid, email, password, reset) VALUES (?, ?, ?, ?)";
@@ -82,15 +87,18 @@ public class AccountDAO {
 	         stmt.setBoolean(4, false);
 
 	         rowsInserted = stmt.executeUpdate();
-				if (rowsInserted == 0) {
-					return false;
+				if (rowsInserted <= 0) {
+					result = "FAILURE";
+					reason = "Database entry error";
 				}
 	    } catch (SQLException e) {
-	    	e.printStackTrace();
-	        return false;
+	    	result = "FAILURE";
+			reason = e.getMessage();
 	    }
 	    
-	    return true;
+	    serverResponse.put("result", result);
+	    serverResponse.put("reason", reason);
+	    return serverResponse;
 	}
 	
 	public static JSONObject updateTemporaryUserAfterFirstLogin(Connection conn, String legalfirstname, String legallastname, String dob, String address, String email, String password, String accountType) {
@@ -174,16 +182,16 @@ public class AccountDAO {
 	    }
 	}
 	
-	public static JSONObject updatePassword(Connection conn, String newPassword, String userId) {
+	public static JSONObject updatePassword(Connection conn, String newPassword, String email) {
 		JSONObject serverResponse = new JSONObject();
 		String result = "SUCCESS";
 		String reason = "";
-		if (!accountExistsById(conn, userId)) {
+		if (!accountExistsByEmail(conn, email)) {
 			result = "FAILURE";
 			reason = "Account does not exist";
 		}
-		String authenticationUpdateSql = "UPDATE healthhaven.authentication SET password = ? WHERE userid = ?";
-	    if (!updateAuthenticationTable(conn, authenticationUpdateSql, newPassword, userId)) { 
+		String authenticationUpdateSql = "UPDATE healthhaven.authentication SET password = ? WHERE email = ?";
+	    if (!updateAuthenticationTable(conn, authenticationUpdateSql, newPassword, getUserIdFromEmail(conn, email))) { 
 	    	result = "FAILURE";
 			reason = "Database Entry Error";
 
