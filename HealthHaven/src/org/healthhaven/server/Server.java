@@ -147,26 +147,34 @@ public class Server {
 			// Read the incoming message json
 			String msg = reader.readLine();
 			String response = "";
+			
+			//"type" otp ; password TODO
 
 			JSONObject requestData = new JSONObject(msg);
 			switch (requestData.getString("request")) {
 			case "UPDATE_ACCOUNT":
-				String newFirstName = requestData.getString("first_name");
-				String newLastName = requestData.getString("last_name");
 				String newAddress = requestData.getString("address");
-				String newEmail = requestData.getString("email");
-				String newDob = requestData.getString("dob"); //i feel like we shouldnt be changing dob but eh
-				String newAccountType = requestData.getString("accountType");
+				String userId = requestData.getString("userId");
+				response = AccountDAO.updateUserInformation(this.conn, newAddress, userId);
+				break;
 				
 //				updateUserTable
+			case "PASSWORD_RESET":
+//				switch(type):
+//					case "EMAIL_CHECK" COMES WITH email n timestamp
+//					case "VERIFY OTP" comes with email and otp
+//					case update password gives me TODO
 				
 			case "UPDATE_PASSWORD":
-				
+				response = AccountDAO.updatePassword(conn, requestData.getString("password"),
+						requestData.getString("userId"));
+				break;
+
 			case "ALLOW_ACCOUNT_CREATION":
 				String email = requestData.getString("email");
 				String dob = requestData.getString("dob");
 				String userType = requestData.getString("userType"); //TODO this is same as accountType but accounttype is better
-				if (AccountDAO.doesAccountExist(this.conn, email)) {
+				if (AccountDAO.accountExistsByEmail(this.conn, email)) {
 					response = "FAILURE";
 					break;
 				}
@@ -175,8 +183,12 @@ public class Server {
 				String generatedUserId = g.generate();
 				AccountDAO.createTemporaryUser(this.conn, generatedUserId, email, generatedPassword, dob, userType);
 				EmailSender.sendDefaultPasswordEmail(email, generatedPassword, userType);
+//				result:
+//				type: NEW or EXISTING
+//				if new, usertype: DOCTOR, etc TODO
 				response = "SUCCESS";
 				break;
+				
 			case "CREATE_ACCOUNT":
 				boolean success = AccountDAO.updateTemporaryUserAfterFirstLogin(this.conn,
 						requestData.getString("first_name"), requestData.getString("last_name"),
@@ -184,10 +196,20 @@ public class Server {
 						requestData.getString("password"), requestData.getString("accountType"));
 				response = success ? "SUCCESS" : "FAILURE";
 				break;
+				
 			case "LOGIN":
-				response = AccountDAO.authenticateUser(this.conn, requestData.getString("email"),
-						requestData.getString("password"));
+				switch (requestData.getString("type")) {
+					case "PASSWORD":						
+						response = AccountDAO.authenticateUser(this.conn, requestData.getString("email"),
+								requestData.getString("password"));
+					case "OTP":
+						response = AccountDAO.authenticateOTP(this.conn, requestData.getString("email"),
+								requestData.getString("OTP"));
+				}
+//				check if type is password or otp (will havet to store in db)
+//				for otp: success, email, userid, first_name, last_name, address, dob, account type TODO
 				break; //we should be talking twice bc otp
+				
 			case "REQUEST_PATIENT_DATA_SUMMARY":
 			case "VIEW_RECORD":
 			case "CREATE_RECORD":

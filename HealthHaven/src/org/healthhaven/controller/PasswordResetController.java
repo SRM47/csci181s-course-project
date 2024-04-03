@@ -1,8 +1,11 @@
 package org.healthhaven.controller;
 
 import java.io.IOException;
+import java.time.LocalDate;
 
 import org.healthhaven.gui.Main;
+import org.healthhaven.model.PasswordGenerator;
+import org.healthhaven.model.PasswordReset;
 import org.json.JSONObject;
 
 import javafx.fxml.FXML;
@@ -18,6 +21,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import me.gosimple.nbvcxz.Nbvcxz;
+import me.gosimple.nbvcxz.scoring.Result;
 
 public class PasswordResetController{
 	
@@ -50,6 +55,10 @@ public class PasswordResetController{
 	@FXML
 	private Hyperlink login;
 	
+	private JSONObject json;
+	private Nbvcxz nbvcxz = new Nbvcxz();
+	
+	
 	@FXML
 	public void initialize() {
 		OTPSection.setVisible(false);
@@ -58,23 +67,134 @@ public class PasswordResetController{
 	
 	@FXML
 	public void handleSubmit() {
+		OTPSection.setVisible(false);
+		passwordResetSection.setVisible(false);
+		
 		String email = emailTextfield.getText();
 		if (email.isEmpty()) {
 			submitResponse.setText("Please fill in the field");
 		} else {
 			submitResponse.setText("");
-			//PasswordReset.verifyEmail(email);
+			String serverResponse = PasswordReset.verifyEmail(email);
+			if (serverResponse.equals("FAILURE")||serverResponse.equals(null)) {
+				submitResponse.setText("Error");
+				this.json = null;
+			} else {
+				JSONObject jsonObj = new JSONObject(serverResponse);
+				if (jsonObj.getString("request").equals("SUCCESS")) {
+					json = jsonObj;
+					OTPSection.setVisible(true);
+					OTPResponse.setText("OTP sent to your email");
+				}
+			}
 		}
 	}
 	
 	@FXML 
 	public void handleOTPVerify() {
+		passwordResetSection.setVisible(false);
 		
+		String otpInput = OTPPasscodeField.getText();
+		
+		String serverResponse = PasswordReset.confirmOTP(json.getString("email"), otpInput);
+		
+		if (serverResponse.equals(null)) {
+			OTPResponse.setText("Error. Try again");
+		} else {
+			JSONObject jsonObj = new JSONObject(serverResponse);
+			if (jsonObj.getString("result").equals("FAILURE")) {
+				OTPResponse.setText(jsonObj.getString("reason"));
+			}
+			else if (jsonObj.getString("result").equals("SUCCESS")) {
+					OTPSection.setVisible(false);
+					passwordResetSection.setVisible(true);
+			}
+				
+		}
 	}
 	
 	@FXML
-	public void handlePasswordReset() {
+	public void realTimePWSec() {
+
+		Result result = nbvcxz.estimate(PasswordField1.getText());
 		
+		System.out.println(PasswordField1.getText());
+		
+		Float prog = ((float) result.getBasicScore())/4;
+		
+		passwordStrengthBar.setProgress(prog);
+	}
+	
+	
+	@FXML
+	public void handlePasswordReset() {
+		OTPSection.setVisible(false);
+		String rpw1 = PasswordField1.getText();
+		String rpw2 = PasswordField2.getText();
+		
+		if (rpw1.isEmpty()||rpw2.isEmpty()) {
+			PasswordResetMessage.setText("Please fill in all fields");
+			return;
+		} 
+		if (!rpw1.equals(rpw2)) {
+			PasswordResetMessage.setText("Password does not match.");
+			return;
+		}
+		
+		if (passwordChecker(json, rpw1).equals("success")) {
+			 String serverResponse = PasswordReset.updatePassword(json.getString("email"), rpw1);
+			    if (serverResponse.equals(null)) {
+			    	PasswordResetMessage.setText("Error.");
+			    } else {
+			    	JSONObject jsonObj = new JSONObject(serverResponse);
+			    	if (jsonObj.getString("result").equals("FAILURE")) {
+			    		PasswordResetMessage.setText(jsonObj.getString("reason"));
+			    	} else if (jsonObj.getString("result").equals("SUCCESS")) {
+			    		PasswordResetMessage.setText("Password got updated");
+			    	}
+			    }
+		}		    	
+		
+	}
+	
+	private String passwordChecker(JSONObject json, String rpw1) {
+		Result result = nbvcxz.estimate(rpw1);
+		String remail = json.getString("email");
+		String rfn = json.getString("first_name");
+		String rln = json.getString("last_name");
+		String rdob = json.getString("dob");
+		LocalDate dob = LocalDate.parse(rdob);
+		
+		Integer passCheck = PasswordGenerator.passwordStrength(rpw1, rfn, rln, dob);
+		
+		//check for PII in password
+		if(passCheck != 1) {
+			if(passCheck == 2){
+				PasswordResetMessage.setText("Please remove references to your name from your password");
+			}
+			else if(passCheck ==3) {
+				PasswordResetMessage.setText("Please remove references to your birthdate from your password");
+			}
+			return "failure";
+		}
+		
+		// Require minscore of 2
+	    if (result.getBasicScore() < 2) {
+	    	PasswordResetMessage.setText("Please strengthen your password: " + result.getFeedback().getWarning());
+	        return "failure"; // Exit the method if any field is empty
+	    }
+	    
+	    try {
+			if (PasswordGenerator.compromiseChecker(rpw1)==1) {
+				PasswordResetMessage.setText("Password has been compromised. Please enter a new password");
+				return "failure";
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    
+	    return "success";
 	}
 	
 	@FXML

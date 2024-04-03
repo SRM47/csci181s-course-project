@@ -16,7 +16,8 @@ public class AccountCreationService {
 		
 		User.Account userType = getUserType(accountType);
 		
-		return(createUserInstance(userType, email, password, firstName, lastName, address, dob));
+		   return(insertNewAccountIntoDB(userType, email, password, firstName, lastName, address,
+	        		dob));
 	}
 	
 	private static User.Account getUserType(String accountType){
@@ -30,33 +31,16 @@ public class AccountCreationService {
 		};
 	}
 
-    private static String createUserInstance(User.Account userType, String email, String password, String legal_first_name, String legal_last_name, String address,
-                                           LocalDate dob) {
-
-
-        User newUser = switch (userType) {
-            case DOCTOR -> new Doctor(email, legal_first_name, legal_last_name, address, dob);
-            case PATIENT -> new Patient(email, legal_first_name, legal_last_name, address, dob);
-            case DATA_ANALYST -> new DataAnalyst(email, legal_first_name, legal_last_name, address, dob);
-            case DPO -> new DataProtectionOfficer(email, legal_first_name, legal_last_name, address, dob);
-            case SUPERADMIN -> new Superadmin(email, legal_first_name, legal_last_name, address, dob);
-            default -> null;
-        };
-        
-        return(insertNewAccountIntoDB(userType, newUser.getUserID(), email, password, legal_first_name, legal_last_name, address,
-        		dob));
-    }
 
     
 
-    protected static String insertNewAccountIntoDB(User.Account userType, long userId, String email, String password, String first_name, String last_name, String address, LocalDate dob){
+    protected static String insertNewAccountIntoDB(User.Account userType, String email, String password, String first_name, String last_name, String address, LocalDate dob){
         Instant timestamp = Instant.now();
         String account = userType.getAccountName();
  
      // Create a JSONObject and populate it with account data
         JSONObject json = new JSONObject();
         json.put("request", "CREATE_ACCOUNT");
-        json.put("userId", userId);
         json.put("email", email);
         json.put("password", password);
         json.put("first_name", first_name);

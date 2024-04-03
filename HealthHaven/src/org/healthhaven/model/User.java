@@ -11,7 +11,7 @@ import org.healthhaven.server.ServerCommunicator;
 public class User {
 
 	// The format of the userID will correspond to the account type
-	private long userID;
+	private String userID;
 	private String email;
 	private String legal_first_name;
 	private String legal_last_name;
@@ -46,16 +46,16 @@ public class User {
 	 * @param address
 	 * @param dob
 	 */
-	public User(String email, String legal_first_name, String legal_last_name, String address,
-			LocalDate dob) {
-		super();
-		this.email = email;
-		this.legal_first_name = legal_first_name;
-		this.legal_last_name = legal_last_name;
-		this.address = address;
-		this.dob = dob;
-		this.generateUserID();
-	}
+//	public User(String email, String legal_first_name, String legal_last_name, String address,
+//			LocalDate dob) {
+//		super();
+//		this.email = email;
+//		this.legal_first_name = legal_first_name;
+//		this.legal_last_name = legal_last_name;
+//		this.address = address;
+//		this.dob = dob;
+//		this.generateUserID();
+//	}
 
 	/**
 	 * For existing user
@@ -67,7 +67,7 @@ public class User {
 	 * @param address
 	 * @param dob
 	 */
-	public User(long userID, String email, String legal_first_name, String legal_last_name, String address, LocalDate dob) {
+	public User(String userID, String email, String legal_first_name, String legal_last_name, String address, LocalDate dob) {
 		this.userID = userID;
 		this.email = email;
 		this.legal_first_name = legal_first_name;
@@ -98,20 +98,22 @@ public class User {
 //		this.password = password;
 //	}
 
-	protected void generateUserID() {
-	}
+//	protected void generateUserID() {
+//		UserIdGenerator g = new UserIdGenerator(16);
+//		this.userID = g.generate();
+//	}
 
 	
 	/**
 	 * @return the userID
 	 */
-	public long getUserID() {
+	public String getUserID() {
 		return userID;
 	}
 	/**
 	 * @param userID the userID to set
 	 */
-	protected void setUserID(long userID) {
+	protected void setUserID(String userID) {
 		this.userID = userID;
 	}
 

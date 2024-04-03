@@ -23,10 +23,10 @@ public class Superadmin extends User {
 	 * @param address
 	 * @param dob
 	 */
-	public Superadmin(String email, String legal_first_name, String legal_last_name, String address,
-			LocalDate dob) {
-		super(email, legal_first_name, legal_last_name, address, dob);
-	}
+//	public Superadmin(String email, String legal_first_name, String legal_last_name, String address,
+//			LocalDate dob) {
+//		super(email, legal_first_name, legal_last_name, address, dob);
+//	}
 
 	/**
 	 * Existing superadmin
@@ -38,17 +38,11 @@ public class Superadmin extends User {
 	 * @param address
 	 * @param dob
 	 */
-	public Superadmin(long userID, String email, String legal_first_name, String legal_last_name, String address,
+	public Superadmin(String userID, String email, String legal_first_name, String legal_last_name, String address,
 					  LocalDate dob) {
 		super(userID, email, legal_first_name, legal_last_name, address, dob);
 	}
 	
-	@Override
-	protected void generateUserID() {
-		Random rnd = new Random();
-		long randomNumber = 5_000_000_000L + (long)(rnd.nextDouble() * 999_999_999L);
-		this.setUserID(randomNumber);
-	}
 	
 	@Override
 	public Account getAccountType() {

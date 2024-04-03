@@ -31,10 +31,10 @@ public class Doctor extends User {
 	 * @param dob
 	 */
     
-	public Doctor(String email, String legal_first_name, String legal_last_name, String address,
-			LocalDate dob) {
-		super(email, legal_first_name, legal_last_name, address, dob);
-	}
+//	public Doctor(String email, String legal_first_name, String legal_last_name, String address,
+//			LocalDate dob) {
+//		super(email, legal_first_name, legal_last_name, address, dob);
+//	}
 
     /**
      * Existing doctor
@@ -46,21 +46,11 @@ public class Doctor extends User {
      * @param address
      * @param dob
      */
-    public Doctor(long userID, String email, String legal_first_name, String legal_last_name,
+    public Doctor(String userID, String email, String legal_first_name, String legal_last_name,
                    String address, LocalDate dob){
         super(userID, email, legal_first_name, legal_last_name, address, dob);
 
     }
-
-    /**
-     * User ID with left most digit = 1
-     */
-	@Override
-	protected void generateUserID() {
-		Random rnd = new Random();
-        long randomNumber = 1_000_000_000L + (long)(rnd.nextDouble() * 999_999_999L);
-	    this.setUserID(randomNumber);
-	}
 	
 	@Override
 	public Account getAccountType() {
