@@ -30,6 +30,18 @@ public class PasswordGeneratorTest {
         String weakPasswordWithFirstName = "JohnPassword1!";
         strength = PasswordGenerator.passwordStrength(weakPasswordWithFirstName, "John", "Doe", LocalDate.of(1990, 1, 1));
         assertEquals(2, strength, "Strength should be 2 for a password containing the first name.");
+        
+        String weakPasswordWithLastName = "DoePassword1!";
+        strength = PasswordGenerator.passwordStrength(weakPasswordWithLastName, "John", "Doe", LocalDate.of(1990, 1, 1));
+        assertEquals(2, strength, "Strength should be 2 for a password containing the last name.");
+        
+        String weakPasswordWithYear = "1990Password1!";
+        strength = PasswordGenerator.passwordStrength(weakPasswordWithYear, "John", "Doe", LocalDate.of(1990, 1, 1));
+        assertEquals(3, strength, "Strength should be 3 for a password containing the birth year.");
+        
+        String weakPasswordWithMonthDay = "11nPassword1!";
+        strength = PasswordGenerator.passwordStrength(weakPasswordWithMonthDay, "John", "Doe", LocalDate.of(1990, 1, 1));
+        assertEquals(3, strength, "Strength should be 3 for a password containing the birth month and day.");
     }
 
     @Test
