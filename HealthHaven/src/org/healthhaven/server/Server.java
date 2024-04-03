@@ -158,7 +158,7 @@ public class Server {
 			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
 
 			// Write message to output stream back to client.
-			writer.write(response + "\nTERMINATE");
+			writer.write(serverResponse.toString());
 			writer.newLine();
 			writer.flush();
 

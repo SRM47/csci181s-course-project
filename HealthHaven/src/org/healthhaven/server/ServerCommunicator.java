@@ -88,12 +88,9 @@ public class ServerCommunicator {
             	if (reader.ready()) {
             		String line;
             		while ((line = reader.readLine()) != null) {
-            			if (line.equals("TERMINATE")) {
-                            responseReceived = true;
-                            break;
-                        }
                         response.append(line);
                     }
+            		responseReceived = true;
             	}
             }
             
