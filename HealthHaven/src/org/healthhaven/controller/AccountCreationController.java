@@ -8,6 +8,7 @@ import java.time.format.DateTimeParseException;
 import org.healthhaven.gui.Main;
 import org.healthhaven.model.AccountCreationService;
 import org.healthhaven.model.PasswordGenerator;
+import org.json.JSONObject;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -36,18 +37,6 @@ public class AccountCreationController {
 	private MenuButton userTypeMenu;
 	@FXML
 	private Label emailDisplay;
-//	@FXML
-//	private MenuButton accountTypeMenu;
-//	@FXML
-//	private MenuItem patientMenuItem;
-//	@FXML
-//	private MenuItem doctorMenuItem;
-//	@FXML
-//	private MenuItem dataProtectionOfficerMenuItem;
-//	@FXML
-//	private MenuItem dataAnalystMenuItem;
-//	@FXML
-//	private TextField emailTextfield;
 	@FXML
 	private PasswordField passwordTextfield;
 	@FXML
@@ -76,7 +65,7 @@ public class AccountCreationController {
 		userTypeMenu.setText(userType);
 	}
 	
-	
+	@FXML
 	public void realTimePWSec() {
 
 		Result result = nbvcxz.estimate(passwordTextfield.getText());
@@ -104,12 +93,29 @@ public class AccountCreationController {
 	        response.setText("Please fill in all fields.");
 	        return; // Exit the method if any field is empty
 	    }
-		
-		Result result = nbvcxz.estimate(rpw);
-
-		Integer passCheck = PasswordGenerator.passwordStrength(rpw, rfn, rln, rdob);
+	    
+	    if (passwordChecker(rpw, remail, rfn,rln, rdob).equals("success")) {
+	    	String serverResponse = AccountCreationService.createUser(rat, remail, rpw, rfn, rln, raddress, rdob);
+			if (serverResponse.equals(null)) {
+				response.setText("Error");
+			} else {
+				JSONObject jsonObj = new JSONObject(serverResponse);
+				if (jsonObj.getString("result").equals("FAILURE")) {
+					response.setText(jsonObj.getString("reason"));
+				} else if (jsonObj.getString("result").equals("SUCCESS")){
+					response.setText("Account created");
+				}
+			}
+				
+	    }
+	    
+	}
 	
-
+	private String passwordChecker(String password, String email, String first_name, String last_name, LocalDate dob) {
+		Result result = nbvcxz.estimate(password);
+		
+		Integer passCheck = PasswordGenerator.passwordStrength(password, first_name, last_name, dob);
+		
 		//check for PII in password
 		if(passCheck != 1) {
 			if(passCheck == 2){
@@ -118,33 +124,29 @@ public class AccountCreationController {
 			else if(passCheck ==3) {
 				response.setText("Please remove references to your birthdate from your password");
 			}
-			return;
+			return "failure";
 		}
 		
 		// Require minscore of 2
 	    if (result.getBasicScore() < 2) {
-	        response.setText("Please strengthen your password: " + result.getFeedback().getWarning());
-	        return; // Exit the method if any field is empty
+	    	response.setText("Please strengthen your password: " + result.getFeedback().getWarning());
+	        return "failure"; // Exit the method if any field is empty
 	    }
 	    
 	    try {
-			if (PasswordGenerator.compromiseChecker(rpw)==1) {
+			if (PasswordGenerator.compromiseChecker(password)==1) {
 				response.setText("Password has been compromised. Please enter a new password");
-				return;
+				return "failure";
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	    	
 	    
-	    
-	    String serverResponse = AccountCreationService.createUser(rat, remail, rpw, rfn, rln, raddress, rdob);
-		response.setText(serverResponse);
-		
-
-		
+	    return "success";
 	}
+	
+	
 	
 	@FXML
 	public void loginPage(ActionEvent actionEvent) throws IOException {

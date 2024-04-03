@@ -62,27 +62,31 @@ public class LoginController{
 		String password = passwordTextfield.getText();
 
 		String serverResponse= Login.authenticateUserOnDB(email, password);
-		if (serverResponse.equals("FAILURE")||serverResponse.equals(null)) {
+		if (serverResponse.equals(null)) {
 			errorMessage.setText("Login Error");
 			
 		} else { //either new or existing user
 			JSONObject jsonObj = new JSONObject(serverResponse);
 			// Access the value associated with the key "request"
-	        String requestValue = jsonObj.getString("request");
 	        
-	        //existing user
-	        if (requestValue.equals("EXISTING")) {
-	        	errorMessage.setText("");
-	        	this.emailAddress = jsonObj.getString("email");
-	        	//Do OTP verification
-	        	OTPSectionLogin.setVisible(true);
-	        	OTPLoginMessage.setText("OTP sent to your email");
-	        	
-	        //new user, direct them to account creation
-	        } else if (requestValue.equals("NEW")) {
-	        	errorMessage.setText("");
-	        	loadAccountCreationPage(email,jsonObj.getString("userType"));
+	        if (jsonObj.getString("result").equals("FAILURE")) {
+	        	errorMessage.setText(jsonObj.optString("reason"));
+	        } else if (jsonObj.getString("result").equals("SUCCESS")) {
+	        	//existing user
+		        if (jsonObj.getString("type").equals("EXISTING")) {
+		        	errorMessage.setText("");
+		        	this.emailAddress = jsonObj.getString("email");
+		        	//Do OTP verification
+		        	OTPSectionLogin.setVisible(true);
+		        	OTPLoginMessage.setText("OTP sent to your email");
+		        	
+		        //new user, direct them to account creation
+		        } else if (jsonObj.getString("type").equals("NEW")) {
+		        	errorMessage.setText("");
+		        	loadAccountCreationPage(email,jsonObj.getString("userType"));
+		        }
 	        }
+	        
 		}
 
 	
@@ -94,14 +98,19 @@ public class LoginController{
 		String otpInput = OTPLoginTextField.getText();
 		
 		String serverResponse = Login.authenticateOTPLogin(emailAddress, otpInput);
-		if (serverResponse.equals("FAILURE")||serverResponse.equals(null)) {
+		if (serverResponse.equals(null)) {
 			OTPLoginMessage.setText("Login Error");
 		} else {
 			//Read server response
 			JSONObject jsonObj = new JSONObject(serverResponse);
-			User user = Login.existingUserSession(jsonObj);
-	    	loadUserPage(user);
-	    	OTPLoginMessage.setText("");
+			if (jsonObj.getString("result").equals("FAILURE")) {
+				OTPLoginMessage.setText(jsonObj.getString("reason"));
+			} else if (jsonObj.getString("result").equals("SUCCESS")){
+				User user = Login.existingUserSession(jsonObj);
+		    	loadUserPage(user);
+		    	OTPLoginMessage.setText("");
+			}
+			
 		}
 	}
 	

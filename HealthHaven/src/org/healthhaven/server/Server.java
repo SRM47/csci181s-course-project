@@ -147,6 +147,8 @@ public class Server {
 			// Read the incoming message json
 			String msg = reader.readLine();
 			String response = "";
+			
+			//"type" otp ; password TODO
 
 			JSONObject requestData = new JSONObject(msg);
 			switch (requestData.getString("request")) {
@@ -155,7 +157,14 @@ public class Server {
 				String userId = requestData.getString("userId");
 				response = AccountDAO.updateUserInformation(this.conn, newAddress, userId);
 				break;
-
+				
+//				updateUserTable
+			case "PASSWORD_RESET":
+//				switch(type):
+//					case "EMAIL_CHECK" COMES WITH email n timestamp
+//					case "VERIFY OTP" comes with email and otp
+//					case update password gives me TODO
+				
 			case "UPDATE_PASSWORD":
 				response = AccountDAO.updatePassword(conn, requestData.getString("password"),
 						requestData.getString("userId"));
@@ -174,6 +183,9 @@ public class Server {
 				String generatedUserId = g.generate();
 				AccountDAO.createTemporaryUser(this.conn, generatedUserId, email, generatedPassword, dob, userType);
 				EmailSender.sendDefaultPasswordEmail(email, generatedPassword, userType);
+//				result:
+//				type: NEW or EXISTING
+//				if new, usertype: DOCTOR, etc TODO
 				response = "SUCCESS";
 				break;
 				
@@ -186,8 +198,16 @@ public class Server {
 				break;
 				
 			case "LOGIN":
-				response = AccountDAO.authenticateUser(this.conn, requestData.getString("email"),
-						requestData.getString("password"));
+				switch (requestData.getString("type")) {
+					case "PASSWORD":						
+						response = AccountDAO.authenticateUser(this.conn, requestData.getString("email"),
+								requestData.getString("password"));
+					case "OTP":
+						response = AccountDAO.authenticateOTP(this.conn, requestData.getString("email"),
+								requestData.getString("OTP"));
+				}
+//				check if type is password or otp (will havet to store in db)
+//				for otp: success, email, userid, first_name, last_name, address, dob, account type TODO
 				break; //we should be talking twice bc otp
 				
 			case "REQUEST_PATIENT_DATA_SUMMARY":
