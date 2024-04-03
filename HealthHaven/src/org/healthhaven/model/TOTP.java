@@ -13,10 +13,11 @@ import com.eatthepath.otp.TimeBasedOneTimePasswordGenerator;
 
 public class TOTP {
 	
-	final static TimeBasedOneTimePasswordGenerator totp = new TimeBasedOneTimePasswordGenerator();
+	static Duration duration = Duration.ofSeconds(30);
+	
+	final static TimeBasedOneTimePasswordGenerator totp = new TimeBasedOneTimePasswordGenerator(duration,8,"HmacSHA512");
 	static Instant now = Instant.now();
 	final static Duration timestep = totp.getTimeStep();
-
 	
 	
 	public static Key secretKey() throws NoSuchAlgorithmException {
@@ -30,6 +31,7 @@ public class TOTP {
 		keyGenerator.init(macLengthInBytes * 8);
 		
 		Key key = keyGenerator.generateKey();
+		System.out.println(key.getEncoded());
 		
 		return key;
 	}
