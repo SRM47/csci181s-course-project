@@ -47,7 +47,7 @@ public class Login {
 	 * @param dob
 	 * @return
 	 */
-	private static User createUserInstance(String accountType, long userID, String email, String legalFirstName, String legalLastName,
+	private static User createUserInstance(String accountType, String userID, String email, String legalFirstName, String legalLastName,
 										   String address, LocalDate dob){
 		return switch (accountType) {
 			case "Doctor" -> new Doctor(userID, email, legalFirstName, legalLastName, address, dob);
@@ -67,7 +67,7 @@ public class Login {
 	public static User existingUserSession(JSONObject jsonOb) {
 			
 			String email = jsonOb.getString("email");
-			long userID = Long.parseLong(jsonOb.getString("userID"));
+			String userID = jsonOb.getString("userID");
 			String legalFirstName = jsonOb.getString("first_name");
 			String legalLastName = jsonOb.getString("last_name");
 			String address = jsonOb.getString("address");

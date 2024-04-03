@@ -122,6 +122,24 @@ public class AccountDAO {
 	    return true; 
 	}
 	
+	public static String updateUserInformation(Connection conn, String address, String userId) {
+		if (!accountExistsById(conn, userId)) {
+			return "NO_ACCOUNT";
+		}
+		
+		String usersUpdateSql = "UPDATE healthhaven.users SET address = ? WHERE userid = ?";
+		try (PreparedStatement stmt = conn.prepareStatement(usersUpdateSql)) {
+	        stmt.setString(1, address);
+	        stmt.setString(2, userId);
+
+	        int rowsUpdated = stmt.executeUpdate();
+	        return rowsUpdated > 0 ? "SUCCESS" : "FAILURE";
+	    } catch (SQLException e) {
+	        System.err.println("Error during table update: " + e.getMessage());
+	        return "FAILURE";
+	    }
+	}
+	
 	private static boolean updateUserTable(Connection conn, String sql, String legalfirstname, String legallastname, String address, String userId) {
 	    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 	        stmt.setString(1, legalfirstname);
@@ -135,6 +153,18 @@ public class AccountDAO {
 	        System.err.println("Error during table update: " + e.getMessage());
 	        return false;
 	    }
+	}
+	
+	public static String updatePassword(Connection conn, String newPassword, String userId) {
+		if (!accountExistsById(conn, userId)) {
+			return "NO_ACCOUNT";
+		}
+		String authenticationUpdateSql = "UPDATE healthhaven.authentication SET password = ? WHERE userid = ?";
+	    if (!updateAuthenticationTable(conn, authenticationUpdateSql, newPassword, userId)) { 
+	        return "FAILURE"; 
+	    } 
+	    return "SUCCESS";
+		
 	}
 	
 	private static boolean updateAuthenticationTable(Connection conn, String sql, String password, String userId) {
@@ -197,8 +227,28 @@ public class AccountDAO {
 	    }
 	}
 	
+	public static boolean accountExistsById(Connection conn, String userId) {
+	    String sql = "SELECT COUNT(*) FROM healthhaven.authentication WHERE userid = ?";
+
+	    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+	        stmt.setString(1, userId);
+
+	        try (ResultSet rs = stmt.executeQuery()) {
+	            if (rs.next()) {
+	                int count = rs.getInt(1); 
+	                return count > 0; // True if there's at least one row with this userid
+	            } 
+	        }
+	    } catch (SQLException e) {
+	        System.err.println("Error checking account existence: " + e.getMessage());
+	        return false; // Or potentially throw an exception instead 
+	    }
+
+	    return false; // Default to account not existing if an error occurs or no match is found
+	}
 	
-	public static boolean doesAccountExist(Connection conn, String email) {
+	
+	public static boolean accountExistsByEmail(Connection conn, String email) {
 	    String sql = "SELECT COUNT(*) FROM healthhaven.authentication WHERE email = ?";
 
 	    try (PreparedStatement stmt = conn.prepareStatement(sql)) {

@@ -28,10 +28,10 @@ public class Patient extends User {
 	 * @param address
 	 * @param dob
 	 */
-	public Patient(String email, String legal_first_name, String legal_last_name, String address,
-			LocalDate dob) {
-		super(email, legal_first_name, legal_last_name, address, dob);
-	}
+//	public Patient(String email, String legal_first_name, String legal_last_name, String address,
+//			LocalDate dob) {
+//		super(email, legal_first_name, legal_last_name, address, dob);
+//	}
 
 	/**
 	 * For existing user
@@ -43,21 +43,11 @@ public class Patient extends User {
 	 * @param address
 	 * @param dob
 	 */
-	public Patient(long userID, String email, String legal_first_name, String legal_last_name,
+	public Patient(String userID, String email, String legal_first_name, String legal_last_name,
 				   String address, LocalDate dob){
         super(userID, email, legal_first_name, legal_last_name, address, dob);
 
     }
-
-	/**
-	 * Generating user id with left most digit = 2
-	 */
-	@Override
-	protected void generateUserID() {
-		Random rnd = new Random();
-		long randomNumber = 2_000_000_000L + (long)(rnd.nextDouble() * 999_999_999L);
-		this.setUserID(randomNumber);
-	}
 	
 	@Override
 	public Account getAccountType() {

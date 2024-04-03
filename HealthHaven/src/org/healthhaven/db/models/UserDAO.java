@@ -85,26 +85,26 @@ public class UserDAO {
 		return true;
 	}
 
-	@SuppressWarnings("deprecation")
-	public static User getUserInformation(Connection conn, String userId) {
-		String sql = "SELECT * FROM healthhaven.users WHERE userid = '" + userId + "'";
-
-		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-			ResultSet data_rs = stmt.executeQuery();
-			User user = null;
-			if (data_rs.next()) {
-				Date dob = data_rs.getDate("dob");
-				user = new User(Long.parseLong(data_rs.getString("userid")), "email",
-						data_rs.getString("legalfirstname"), data_rs.getString("legallastname"),
-						data_rs.getString("address"), LocalDate.of(dob.getYear(), dob.getMonth(), dob.getDay()));
-			}
-			return user;
-		} catch (SQLException e) {
-			System.err.println("Error creating user: " + e.getMessage());
-			return null;
-		}
-
-	}
+//	@SuppressWarnings("deprecation")
+//	public static User getUserInformation(Connection conn, String userId) {
+//		String sql = "SELECT * FROM healthhaven.users WHERE userid = '" + userId + "'";
+//
+//		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+//			ResultSet data_rs = stmt.executeQuery();
+//			User user = null;
+//			if (data_rs.next()) {
+//				Date dob = data_rs.getDate("dob");
+//				user = new User(Long.parseLong(data_rs.getString("userid")), "email",
+//						data_rs.getString("legalfirstname"), data_rs.getString("legallastname"),
+//						data_rs.getString("address"), LocalDate.of(dob.getYear(), dob.getMonth(), dob.getDay()));
+//			}
+//			return user;
+//		} catch (SQLException e) {
+//			System.err.println("Error creating user: " + e.getMessage());
+//			return null;
+//		}
+//
+//	}
 	
 
 }

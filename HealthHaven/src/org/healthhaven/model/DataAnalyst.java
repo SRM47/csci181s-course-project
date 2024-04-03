@@ -27,11 +27,11 @@ public class DataAnalyst extends User {
 	 * @param address
 	 * @param dob
 	 */
-	public DataAnalyst(String email, String legal_first_name, String legal_last_name, String address,
-			LocalDate dob) {
-		super(email, legal_first_name, legal_last_name, address, dob);
-
-	}
+//	public DataAnalyst(String email, String legal_first_name, String legal_last_name, String address,
+//			LocalDate dob) {
+//		super(email, legal_first_name, legal_last_name, address, dob);
+//
+//	}
 
 	/**
 	 * Existing Data Analyst
@@ -43,7 +43,7 @@ public class DataAnalyst extends User {
 	 * @param address
 	 * @param dob
 	 */
-	public DataAnalyst(long userID, String email,  String legal_first_name, String legal_last_name, String address,
+	public DataAnalyst(String userID, String email,  String legal_first_name, String legal_last_name, String address,
 					   LocalDate dob) {
 		super(userID, email, legal_first_name, legal_last_name, address, dob);
 	}
@@ -62,19 +62,6 @@ public class DataAnalyst extends User {
 //		System.out.println("message");
 		return(ServerCommunicator.communicateWithServer(message));
 	}
-	
-	@Override
-	protected void generateUserID() {
-		Random rnd = new Random();
-		// Generate a random number where the first digit is 3 and the rest 11 digits are random
-		// This is done by starting at 3_000_000_000_000L (the smallest 12-digit number starting with 3)
-		// and adding a random number up to 8_999_999_999_999L to ensure the first digit remains 3
-		// and we have a total of 12 digits.
-		long randomNumber = 3_000_000_000L + (long)(rnd.nextDouble() * 999_999_999L);
-
-		this.setUserID(randomNumber);
-	}
-
 
 
 }
