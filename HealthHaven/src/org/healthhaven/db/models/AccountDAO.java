@@ -8,6 +8,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import org.healthhaven.model.User;
+import org.json.JSONObject;
 
 public class AccountDAO {
 	public static boolean createTemporaryUser(Connection conn, String userId, String email, String password, String dob, String accountType) {
@@ -230,22 +231,75 @@ public class AccountDAO {
 				// TODO: Hash this password.
 				String hashedCandidatePassword = candidatePassword;
 				if (!hashedCandidatePassword.equals(truePassword)) {
-					return "INCORRECT_PASSWORD";
+					JSONObject json = new JSONObject();
+					json.put("result", "FAILURE");
+					json.put("reason", "INCORRECT_PASSWORD");
+				    return json.toString();
 				}
 				boolean resetValue = data_rs.getBoolean("reset");
 				if (!resetValue) {
-					return "MUST_CREATE_ACCOUNT"; // send email with otp
+					JSONObject json = new JSONObject();
+					json.put("result", "FAILURE");
+					json.put("reason", "MUST_CREATE_ACCOUNT");
+				    return json.toString();   					// send email with otp
 				} else {
-					return "AUTHENTICATED";
+					JSONObject json = new JSONObject();
+					json.put("result", "SUCCESS");
+					json.put("reason", "AUTHENTICATED");
+				    return json.toString();   
 				}
 			} else {
-				return "EMAIL DOES NOT EXIST";
+				JSONObject json = new JSONObject();
+				json.put("result", "FAILURE");
+				json.put("reason", "EMAIL_DOES_NOT_EXIST");
+			    return json.toString(); 
 			}
 
 		} catch (SQLException e) {
 			System.err.println("Error creating user: " + e.getMessage());
 			return null;
 		}
+	}
+	
+	public static String authenticateOTP(Connection conn, String email, String otp) {
+		return "";
+//		// Returns the userId if user is authenticated correctly
+//		String sql = "SELECT * FROM healthhaven.authentication WHERE email = '" + email + "'";
+//
+//		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+//			ResultSet data_rs = stmt.executeQuery();
+//
+//			if (data_rs.next()) {
+//				String truePassword = data_rs.getString("otp");
+//				if (!otp.equals(truePassword)) {
+////					JSONObject json = new JSONObject();
+////					json.put("result", "FAILURE");
+////					json.put("reason", "INCORRECT_PASSWORD");
+////				    return json.toString();
+//				}
+////				boolean resetValue = data_rs.getBoolean("reset");
+////				if (!resetValue) {
+////					JSONObject json = new JSONObject();
+////					json.put("result", "FAILURE");
+////					json.put("reason", "MUST_CREATE_ACCOUNT");
+////				    return json.toString();   					// send email with otp
+////				} else {
+////					JSONObject json = new JSONObject();
+////					json.put("result", "SUCCESS");
+////					json.put("reason", "AUTHENTICATED");
+////				    return json.toString();   
+////				}
+////			} else {
+////				JSONObject json = new JSONObject();
+////				json.put("result", "FAILURE");
+////				json.put("reason", "EMAIL_DOES_NOT_EXIST");
+////			    return json.toString(); 
+//			}
+//
+//		} catch (SQLException e) {
+//			System.err.println("Error creating user: " + e.getMessage());
+//			return null;
+//		}
 	}
 
 
