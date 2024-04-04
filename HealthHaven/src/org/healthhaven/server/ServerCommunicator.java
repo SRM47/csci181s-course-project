@@ -105,6 +105,7 @@ public class ServerCommunicator {
         return response.toString();
     }
     
+    //This is to test client side code by mimicking the server response.
     public static String communicateWithServer1(String message) {
     	System.out.println(message);
     	JSONObject json = new JSONObject(message);
