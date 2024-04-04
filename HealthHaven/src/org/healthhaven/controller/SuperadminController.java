@@ -101,6 +101,7 @@ public class SuperadminController {
     @FXML
     public void handleCancel() {
     	emailTextfield.setText("");
+    	datepicker.setValue(null);
     }
     
     

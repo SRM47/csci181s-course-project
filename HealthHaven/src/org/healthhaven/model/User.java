@@ -201,7 +201,7 @@ public class User {
 		JSONObject json = new JSONObject();
 	    
 	    // Populate the JSON object with key-value pairs
-	    json.put("action", "UPDATE_ACCOUNT");
+	    json.put("request", "UPDATE_ACCOUNT");
 	    json.put("address", newAddress);
 		return ServerCommunicator.communicateWithServer(json.toString());
 	}

@@ -28,7 +28,7 @@
                   <TextField fx:id="emailTextfield" promptText="Enter email" />
                </children>
             </HBox>
-            <DatePicker maxWidth="-Infinity" minWidth="-Infinity" prefWidth="150.0" promptText="Enter Date of Birth">
+            <DatePicker fx:id="datepicker" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="150.0" promptText="Enter Date of Birth">
                <VBox.margin>
                   <Insets top="5.0" />
                </VBox.margin>

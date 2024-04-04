@@ -30,7 +30,7 @@
                   <Region VBox.vgrow="ALWAYS" />
                </children>
             </VBox>
-            <Button fx:id="logoutButton" alignment="CENTER" contentDisplay="BOTTOM" layoutX="47.0" layoutY="353.0" mnemonicParsing="false" text="Logout" />
+            <Button fx:id="logoutButton" alignment="CENTER" contentDisplay="BOTTOM" layoutX="47.0" layoutY="353.0" mnemonicParsing="false" onAction="#handleLogout" text="Logout" />
          </children>
       </Pane>
    </left>

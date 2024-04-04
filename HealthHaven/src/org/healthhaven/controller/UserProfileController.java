@@ -13,10 +13,6 @@ public class UserProfileController {
 	@FXML
     private TextArea userInfoArea;
     @FXML
-    private TextField emailField;
-    @FXML
-    private PasswordField passwordField;
-    @FXML
     private TextField addressField;
     @FXML
     private Label response;
@@ -60,8 +56,6 @@ public class UserProfileController {
     @FXML
     public void handleCancelAction() {
         // Clear all text fields
-        emailField.setText("");
-        passwordField.setText("");
         addressField.setText("");
     }
     

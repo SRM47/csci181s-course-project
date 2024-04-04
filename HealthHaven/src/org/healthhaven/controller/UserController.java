@@ -25,17 +25,6 @@ public class UserController {
 	
 	private User currentUser;// This could be set during login
 	
-
-	@FXML
-    public void initialize() {
-        // Now it's safe to use FXML-injected fields here.
-    	homeButton.setOnAction(event -> loadHomePage());
-        profileButton.setOnAction(event -> loadProfilePage());
-        logoutButton.setOnAction(event -> handleLogout());
-        
-        loadHomePage(); // It's safe to call this here because initialize is called after FXML fields are injected.
-    }
-    
     
     @FXML
     public void loadHomePage() {
@@ -111,6 +100,7 @@ public class UserController {
     
     public void setCurrentUser(User user) {
         this.currentUser = user;
+        loadHomePage();
     }
     
     @FXML

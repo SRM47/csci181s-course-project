@@ -37,6 +37,8 @@ public class DoctorController {
 	@FXML
 	private TextField patientWeightField;
 	@FXML
+	private Label updateRecordResponse;
+	@FXML
 	private Button searchButton;
 	@FXML
 	private Button cancelButton2;
@@ -49,6 +51,8 @@ public class DoctorController {
 
     public void setDoctor(Doctor doctor) {
         this.doctor = doctor;
+        updateFormContainer.setVisible(false);
+        
         // Load doctor-specific information into the dashboard
     }
     
@@ -67,6 +71,7 @@ public class DoctorController {
 
     @FXML
     public void handleViewPatientRecord() {
+    	updateFormContainer.setVisible(false);
         long patientID = Long.parseLong(patientIdField.getText());
         
         //Server response
@@ -91,6 +96,10 @@ public class DoctorController {
         long patientID = Long.parseLong(patientIdField.getText());
         String height = patientHeightField.getText();
         String weight = patientWeightField.getText();
+        if (height.isEmpty()||weight.isEmpty()) {
+        	updateRecordResponse.setText("Nothing to update");
+        	return;
+        }
 
         String response = doctor.updatePatientRecordOnDB(patientID, height, weight);
         
