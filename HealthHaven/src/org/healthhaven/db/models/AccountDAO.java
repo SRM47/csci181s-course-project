@@ -8,6 +8,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import org.healthhaven.model.User;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class AccountDAO {
@@ -166,6 +167,111 @@ public class AccountDAO {
 	    serverResponse.put("reason", reason);
 	    return serverResponse;
 	}
+	
+	public static JSONObject viewUserInformation(Connection conn, String doctorId, String userId) {
+		JSONObject serverResponse = new JSONObject();
+		
+//		TODO: check that PatientUserID is the right way
+		String selectSQL = "SELECT * FROM medical_information_database WHERE PatientUserID = ?";
+	    
+		try (PreparedStatement stmt = conn.prepareStatement(selectSQL)) {
+	        stmt.setString(1, userId);
+	        
+	        try (ResultSet rs = stmt.executeQuery()) {
+	            if (!rs.next()) { // If ResultSet is empty, no records are found for the given IDs.
+	                serverResponse.put("result", "FAILURE");
+	                serverResponse.put("reason", "No records found for the given user ID.");
+	                return serverResponse;
+	            }
+	            
+	            // If records are found, process and add them to the response.
+	            // This example collects all records; adjust according to your needs.
+	            JSONArray records = new JSONArray();
+	            do {
+	                JSONObject record = new JSONObject();
+	                // TODO check this is the right way to get columns
+	                record.put("Timestamp", rs.getString("Timestamp"));
+	                record.put("Height", rs.getFloat("Height"));
+	                record.put("Weight", rs.getFloat("Weight"));
+	                
+	                
+	                records.put(record);
+	            } while (rs.next());
+	            
+	            serverResponse.put("result", "SUCCESS");
+	            serverResponse.put("records", records); 
+	        }
+	    } catch (SQLException e) {
+	        serverResponse.put("result", "FAILURE");
+	        serverResponse.put("reason", "SQL error: " + e.getMessage());
+	    }
+	    
+	    return serverResponse;
+	}
+	
+	public static JSONObject getDataAverage(Connection conn) {
+		JSONObject serverResponse = new JSONObject();
+		
+//		TODO: check query
+		String query = "SELECT AVG(Height) AS AvgHeight, AVG(Weight) AS AvgWeight FROM medical_information_database";
+
+		try (PreparedStatement stmt = conn.prepareStatement(query)) {
+	        ResultSet rs = stmt.executeQuery();
+	        if (rs.next()) {
+	            float avgHeight = rs.getFloat("AvgHeight");
+	            float avgWeight = rs.getFloat("AvgWeight");
+	            serverResponse.put("result", "SUCCESS");
+	            serverResponse.put("averageHeight", avgHeight);
+	            serverResponse.put("averageWeight", avgWeight);
+	        } else {
+	            // Handle unexpected case where query executed but no row is returned
+	            serverResponse.put("result", "FAILURE");
+	            serverResponse.put("reason", "Failed to calculate averages");
+	        }
+	    } catch (SQLException e) {
+	        serverResponse.put("result", "FAILURE");
+	        serverResponse.put("reason", "SQL error: " + e.getMessage());
+	    }
+		
+	    return serverResponse;
+	}
+	
+	public static JSONObject newMedicalInformation(Connection conn, String patientId, String doctorId, String height, String weight, String timestamp) {
+	    JSONObject response = new JSONObject();
+	    
+//	    TODO: check that PatientUserID is the right way
+	    String insertSQL = "INSERT INTO medical_information_database (PatientUserID, DoctorUserID, Timestamp, Height, Weight) VALUES (?, ?, ?, ?, ?)";
+	    
+	    try (PreparedStatement stmt = conn.prepareStatement(insertSQL)) {
+	        stmt.setString(1, patientId);
+	        stmt.setString(2, doctorId);
+	        // Not sure of timestamp format so gonna assume string
+//	        Timestamp sqlTimestamp = Timestamp.valueOf(timestamp);
+	        stmt.setString(3, timestamp);
+	        stmt.setFloat(4, Float.parseFloat(height));
+	        stmt.setFloat(5, Float.parseFloat(weight));
+	        
+	        // Execute the insert operation
+	        int rowsAffected = stmt.executeUpdate();
+	        if (rowsAffected > 0) {
+	            response.put("result", "SUCCESS");
+	            // Instead of "reason", you could use a key like "details" for clarity
+	            response.put("details", String.format("Height: %s, Weight: %s", height, weight));
+	        } else {
+	            response.put("result", "FAILURE");
+	            response.put("reason", "No rows affected");
+	        }
+	    } catch (SQLException e) {
+	        response.put("result", "FAILURE");
+	        response.put("reason", e.getMessage());
+	    } catch (IllegalArgumentException e) {
+	        response.put("result", "FAILURE");
+	        response.put("reason", "Invalid timestamp format: " + e.getMessage());
+	    }
+	    
+	    return response;
+	}
+
 	
 	private static boolean updateUserTable(Connection conn, String sql, String legalfirstname, String legallastname, String address, String userId) {
 	    try (PreparedStatement stmt = conn.prepareStatement(sql)) {

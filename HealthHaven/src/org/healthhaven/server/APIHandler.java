@@ -39,18 +39,23 @@ public class APIHandler{
 	}
 	
 	private static JSONObject createRecord(JSONObject json, Connection cnn) {
-		// TODO Auto-generated method stub
-		return null;
+//		return AccountDAO.updateUserInformation(cnn, newAddress, userId);
+		return AccountDAO.newMedicalInformation(cnn, json.getString("userID"),
+        json.getString("doctorID"), 
+        json.getString("height"),
+        json.getString("height"),
+        json.getString("timestamp"));
+		
 	}
 
 	private static JSONObject handleViewRecord(JSONObject json, Connection cnn) {
-		// TODO Auto-generated method stub
-		return null;
+		return AccountDAO.viewUserInformation(cnn,
+		        json.getString("doctorID"), 
+		        json.getString("patientID"));
 	}
 
 	private static JSONObject handlePatientDataSummary(JSONObject json, Connection cnn) {
-		// TODO Auto-generated method stub
-		return null;
+		return AccountDAO.getDataAverage(cnn);
 	}
 
 	private static JSONObject handleUpdateAccount(JSONObject json, Connection cnn) {
