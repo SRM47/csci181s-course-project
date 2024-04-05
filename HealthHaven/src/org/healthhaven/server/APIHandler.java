@@ -33,7 +33,7 @@ public class APIHandler{
 			default:
 				JSONObject serverResponse = new JSONObject();
 				serverResponse.put("result", "FAILURE");
-				serverResponse.put("reason", "incorrect request");
+				serverResponse.put("reason", "Invalid Request");
 				return serverResponse;	
 		}
 	}

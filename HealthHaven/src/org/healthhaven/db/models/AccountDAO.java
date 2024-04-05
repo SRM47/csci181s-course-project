@@ -4,10 +4,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import org.healthhaven.model.User;
+import org.healthhaven.model.UserIdGenerator;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -172,7 +174,7 @@ public class AccountDAO {
 		JSONObject serverResponse = new JSONObject();
 		
 //		TODO: check that PatientUserID is the right way
-		String selectSQL = "SELECT * FROM medical_information_database WHERE PatientUserID = ?";
+		String selectSQL = "SELECT * FROM healthhaven.medical_information WHERE patientid = ? AND doctorid = ?";
 	    
 		try (PreparedStatement stmt = conn.prepareStatement(selectSQL)) {
 	        stmt.setString(1, userId);
@@ -213,7 +215,7 @@ public class AccountDAO {
 		JSONObject serverResponse = new JSONObject();
 		
 //		TODO: check query
-		String query = "SELECT AVG(Height) AS AvgHeight, AVG(Weight) AS AvgWeight FROM medical_information_database";
+		String query = "SELECT AVG(height) AS AvgHeight, AVG(weight) AS AvgWeight FROM healthhaven.medical_information";
 
 		try (PreparedStatement stmt = conn.prepareStatement(query)) {
 	        ResultSet rs = stmt.executeQuery();
@@ -240,16 +242,18 @@ public class AccountDAO {
 	    JSONObject response = new JSONObject();
 	    
 //	    TODO: check that PatientUserID is the right way
-	    String insertSQL = "INSERT INTO medical_information_database (PatientUserID, DoctorUserID, Timestamp, Height, Weight) VALUES (?, ?, ?, ?, ?)";
+	    String insertSQL = "INSERT INTO healthhaven.medical_information (entryid, patientid, doctorid, timestamp, height, weight) VALUES (?, ?, ?, ?, ?, ?)";
 	    
 	    try (PreparedStatement stmt = conn.prepareStatement(insertSQL)) {
-	        stmt.setString(1, patientId);
-	        stmt.setString(2, doctorId);
+	    	UserIdGenerator g = new UserIdGenerator(16);
+	    	stmt.setString(1, g.generate());
+	        stmt.setString(2, patientId);
+	        stmt.setString(3, doctorId);
 	        // Not sure of timestamp format so gonna assume string
 //	        Timestamp sqlTimestamp = Timestamp.valueOf(timestamp);
-	        stmt.setString(3, timestamp);
-	        stmt.setFloat(4, Float.parseFloat(height));
-	        stmt.setFloat(5, Float.parseFloat(weight));
+	        stmt.setTimestamp(4, Timestamp.valueOf(timestamp));
+	        stmt.setFloat(5, Float.parseFloat(height));
+	        stmt.setFloat(6, Float.parseFloat(weight));
 	        
 	        // Execute the insert operation
 	        int rowsAffected = stmt.executeUpdate();
