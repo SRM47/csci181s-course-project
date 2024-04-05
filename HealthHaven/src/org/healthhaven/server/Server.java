@@ -151,7 +151,9 @@ public class Server {
 			//"type" otp ; password TODO
 
 			JSONObject requestData = new JSONObject(msg);
+			System.out.println(requestData);
 			JSONObject serverResponse = APIHandler.processAPIRequest(requestData, this.conn);
+			System.out.println(serverResponse);
 
 			// Respond to client with appropriate response.
 			// Initialize output data stream.

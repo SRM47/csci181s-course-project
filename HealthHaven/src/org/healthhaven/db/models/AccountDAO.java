@@ -245,7 +245,7 @@ public class AccountDAO {
 	    String insertSQL = "INSERT INTO healthhaven.medical_information (entryid, patientid, doctorid, timestamp, height, weight) VALUES (?, ?, ?, ?, ?, ?)";
 	    
 	    try (PreparedStatement stmt = conn.prepareStatement(insertSQL)) {
-	    	UserIdGenerator g = new UserIdGenerator(16);
+	    	UserIdGenerator g = new UserIdGenerator(32);
 	    	stmt.setString(1, g.generate());
 	        stmt.setString(2, patientId);
 	        stmt.setString(3, doctorId);
@@ -424,6 +424,7 @@ public class AccountDAO {
 
 		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 			ResultSet data_rs = stmt.executeQuery();
+			System.out.println("Statement Executed");
 
 			if (data_rs.next()) {
 				String truePassword = data_rs.getString("password");
@@ -453,6 +454,7 @@ public class AccountDAO {
 		
 		serverResponse.put("result", result);
 		serverResponse.put(result.equals("SUCCESS") ? "type" : "reason", reason);
+		System.out.println(serverResponse);
 		return serverResponse;
 	}
 	

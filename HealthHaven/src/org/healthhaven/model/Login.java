@@ -32,7 +32,7 @@ public class Login {
 	    json.put("timestamp", timestamp.toString());
 	    
 		// System.out.println("Message: " + message);
-		return(ServerCommunicator.communicateWithServer(json.toString()));
+		return ServerCommunicator.communicateWithServer(json.toString());
 	}
 	
 

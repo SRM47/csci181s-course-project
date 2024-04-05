@@ -20,6 +20,7 @@ import me.gosimple.nbvcxz.Nbvcxz;
 import me.gosimple.nbvcxz.scoring.Result;
 
 import java.io.IOException;
+import java.time.Instant;
 
 import org.healthhaven.gui.Main;
 import org.healthhaven.model.*;

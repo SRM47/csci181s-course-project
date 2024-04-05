@@ -15,20 +15,28 @@ public class APIHandler{
 	public static JSONObject processAPIRequest(JSONObject json, Connection cnn) {
 		switch(json.getString("request")) {
 			case "LOGIN":
+				System.out.println("LOGIN");
 				return handleLoginRequest(json, cnn);
 			case "PASSWORD_RESET":
+				System.out.println("PASSWORD_RESET");
 				return handlePasswordReset(json, cnn);
 			case "ALLOW_ACCOUNT_CREATION":
+				System.out.println("ALLOW_ACCOUNT_CREATION");
 				return handleAccountCreation(json, cnn);
 			case "CREATE_ACCOUNT":
+				System.out.println("CREATE_ACCOUNT");
 				return handleCreateAccount(json, cnn);
 			case "UPDATE_ACCOUNT":
+				System.out.println("UPDATE_ACCOUNT");
 				return handleUpdateAccount(json, cnn);
 			case "REQUEST_PATIENT_DATA_SUMMARY":
+				System.out.println("REQUEST_PATIENT_DATA_SUMMARY");
 				return handlePatientDataSummary(json, cnn);
 			case "VIEW_RECORD":
+				System.out.println("VIEW_RECORD");
 				return handleViewRecord(json, cnn);
 			case "CREATE_RECORD":
+				System.out.println("CREATE_RECORD");
 				return createRecord(json, cnn);
 			default:
 				JSONObject serverResponse = new JSONObject();
@@ -43,7 +51,7 @@ public class APIHandler{
 		return AccountDAO.newMedicalInformation(cnn, json.getString("userID"),
         json.getString("doctorID"), 
         json.getString("height"),
-        json.getString("height"),
+        json.getString("weight"),
         json.getString("timestamp"));
 		
 	}
@@ -138,10 +146,12 @@ public class APIHandler{
 
 	private static JSONObject handleLoginRequest(JSONObject json, Connection cnn) {
 		switch (json.getString("type")) {
-		case "PASSWORD":						
+		case "PASSWORD":	
+			System.out.println("PASSWORD");
 			return AccountDAO.authenticateUser(cnn, json.getString("email"),
 					json.getString("password"));
 		case "OTP":
+			System.out.println("OTP");
 			return AccountDAO.authenticateOTP(cnn, json.getString("email"),
 					json.getString("otp"));
 		default:

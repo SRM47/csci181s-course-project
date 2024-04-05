@@ -4,11 +4,13 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.security.KeyStore;
 import java.security.cert.X509Certificate;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Arrays;
 
@@ -41,8 +43,6 @@ public class ServerCommunicator {
      */
     public static String communicateWithServer(String message) {
     	
-    	
-        StringBuilder response = new StringBuilder();
         
         try {
         	// Certificate Trust Configuration (if using a self-signed certificate)
@@ -77,32 +77,35 @@ public class ServerCommunicator {
         	// Initialize readers and writer.
         	BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        	
             
             // Write the message.
-            writer.write(message);
-            writer.newLine();
-            writer.flush();
-            
-            // System.out.println(message);
-            boolean responseReceived = false;
-
-            
-            while (!responseReceived) {
-            	if (reader.ready()) {
-            		String line;
-            		while ((line = reader.readLine()) != null) {
-                        response.append(line);
-                    }
-            		responseReceived = true;
-            	}
+            try {
+                // Write the message.
+                writer.write(message);
+                writer.newLine();
+                writer.flush();
+                String response = reader.readLine();
+                return response; 
+            } catch (IOException e) {
+                // Handle IO exceptions (e.g., log the error)
+            	e.printStackTrace();
+            } finally {
+                // Close resources to prevent leaks
+                try { writer.close(); } catch (Exception ignored) {} 
+                try { reader.close(); } catch (Exception ignored) {}
+                try { socket.close(); } catch (Exception ignored) {} 
+                
             }
+           
             
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
+        
+        return null;
 
-        return response.toString();
     }
     
     //This is to test client side code by mimicking the server response.
