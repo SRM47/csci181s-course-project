@@ -6,6 +6,7 @@ import java.util.Scanner;
 
 import org.healthhaven.model.User.Account;
 import org.healthhaven.server.ServerCommunicator;
+import org.json.JSONObject;
 
 
 /**
@@ -58,9 +59,10 @@ public class DataAnalyst extends User {
 	 * @param scanner
 	 */
 	public String performDataAnalysis(){
-		String message = "REQUEST_PATIENT_DATA_SUMMARY ";
+		JSONObject json = new JSONObject();
+		json.put("request", "REQUEST_PATIENT_DATA_SUMMARY");
 //		System.out.println("message");
-		return(ServerCommunicator.communicateWithServer(message));
+		return(ServerCommunicator.communicateWithServer(json.toString()));
 	}
 
 

@@ -81,10 +81,11 @@ public class PasswordResetController{
 				this.json = null;
 			} else {
 				JSONObject jsonObj = new JSONObject(serverResponse);
-				if (jsonObj.getString("request").equals("SUCCESS")) {
+				if (jsonObj.getString("result").equals("SUCCESS")) {
 					json = jsonObj;
 					OTPSection.setVisible(true);
 					OTPResponse.setText("OTP sent to your email");
+					emailTextfield.setText("");
 				}
 			}
 		}
@@ -106,8 +107,10 @@ public class PasswordResetController{
 				OTPResponse.setText(jsonObj.getString("reason"));
 			}
 			else if (jsonObj.getString("result").equals("SUCCESS")) {
+					this.json = jsonObj;
 					OTPSection.setVisible(false);
 					passwordResetSection.setVisible(true);
+					OTPPasscodeField.setText("");
 			}
 				
 		}
@@ -151,6 +154,8 @@ public class PasswordResetController{
 			    		PasswordResetMessage.setText(jsonObj.getString("reason"));
 			    	} else if (jsonObj.getString("result").equals("SUCCESS")) {
 			    		PasswordResetMessage.setText("Password got updated");
+			    		PasswordField1.setText("");
+			    		PasswordField2.setText("");
 			    	}
 			    }
 		}		    	

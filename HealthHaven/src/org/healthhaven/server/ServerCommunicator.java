@@ -9,6 +9,7 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.security.KeyStore;
 import java.security.cert.X509Certificate;
+import java.time.LocalDate;
 import java.util.Arrays;
 
 import javax.net.ssl.SSLContext;
@@ -17,6 +18,8 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
+
+import org.json.JSONObject;
 
 
 public class ServerCommunicator {
@@ -96,13 +99,92 @@ public class ServerCommunicator {
             
         } catch (Exception e) {
             e.printStackTrace();
-            return "Error communicating with server.";
+            return null;
         }
 
         return response.toString();
     }
     
-    public static void main(String[] args) {
-		communicateWithServer("Hello Bye Bye Hello");
+    //This is to test client side code by mimicking the server response.
+    public static String communicateWithServer1(String message) {
+    	System.out.println(message);
+    	JSONObject json = new JSONObject(message);
+    	JSONObject serverResponse = new JSONObject();
+    	switch(json.getString("request")) {
+		case "LOGIN":
+			switch (json.getString("type")) {
+			case "PASSWORD":
+				serverResponse.put("result", "SUCCESS");
+				serverResponse.put("type" , "EXISTING"); 
+				//or this for new
+				serverResponse.put("type" , "NEW"); 
+				serverResponse.put("accountType" , "DOCTOR"); //feel free to change here for testing
+				return serverResponse.toString();
+			case "OTP":
+				serverResponse.put("result", "SUCCESS");
+				serverResponse.put("email", "example@email.com");
+				serverResponse.put("userID", "abcdefg"); //might not need this
+				serverResponse.put("first_name", "Sae");
+				serverResponse.put("last_name", "Furukawa");
+				serverResponse.put("address", "Claremont, CA");
+				serverResponse.put("accountType", "DATA_ANALYST"); //change the role for testing
+				serverResponse.put("dob", LocalDate.of(2000, 10, 10).toString());
+				return serverResponse.toString();
+
+			default:	
+				serverResponse.put("result", "FAILURE");
+				serverResponse.put("reason", "Invalid Request");
+				return serverResponse.toString();	
+			}
+		case "PASSWORD_RESET":
+			switch (json.getString("type")){
+			case "EMAIL_CHECK":
+				serverResponse.put("result", "SUCCESS");
+				serverResponse.put("email", "example@example.com");
+				return serverResponse.toString();
+			case "VERIFY_OTP":
+				serverResponse.put("result", "SUCCESS");
+				serverResponse.put("email", "example@example.com");
+				serverResponse.put("first_name", "Sae");
+				serverResponse.put("last_name", "Furukawa");
+				serverResponse.put("dob", LocalDate.of(2000, 10, 10).toString());
+				return serverResponse.toString();
+			case "UPDATE_PASSWORD":
+				serverResponse.put("result", "SUCCESS");
+				return serverResponse.toString();
+			default:
+				serverResponse.put("result", "FAILURE");
+				serverResponse.put("reason", "incorrect request");
+				return serverResponse.toString();	
+			}
+		case "ALLOW_ACCOUNT_CREATION":
+			serverResponse.put("result", "SUCCESS");
+			return serverResponse.toString();
+		case "CREATE_ACCOUNT":
+			serverResponse.put("result", "SUCCESS");
+			return serverResponse.toString();
+		case "UPDATE_ACCOUNT":
+			serverResponse.put("result", "SUCCESS");
+			serverResponse.put("type" , "EXISTING");
+			return serverResponse.toString();
+		case "REQUEST_PATIENT_DATA_SUMMARY":
+			serverResponse.put("average height", "180");
+			serverResponse.put("average weight", "180");
+			return serverResponse.toString();
+		case "VIEW_RECORD":
+			serverResponse.put("height", "180");
+			serverResponse.put("weight", "180");
+			return serverResponse.toString();
+		case "CREATE_RECORD":
+			serverResponse.put("result", "SUCCESS");
+			serverResponse.put("height", "180");
+			serverResponse.put("weight", "190");
+			return serverResponse.toString();
+		default:
+			serverResponse.put("result", "FAILURE");
+			serverResponse.put("reason", "incorrect request");
+			return serverResponse.toString();	
 	}
+    }
+    
 }

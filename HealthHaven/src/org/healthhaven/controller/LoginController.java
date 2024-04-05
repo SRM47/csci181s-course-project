@@ -60,6 +60,7 @@ public class LoginController{
 		//get input
 		String email = emailTextfield.getText();
 		String password = passwordTextfield.getText();
+		this.emailAddress = email;
 
 		String serverResponse= Login.authenticateUserOnDB(email, password);
 		if (serverResponse.equals(null)) {
@@ -75,7 +76,6 @@ public class LoginController{
 	        	//existing user
 		        if (jsonObj.getString("type").equals("EXISTING")) {
 		        	errorMessage.setText("");
-		        	this.emailAddress = jsonObj.getString("email");
 		        	//Do OTP verification
 		        	OTPSectionLogin.setVisible(true);
 		        	OTPLoginMessage.setText("OTP sent to your email");
@@ -83,7 +83,7 @@ public class LoginController{
 		        //new user, direct them to account creation
 		        } else if (jsonObj.getString("type").equals("NEW")) {
 		        	errorMessage.setText("");
-		        	loadAccountCreationPage(email,jsonObj.getString("userType"));
+		        	loadAccountCreationPage(email,jsonObj.getString("accountType"));
 		        }
 	        }
 	        

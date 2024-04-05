@@ -91,7 +91,7 @@ public class Doctor extends User {
 	    JSONObject json = new JSONObject();
 	    
 	    // Populate the JSON object with key-value pairs
-	    json.put("action", "VIEW_RECORD");
+	    json.put("request", "VIEW_RECORD");
 	    json.put("patientID", patientID);
 	    json.put("doctorID", getUserID());
 	   

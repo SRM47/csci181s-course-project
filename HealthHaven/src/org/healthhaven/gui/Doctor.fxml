@@ -66,8 +66,13 @@
                   <Insets top="5.0" />
                </padding>
             </HBox>
-            <TextArea fx:id="patientRecordArea" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="70.0" prefWidth="199.0" />
-            <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="300.0">
+            <TextArea fx:id="patientRecordArea" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="199.0" />
+            <Label fx:id="updateRecordResponse" textFill="#ee0707">
+               <font>
+                  <Font size="9.0" />
+               </font>
+            </Label>
+            <VBox fx:id="updateFormContainer" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="300.0">
                <children>
                   <TextField fx:id="patientHeightField" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="200.0" promptText="Update Height">
                      <VBox.margin>

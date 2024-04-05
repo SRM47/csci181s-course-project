@@ -10,6 +10,7 @@ public class PasswordReset{
 		Instant timestamp = Instant.now();
 		JSONObject json = new JSONObject();
 	    json.put("request", "PASSWORD_RESET");
+	    json.put("type", "EMAIL_CHECK");
 	    json.put("email", email);
 	    json.put("timestamp", timestamp.toString());
 	    
@@ -22,7 +23,7 @@ public class PasswordReset{
 		Instant timestamp = Instant.now();
 		JSONObject json = new JSONObject();
 	    json.put("request", "PASSWORD_RESET");
-	    json.put("type", "OTP");
+	    json.put("type", "VERIFY_OTP");
 	    json.put("email", email);
 	    json.put("timestamp", timestamp.toString());
 
@@ -34,7 +35,8 @@ public class PasswordReset{
 		Instant timestamp = Instant.now();
 		JSONObject json = new JSONObject();
 		
-		json.put("request", "PASSWORD_UPDATE");
+		json.put("request", "PASSWORD_RESET");
+		json.put("type", "UPDATE_PASSWORD");
 		json.put("email", email);
 		json.put("timestamp", timestamp.toString());
 		
