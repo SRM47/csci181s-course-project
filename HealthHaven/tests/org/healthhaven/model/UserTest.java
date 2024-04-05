@@ -2,6 +2,7 @@ package org.healthhaven.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mockStatic;
 
 import java.time.LocalDate;
@@ -94,11 +95,12 @@ public abstract class UserTest<T extends User> {
 
             // Update the address
             String newAddress = "456 Elm St";
+            User user = new User("userID123", "user@example.com", "John", "Doe", "123 Main St", LocalDate.parse("1980-01-01"));
             String actualResponse = user.updatePersonalRecordOnDB(newAddress);
 
             // Capture the JSON payload sent to the server
             ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-            mockedStatic.verify(() -> ServerCommunicator.communicateWithServer(captor.capture()));
+            mockedStatic.verify(() -> ServerCommunicator.communicateWithServer(captor.capture()), atLeastOnce());
             String capturedJson = captor.getValue();
 
             // Assert the local change
@@ -109,10 +111,11 @@ public abstract class UserTest<T extends User> {
 
             // Validate the JSON payload
             JSONObject json = new JSONObject(capturedJson);
-            assertEquals("UPDATE_ACCOUNT", json.getString("action"));
+            assertEquals("UPDATE_ACCOUNT", json.getString("request")); // Ensure this matches your actual request key
             assertEquals(newAddress, json.getString("address"));
         }
     }
+
 
 //    @Override
 //    public User createUser() {

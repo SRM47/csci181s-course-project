@@ -38,6 +38,7 @@ public class LoginTest {
 
     @Test
     public void testExistingUserSession() {
+        // Adjust 'accountType' to the expected format used within your system
         JSONObject jsonOb = new JSONObject();
         jsonOb.put("email", "user@example.com");
         jsonOb.put("userID", "userID123");
@@ -45,13 +46,20 @@ public class LoginTest {
         jsonOb.put("last_name", "Doe");
         jsonOb.put("address", "123 Main St");
         jsonOb.put("dob", "1980-01-01");
-        jsonOb.put("accountType", "Doctor");
+        jsonOb.put("accountType", "DOCTOR"); // Use uppercase to match the switch case values
 
         User user = Login.existingUserSession(jsonOb);
 
+        assertNotNull(user, "User should not be null.");
+        assertTrue(user instanceof Doctor, "The created user should be an instance of Doctor.");
         assertEquals("user@example.com", user.getEmail(), "Email should match the JSON object.");
-        // Note: Real assertion might adjust based on actual return type or user instance checks.
+        assertEquals("John", user.getLegal_first_name(), "First name should match the JSON object.");
+        assertEquals("Doe", user.getLegal_last_name(), "Last name should match the JSON object.");
+        assertEquals("123 Main St", user.getAddress(), "Address should match the JSON object.");
+        // Parsing the 'dob' string to LocalDate for comparison
+        assertEquals(LocalDate.parse("1980-01-01"), user.getDob(), "DOB should match the JSON object.");
     }
+
 
     @Test
     public void testAuthenticateOTPLogin() {
@@ -65,62 +73,57 @@ public class LoginTest {
     // Tests for createUserInstance functionality
     @Test
     public void testCreateDoctorInstance() {
-        String doctorResponse = generateUserJsonResponse("Doctor", "doc123", "doctor@example.com", "Jane", "Doe", "456 Clinic St", "1975-05-15");
-        mockedServerCommunicator.when(() -> ServerCommunicator.communicateWithServer(anyString())).thenReturn(doctorResponse);
-
-        User user = Login.existingUserSession(new JSONObject(doctorResponse));
+        JSONObject doctorJson = generateUserJson("123456789", "doctor@example.com", "Jane", "Doe", "456 Clinic St", "1975-05-15", "DOCTOR");
+        User user = Login.existingUserSession(doctorJson);
         assertTrue(user instanceof Doctor, "The created user should be an instance of Doctor.");
     }
+
     
     @Test
     public void testCreatePatientInstance() {
-        String patientResponse = generateUserJsonResponse("Patient", "patient123", "patient@example.com", "John", "Patient", "123 Health St", "1985-04-20");
-        mockedServerCommunicator.when(() -> ServerCommunicator.communicateWithServer(anyString())).thenReturn(patientResponse);
-
-        User user = Login.existingUserSession(new JSONObject(patientResponse));
+        JSONObject patientJson = generateUserJson("987654321", "patient@example.com", "John", "Patient", "123 Health St", "1985-04-20", "PATIENT");
+        User user = Login.existingUserSession(patientJson);
         assertTrue(user instanceof Patient, "The created user should be an instance of Patient.");
     }
 
+
     @Test
     public void testCreateDataAnalystInstance() {
-        String dataAnalystResponse = generateUserJsonResponse("Data_Analyst", "analyst123", "analyst@example.com", "Danny", "Data", "456 Data St", "1982-08-15");
-        mockedServerCommunicator.when(() -> ServerCommunicator.communicateWithServer(anyString())).thenReturn(dataAnalystResponse);
-
-        User user = Login.existingUserSession(new JSONObject(dataAnalystResponse));
+        JSONObject dataAnalystJson = generateUserJson("234567890", "analyst@example.com", "Danny", "Data", "456 Data St", "1982-08-15", "DATA_ANALYST");
+        User user = Login.existingUserSession(dataAnalystJson);
         assertTrue(user instanceof DataAnalyst, "The created user should be an instance of Data Analyst.");
     }
 
+
     @Test
     public void testCreateDPOInstance() {
-        String dpoResponse = generateUserJsonResponse("Data_Protection_Officer", "dpo123", "dpo@example.com", "Diana", "Privacy", "789 Privacy Ln", "1978-12-05");
-        mockedServerCommunicator.when(() -> ServerCommunicator.communicateWithServer(anyString())).thenReturn(dpoResponse);
-
-        User user = Login.existingUserSession(new JSONObject(dpoResponse));
+        JSONObject dpoJson = generateUserJson("345678901", "dpo@example.com", "Diana", "Privacy", "789 Privacy Ln", "1978-12-05", "DATA_PROTECTION_OFFICER");
+        User user = Login.existingUserSession(dpoJson);
         assertTrue(user instanceof DataProtectionOfficer, "The created user should be an instance of Data Protection Officer.");
     }
 
+
     @Test
     public void testCreateSuperadminInstance() {
-        String superadminResponse = generateUserJsonResponse("Superadmin", "admin123", "superadmin@example.com", "Sam", "Admin", "123 Admin Blvd", "1975-02-28");
-        mockedServerCommunicator.when(() -> ServerCommunicator.communicateWithServer(anyString())).thenReturn(superadminResponse);
-
-        User user = Login.existingUserSession(new JSONObject(superadminResponse));
+        JSONObject superadminJson = generateUserJson("456789012", "superadmin@example.com", "Sam", "Admin", "123 Admin Blvd", "1975-02-28", "SUPERADMIN");
+        User user = Login.existingUserSession(superadminJson);
         assertTrue(user instanceof Superadmin, "The created user should be an instance of Superadmin.");
     }
+
 
 
     // Add similar tests for Patient, Data_Analyst, Data_Protection_Officer, and Superadmin
     // Implement generateUserJsonResponse and any additional helper methods as needed.
 
-    private String generateUserJsonResponse(String accountType, String userID, String email, String firstName, String lastName, String address, String dob) {
-        JSONObject jsonResponse = new JSONObject();
-        jsonResponse.put("accountType", accountType);
-        jsonResponse.put("userID", userID);
-        jsonResponse.put("email", email);
-        jsonResponse.put("first_name", firstName);
-        jsonResponse.put("last_name", lastName);
-        jsonResponse.put("address", address);
-        jsonResponse.put("dob", dob);
-        return jsonResponse.toString();
+    private JSONObject generateUserJson(String userID, String email, String firstName, String lastName, String address, String dob, String accountType) {
+        return new JSONObject()
+                .put("userID", userID)
+                .put("email", email)
+                .put("first_name", firstName)
+                .put("last_name", lastName)
+                .put("address", address)
+                .put("dob", dob)
+                .put("accountType", accountType);
     }
+
 }
