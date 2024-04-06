@@ -152,8 +152,8 @@ public class APIHandler{
 					json.getString("password"));
 		case "OTP":
 			System.out.println("OTP");
-			return AccountDAO.authenticateOTP(cnn, json.getString("email"),
-					json.getString("otp"));
+			return AccountDAO.authenticateOTP(cnn, json.getString("email"), null);
+//					json.getString("otp"));
 		default:
 			JSONObject serverResponse = new JSONObject();
 			serverResponse.put("result", "FAILURE");

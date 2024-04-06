@@ -95,17 +95,12 @@ public class ServerCommunicator {
                 try { writer.close(); } catch (Exception ignored) {} 
                 try { reader.close(); } catch (Exception ignored) {}
                 try { socket.close(); } catch (Exception ignored) {} 
-                
-            }
-           
-            
+            } 
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
-        
         return null;
-
     }
     
     //This is to test client side code by mimicking the server response.
