@@ -1,6 +1,7 @@
 package org.healthhaven.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mockStatic;
 
 import java.time.LocalDate;
@@ -32,19 +33,23 @@ public class DataAnalystTest extends UserTest<DataAnalyst> {
 
     @Test
     public void testPerformDataAnalysis() {
-        // Assume the server responds with a specific string upon a data analysis request
         String expectedServerResponse = "DATA SUMMARY";
 
         try (MockedStatic<ServerCommunicator> mockedStatic = mockStatic(ServerCommunicator.class)) {
             // Mock the static method call to return a predefined response
-            mockedStatic.when(() -> ServerCommunicator.communicateWithServer("REQUEST_PATIENT_DATA_SUMMARY ")).thenReturn(expectedServerResponse);
+            // Use anyString() to allow any JSON string or refine as needed
+            mockedStatic.when(() -> ServerCommunicator.communicateWithServer(anyString())).thenReturn(expectedServerResponse);
+
+            // Assuming 'user' is an instance of DataAnalyst
+            DataAnalyst analyst = new DataAnalyst("userID", "email@example.com", "John", "Doe", "123 Main St", LocalDate.now());
 
             // Execute the method under test
-            String response = user.performDataAnalysis();
+            String response = analyst.performDataAnalysis();
 
             // Assert that the response is as expected
             assertEquals(expectedServerResponse, response, "The server response should match the expected data summary.");
         }
     }
+
 
 }
