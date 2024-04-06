@@ -116,9 +116,9 @@ public class APIHandler{
 			} else {
 				// Send email with OTP to person only if email is verified.
 				try {
-					String OTP = TOTP.secretKey().toString();
+					String OTP = TOTP.genSecretKey().toString();
 					EmailSender.sendDefaultPasswordEmail(json.getString("email"), OTP, "None");
-				} catch (NoSuchAlgorithmException e) {
+				} catch (Exception e) {
 					result = "FAILURE";
 					reason = "Error generating OTP";
 				}
@@ -152,8 +152,7 @@ public class APIHandler{
 					json.getString("password"));
 		case "OTP":
 			System.out.println("OTP");
-			return AccountDAO.authenticateOTP(cnn, json.getString("email"), null);
-//					json.getString("otp"));
+			return AccountDAO.authenticateOTP(cnn, json.getString("email"), json.getString("otp"));
 		default:
 			JSONObject serverResponse = new JSONObject();
 			serverResponse.put("result", "FAILURE");

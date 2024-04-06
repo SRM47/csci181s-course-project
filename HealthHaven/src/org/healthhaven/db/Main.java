@@ -5,11 +5,6 @@ package org.healthhaven.db;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.time.LocalDate;
-
-import org.healthhaven.db.models.UserDAO;
-import org.healthhaven.model.Patient;
-import org.healthhaven.model.User;
 
 public class Main {
     public static void main(String[] args){

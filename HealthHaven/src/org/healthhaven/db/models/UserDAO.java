@@ -4,14 +4,10 @@
 package org.healthhaven.db.models;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.time.ZoneId;
-
-import org.healthhaven.model.User;
+import org.json.JSONObject;
 
 /**
  * 
@@ -86,25 +82,63 @@ public class UserDAO {
 	}
 
 //	@SuppressWarnings("deprecation")
-//	public static User getUserInformation(Connection conn, String userId) {
-//		String sql = "SELECT * FROM healthhaven.users WHERE userid = '" + userId + "'";
-//
-//		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-//			ResultSet data_rs = stmt.executeQuery();
-//			User user = null;
-//			if (data_rs.next()) {
-//				Date dob = data_rs.getDate("dob");
-//				user = new User(Long.parseLong(data_rs.getString("userid")), "email",
-//						data_rs.getString("legalfirstname"), data_rs.getString("legallastname"),
-//						data_rs.getString("address"), LocalDate.of(dob.getYear(), dob.getMonth(), dob.getDay()));
-//			}
-//			return user;
-//		} catch (SQLException e) {
-//			System.err.println("Error creating user: " + e.getMessage());
-//			return null;
-//		}
-//
-//	}
+	public static JSONObject getUserInformation(Connection conn, String userId) {
+		JSONObject response = new JSONObject();
+		String reason = "";
+		
+		String sql = "SELECT * FROM healthhaven.users WHERE userid = '" + userId + "'";
+
+		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+			ResultSet data_rs = stmt.executeQuery();
+			if (data_rs.next()) {
+				response.put("email", getEmailFromId(conn, userId));
+				response.put("userID", userId);
+				response.put("first_name", data_rs.getString("legalfirstname"));
+				response.put("last_name", data_rs.getString("legallastname"));
+				response.put("address", data_rs.getString("address"));
+				response.put("dob", data_rs.getDate("dob").toString());
+				response.put("accountType", getUserAccountType(conn, userId));
+				response.put("result", "SUCCESS");
+				return response;
+			}
+			reason = "User does not exist";
+		} catch (SQLException e) {
+			System.err.println("Error creating user: " + e.getMessage());
+			reason = "Error creating user: " + e.getMessage();
+		}
+		response.put("result", "FAILURE");
+		response.put("reason", reason);
+		return response;
+
+	}
+
+	private static String getUserAccountType(Connection conn, String userId) {
+		String sql = "SELECT * FROM healthhaven.accounts WHERE userid = '" + userId + "'";
+
+		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+			ResultSet data_rs = stmt.executeQuery();
+			if (data_rs.next()) {
+				return data_rs.getString("accounttype");
+			}
+		} catch (SQLException e) {
+			System.err.println("Error creating user: " + e.getMessage());
+		}
+		return "";
+	}
+
+	private static String getEmailFromId(Connection conn, String userId) {
+		String sql = "SELECT * FROM healthhaven.authentication WHERE userid = '" + userId + "'";
+
+		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+			ResultSet data_rs = stmt.executeQuery();
+			if (data_rs.next()) {
+				return data_rs.getString("email");
+			}
+		} catch (SQLException e) {
+			System.err.println("Error creating user: " + e.getMessage());
+		}
+		return "";
+	}
 	
 
 }

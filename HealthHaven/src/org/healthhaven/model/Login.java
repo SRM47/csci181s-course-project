@@ -86,10 +86,10 @@ public class Login {
 		json.put("request", "LOGIN");
 	    json.put("type", "OTP");
 	    json.put("email", emailAddress);
-	    json.put("OTP", otpInput);
+	    json.put("otp", otpInput);
 	    
 		// System.out.println("Message: " + message);
-		return(ServerCommunicator.communicateWithServer(json.toString()));
+		return ServerCommunicator.communicateWithServer(json.toString());
 	}
 
 

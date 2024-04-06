@@ -128,7 +128,7 @@ public class TOTP {
 //	}
 //	
 	
-	public static int verTOTP(String key, String pass) throws InvalidKeyException {
+	public static boolean verTOTP(String key, String pass){
 		
 		Instant now = Instant.now();
 		
@@ -140,10 +140,10 @@ public class TOTP {
 			System.out.println("totpcheck: " + totpCheck);
 			
 			if (pass.equals(totpCheck)){
-				return 1;
+				return true;
 			}
 		}
-		return 0;
+		return false;
 		
 	}
 	

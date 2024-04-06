@@ -1,44 +1,25 @@
 package org.healthhaven.server;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.DataInputStream;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.Arrays;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
+import java.security.KeyStore;
+import java.sql.Connection;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.concurrent.TimeUnit;
-import javax.net.ssl.SSLSocket;
+
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
-import java.io.FileInputStream;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
-import java.sql.Connection;
-
+import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManagerFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 import org.healthhaven.db.DatabaseConnectionUtil;
-import org.healthhaven.db.models.AccountDAO;
-import org.healthhaven.model.EmailSender;
-import org.healthhaven.model.PasswordGenerator;
-import org.healthhaven.model.UserIdGenerator;
 import org.json.JSONException;
 import org.json.JSONObject;
 

@@ -13,6 +13,13 @@ public class EmailSender {
 		return sendEmail(email, subject, body);
 	}
 	
+	public static String sendTOTPEmail(String email, String totp) {
+		String subject = "Your One Time Passcode!";
+		String body = String.format(totp);
+		return sendEmail(email, subject, body);
+		
+	}
+	
 	private static String sendEmail(String toEmail, String subject, String body) {
         String fromEmail = "healthhaven845@gmail.com"; //requires valid gmail id
         String password = "fsnx gvno zvwk goip"; // correct password for gmail id

@@ -84,7 +84,8 @@ public class LoginController{
 		        //new user, direct them to account creation
 		        } else if (jsonObj.getString("type").equals("NEW")) {
 		        	errorMessage.setText("");
-		        	loadAccountCreationPage(email,jsonObj.getString("accountType"));
+		        	// loadAccountCreationPage(email,jsonObj.getString("accountType"));
+		        	loadAccountCreationPage(email,"Patient");
 		        }
 	        }
 	        
