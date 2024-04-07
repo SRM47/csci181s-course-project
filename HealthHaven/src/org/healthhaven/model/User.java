@@ -24,7 +24,7 @@ public class User {
 		PATIENT( "Patient"),
 		DATA_ANALYST("Data_Analyst"),
 		SUPERADMIN("Superadmin"),
-		DPO("Data_Protection_Officer"),
+		DPO("Data Protection Officer"),
 		NONE("NONE");
 		private String account_name;
 		private Account(String account_name) {
