@@ -48,10 +48,10 @@ public class APIHandler{
 	
 	private static JSONObject createRecord(JSONObject json, Connection cnn) {
 //		return AccountDAO.updateUserInformation(cnn, newAddress, userId);
-		return AccountDAO.newMedicalInformation(cnn, json.getString("userID"),
+		return AccountDAO.newMedicalInformation(cnn, json.getString("patientID"),
         json.getString("doctorID"), 
-        json.getString("height"),
-        json.getString("weight"),
+        json.getFloat("height"),
+        json.getFloat("weight"),
         json.getString("timestamp"));
 		
 	}

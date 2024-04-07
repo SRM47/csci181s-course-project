@@ -65,13 +65,13 @@ public class Doctor extends User {
      * @param weight
      * @return
      */
-	public String updatePatientRecordOnDB(long userID, String height, String weight) {
+	public String updatePatientRecordOnDB(String userID, float height, float weight) {
         Instant timestamp = Instant.now(); // This captures the current moment in UTC.
         
         // Create a JSONObject and populate it with data
         JSONObject json = new JSONObject();
         json.put("request", "CREATE_RECORD");
-        json.put("userID", userID);
+        json.put("patientID", userID);
         json.put("doctorID", getUserID());
         json.put("height", height);
         json.put("weight", weight);
@@ -86,7 +86,7 @@ public class Doctor extends User {
      * @param userID
      * @return
      */
-	public String viewPatientRecord(long patientID) {
+	public String viewPatientRecord(String patientID) {
 		// Create a new JSONObject
 	    JSONObject json = new JSONObject();
 	    

@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 
 import org.healthhaven.model.EmailSender;
 import org.healthhaven.model.TOTP;
@@ -173,10 +174,15 @@ public class AccountDAO {
 
 	public static JSONObject viewUserInformation(Connection conn, String doctorId, String userId) {
 		JSONObject serverResponse = new JSONObject();
+		if (!accountExistsById(conn, userId)) {
+			serverResponse.put("result", "FAILURE");
+			serverResponse.put("reason", "User does not exist!");
+			return serverResponse;
+		}
 
 //		TODO: check that PatientUserID is the right way
 		String selectSQL = "";
-		if (doctorId != null || doctorId != "") {
+		if (doctorId != null && doctorId != "") {
 			selectSQL = "SELECT * FROM healthhaven.medical_information WHERE patientid = ? AND doctorid = ?";
 		} else {
 			selectSQL = "SELECT * FROM healthhaven.medical_information WHERE patientid = ?";
@@ -184,10 +190,13 @@ public class AccountDAO {
 		
 
 		try (PreparedStatement stmt = conn.prepareStatement(selectSQL)) {
+			System.out.println(selectSQL);
 			stmt.setString(1, userId);
-			if (doctorId != null || doctorId != "") {
+			if (doctorId != null && doctorId != "") {
 				stmt.setString(2, doctorId);
 			}
+			
+			
 
 			try (ResultSet rs = stmt.executeQuery()) {
 				if (!rs.next()) { // If ResultSet is empty, no records are found for the given IDs.
@@ -247,9 +256,14 @@ public class AccountDAO {
 		return serverResponse;
 	}
 
-	public static JSONObject newMedicalInformation(Connection conn, String patientId, String doctorId, String height,
-			String weight, String timestamp) {
+	public static JSONObject newMedicalInformation(Connection conn, String patientId, String doctorId, float height,
+			float weight, String timestamp) {
 		JSONObject response = new JSONObject();
+		if (!accountExistsById(conn, patientId) || !accountExistsById(conn, doctorId)) {
+			response.put("result", "FAILURE");
+			response.put("reason", "User doe not exist!");
+			return response;
+		}
 
 //	    TODO: check that PatientUserID is the right way
 		String insertSQL = "INSERT INTO healthhaven.medical_information (entryid, patientid, doctorid, timestamp, height, weight) VALUES (?, ?, ?, ?, ?, ?)";
@@ -261,9 +275,10 @@ public class AccountDAO {
 			stmt.setString(3, doctorId);
 			// Not sure of timestamp format so gonna assume string
 //	        Timestamp sqlTimestamp = Timestamp.valueOf(timestamp);
-			stmt.setTimestamp(4, Timestamp.valueOf(timestamp));
-			stmt.setFloat(5, Float.parseFloat(height));
-			stmt.setFloat(6, Float.parseFloat(weight));
+			Instant instant = Instant.parse(timestamp);
+			stmt.setTimestamp(4, Timestamp.from(instant));
+			stmt.setFloat(5, height);
+			stmt.setFloat(6, weight);
 
 			// Execute the insert operation
 			int rowsAffected = stmt.executeUpdate();
