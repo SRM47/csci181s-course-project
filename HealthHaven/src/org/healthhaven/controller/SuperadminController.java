@@ -3,6 +3,7 @@ package org.healthhaven.controller;
 import java.time.LocalDate;
 
 import org.healthhaven.model.*;
+import org.healthhaven.model.User.Account;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -16,23 +17,23 @@ import javafx.scene.control.TextArea;
 
 public class SuperadminController {
 
-    private Superadmin superadmin;
-    
-    @FXML
-    private StackPane mainView;
-    @FXML 
-    private Label response;
-    @FXML
-    private Button authorizeAccountButton;
-    @FXML
-    private Button cancelButton;
-    @FXML
-    private Button viewAccountButton;
-    @FXML
-    private TextArea recordTextArea;
-    @FXML
-    private TextField emailTextfield;
-    @FXML
+	private Superadmin superadmin;
+
+	@FXML
+	private StackPane mainView;
+	@FXML
+	private Label response;
+	@FXML
+	private Button authorizeAccountButton;
+	@FXML
+	private Button cancelButton;
+	@FXML
+	private Button viewAccountButton;
+	@FXML
+	private TextArea recordTextArea;
+	@FXML
+	private TextField emailTextfield;
+	@FXML
 	private MenuButton accountTypeMenu;
 	@FXML
 	private MenuItem patientMenuItem;
@@ -44,65 +45,80 @@ public class SuperadminController {
 	private MenuItem dataAnalystMenuItem;
 	@FXML
 	private DatePicker datepicker;
-    
 
-    public void setSuperadmin(Superadmin superadmin) {
-        this.superadmin = superadmin;
-        // Load doctor-specific information into the dashboard
-    }
-    
-    @FXML
-    public void clickViewAccountList() {
-    	listAccounts();
-    }
-    
-    @FXML
-    public void updateAccountTypeDoctor() {
+	public void setSuperadmin(Superadmin superadmin) {
+		this.superadmin = superadmin;
+		// Load doctor-specific information into the dashboard
+	}
+
+	@FXML
+	public void clickViewAccountList() {
+		listAccounts();
+	}
+
+	@FXML
+	public void updateAccountTypeDoctor() {
 		accountTypeMenu.setText(doctorMenuItem.getText());
 	}
-	
-    @FXML
+
+	@FXML
 	public void updateAccountTypePatient() {
 		accountTypeMenu.setText(patientMenuItem.getText());
 	}
-    
+
 	@FXML
 	public void updateAccountTypeDataProtectionOfficer() {
 		accountTypeMenu.setText(dataProtectionOfficerMenuItem.getText());
 	}
-	
+
 	@FXML
 	public void updateAccountTypeDataAnalyst() {
 		accountTypeMenu.setText(dataAnalystMenuItem.getText());
 	}
-	
+
 	@FXML
 	public void authorizeAccount() {
-		response.setText(null); //clear
-		
+		response.setText(null); // clear
+
 		String rat = accountTypeMenu.getText();
-		String remail = emailTextfield.getText();
+		Account userAccountType = Account.NONE;
+		switch (accountTypeMenu.getText()) {
+		case "Patient":
+			userAccountType = Account.PATIENT;
+			break;
+		case "Doctor":
+			userAccountType = Account.DOCTOR;
+			break;
+		case "Data Analyst":
+			userAccountType = Account.DATA_ANALYST;
+			break;
+		case "Data Protection Officer":
+			userAccountType = Account.DPO;
+			break;
+
+		}
+		String email = emailTextfield.getText();
 		LocalDate dob = datepicker.getValue();
-		
-		//Input validation
-		if (rat.isEmpty()|| remail.isEmpty()||dob==null) {
+
+		// Input validation
+		if (rat.isEmpty() || email.isEmpty() || dob == null) {
 			response.setText("Please fill in all fields.");
 		}
-		String serverResponse = superadmin.authorizeAccountCreation(remail, rat, dob);
+		String serverResponse = superadmin.authorizeAccountCreation(email, userAccountType, dob);
 		response.setText(serverResponse);
-		
+
 	}
 
-    private void listAccounts() {
-    	String accountRecords = superadmin.viewAccountList();;
-        recordTextArea.setText(accountRecords);
-    }
-    
-    @FXML
-    public void handleCancel() {
-    	emailTextfield.setText("");
-    	datepicker.setValue(null);
-    }
-    
-    
+	private void listAccounts() {
+		String accountRecords = superadmin.viewAccountList();
+		;
+		recordTextArea.setText(accountRecords);
+	}
+
+	@FXML
+	public void handleCancel() {
+		emailTextfield.setText("");
+		datepicker.setValue(null);
+	}
+
 }

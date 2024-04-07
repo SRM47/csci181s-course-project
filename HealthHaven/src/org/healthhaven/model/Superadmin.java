@@ -60,12 +60,12 @@ public class Superadmin extends User {
 		
 	}
 	
-	public String authorizeAccountCreation(String email, String userType, LocalDate dob) {
+	public String authorizeAccountCreation(String email, Account accountType, LocalDate dob) {
 		//Construct API call
 		JSONObject json = new JSONObject();
 	    json.put("request", "ALLOW_ACCOUNT_CREATION");
 	    json.put("email", email);
-	    json.put("userType", userType);
+	    json.put("userType", accountType.getAccountName());
 	    json.put("dob", dob.toString());
 	    
 	    return ServerCommunicator.communicateWithServer(json.toString());

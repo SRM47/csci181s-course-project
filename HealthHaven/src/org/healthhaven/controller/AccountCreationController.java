@@ -34,7 +34,7 @@ public class AccountCreationController {
 	@FXML
 	private Button loginPageButton;
 	@FXML
-	private MenuButton userTypeMenu;
+	private Label userTypeLabel;
 	@FXML
 	private Label emailDisplay;
 	@FXML
@@ -62,7 +62,7 @@ public class AccountCreationController {
 		this.userType = userType;
 		
 		emailDisplay.setText(email);
-		userTypeMenu.setText(userType);
+		userTypeLabel.setText(userType);
 	}
 	
 	@FXML

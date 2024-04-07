@@ -19,12 +19,6 @@
           </font>
         </Label>
             <PasswordField fx:id="passwordTextfield" layoutX="38.0" layoutY="202.0" onKeyTyped="#realTimePWSec" promptText="Password" />
-            <MenuButton fx:id="userTypeMenu" layoutX="51.0" layoutY="165.0" minWidth="100.0" mnemonicParsing="false">
-              <items>
-                <MenuItem mnemonicParsing="false" text="Action 1" />
-                <MenuItem mnemonicParsing="false" text="Action 2" />
-              </items>
-            </MenuButton>
             <TextField fx:id="legalFirstNameTextfield" layoutX="38.0" layoutY="239.0" promptText="Legal First Name" />
             <Button fx:id="submitButton" layoutX="39.0" layoutY="332.0" mnemonicParsing="false" onAction="#handleSubmit" text="Submit" />
             <Label alignment="CENTER" layoutX="36.0" layoutY="105.0" style="&#10;" text="Create Account" textAlignment="CENTER" wrapText="false">
@@ -47,6 +41,7 @@
             <Label fx:id="response" layoutX="137.0" layoutY="337.0" textFill="#e10000" />
             <ProgressBar fx:id="passwordStrengthBar" layoutX="205.0" layoutY="206.0" prefHeight="20.0" prefWidth="161.0" progress="0.0" />
             <Label layoutX="211.0" layoutY="207.0" prefHeight="17.0" prefWidth="132.0" text="Password Strength" textFill="#00000069" />
+            <Label fx:id="userTypeLabel" layoutX="38.0" layoutY="172.0" prefHeight="17.0" prefWidth="132.0" />
       </children>
     </AnchorPane>
   </children>

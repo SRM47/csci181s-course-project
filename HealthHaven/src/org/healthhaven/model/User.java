@@ -21,7 +21,7 @@ public class User {
 	
 	public static enum Account{
 		DOCTOR("Doctor"), 
-		PATIENT( "Patient"),
+		PATIENT("Patient"),
 		DATA_ANALYST("Data_Analyst"),
 		SUPERADMIN("Superadmin"),
 		DPO("Data Protection Officer"),
