@@ -22,7 +22,7 @@ public class User {
 	public static enum Account{
 		DOCTOR("Doctor"), 
 		PATIENT("Patient"),
-		DATA_ANALYST("Data_Analyst"),
+		DATA_ANALYST("Data Analyst"),
 		SUPERADMIN("Superadmin"),
 		DPO("Data Protection Officer"),
 		NONE("NONE");

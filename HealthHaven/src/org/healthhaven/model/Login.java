@@ -50,13 +50,14 @@ public class Login {
 	 */
 	private static User createUserInstance(String accountType, String userID, String email, String legalFirstName, String legalLastName,
 										   String address, LocalDate dob){
+		
 		return switch (accountType) {
-			case User.Account.DOCTOR.getAccountName() -> new Doctor(userID, email, legalFirstName, legalLastName, address, dob);
-			case User.Account.PATIENT.getAccountName() -> new Patient(userID, email, legalFirstName, legalLastName, address, dob);
-			case User.Account.DPO.getAccountName() ->
+			case "Doctor" -> new Doctor(userID, email, legalFirstName, legalLastName, address, dob);
+			case "Patient" -> new Patient(userID, email, legalFirstName, legalLastName, address, dob);
+			case "Data Protection Officer" ->
 					new DataProtectionOfficer(userID, email, legalFirstName, legalLastName, address, dob);
-			case User.Account.DATA_ANALYST.getAccountName() -> new DataAnalyst(userID, email, legalFirstName, legalLastName, address, dob);
-			case User.Account.SUPERADMIN.getAccountName() -> new Superadmin(userID, email, legalFirstName, legalLastName, address, dob);
+			case "Data Analyst" -> new DataAnalyst(userID, email, legalFirstName, legalLastName, address, dob);
+			case "Superadmin" -> new Superadmin(userID, email, legalFirstName, legalLastName, address, dob);
 			default -> null;
 		};
 	}
