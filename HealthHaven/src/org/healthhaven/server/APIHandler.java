@@ -58,7 +58,7 @@ public class APIHandler{
 
 	private static JSONObject handleViewRecord(JSONObject json, Connection cnn) {
 		return AccountDAO.viewUserInformation(cnn,
-		        json.getString("doctorID"), 
+		        json.optString("doctorID"), 
 		        json.getString("patientID"));
 	}
 

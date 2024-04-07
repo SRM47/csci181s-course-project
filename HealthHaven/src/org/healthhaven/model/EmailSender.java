@@ -15,7 +15,7 @@ public class EmailSender {
 	
 	public static String sendTOTPEmail(String email, String totp) {
 		String subject = "Your One Time Passcode!";
-		String body = String.format(totp);
+		String body = "This is your One Time Passcode: \n" + totp;
 		return sendEmail(email, subject, body);
 		
 	}
