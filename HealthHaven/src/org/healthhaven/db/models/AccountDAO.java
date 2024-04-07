@@ -148,23 +148,24 @@ public class AccountDAO {
 		if (!accountExistsById(conn, userId)) {
 			result = "FAILURE";
 			reason = "Account does not exist";
-		}
+		} else {
+			String usersUpdateSql = "UPDATE healthhaven.users SET address = ? WHERE userid = ?";
+			try (PreparedStatement stmt = conn.prepareStatement(usersUpdateSql)) {
+				stmt.setString(1, address);
+				stmt.setString(2, userId);
 
-		String usersUpdateSql = "UPDATE healthhaven.users SET address = ? WHERE userid = ?";
-		try (PreparedStatement stmt = conn.prepareStatement(usersUpdateSql)) {
-			stmt.setString(1, address);
-			stmt.setString(2, userId);
-
-			int rowsUpdated = stmt.executeUpdate();
-			if (rowsUpdated <= 0) {
+				int rowsUpdated = stmt.executeUpdate();
+				if (rowsUpdated <= 0) {
+					result = "FAILURE";
+					reason = "Database entry error"; // TODO: need better reason
+				}
+			} catch (SQLException e) {
 				result = "FAILURE";
-				reason = "Database entry error"; // TODO: need better reason
+				reason = e.getMessage();
 			}
-		} catch (SQLException e) {
-			result = "FAILURE";
-			reason = e.getMessage();
 		}
 
+	
 		serverResponse.put("result", result);
 		serverResponse.put("reason", reason);
 		return serverResponse;

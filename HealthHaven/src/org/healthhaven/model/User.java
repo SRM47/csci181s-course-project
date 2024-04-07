@@ -203,6 +203,7 @@ public class User {
 	    // Populate the JSON object with key-value pairs
 	    json.put("request", "UPDATE_ACCOUNT");
 	    json.put("address", newAddress);
+	    json.put("userId", userID);
 		return ServerCommunicator.communicateWithServer(json.toString());
 	}
 

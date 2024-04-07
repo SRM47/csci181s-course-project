@@ -1,6 +1,7 @@
 package org.healthhaven.controller;
 
 import org.healthhaven.model.*;
+import org.json.JSONObject;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -47,8 +48,11 @@ public class UserProfileController {
         }
 
         // Update User model
-        currentUser.updatePersonalRecordOnDB(address);
-
+        String serverResponse = currentUser.updatePersonalRecordOnDB(address);
+        JSONObject jsonObj = new JSONObject(serverResponse);
+        if (jsonObj.get("result").equals("SUCCESS")) {
+        	currentUser.setAddress(address);
+        }
         // Refresh displayed user info
         displayUserInfo();
     }
