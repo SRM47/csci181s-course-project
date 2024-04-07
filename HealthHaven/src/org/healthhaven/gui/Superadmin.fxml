@@ -20,9 +20,9 @@
                   <MenuButton fx:id="accountTypeMenu" mnemonicParsing="false" text="User Type">
                     <items>
                         <MenuItem fx:id="patientMenuItem" mnemonicParsing="false" onAction="#updateAccountTypePatient" text="Patient" />
-                      <MenuItem fx:id="doctorMenuItem" mnemonicParsing="false" onAction="#updateAccountTypePatient" text="Doctor" />
-                      <MenuItem fx:id="dataAnalystMenuItem" mnemonicParsing="false" onAction="#updateAccountTypeDataProtectionOfficer" onMenuValidation="#updateAccountTypeDataAnalyst" text="Data Analyst" />
-                        <MenuItem fx:id="dataProtectionOfficerMenuItem" mnemonicParsing="false" onAction="#updateAccountTypeDataAnalyst" text="Data Protection Officer" />
+                      <MenuItem fx:id="doctorMenuItem" mnemonicParsing="false" onAction="#updateAccountTypeDoctor" text="Doctor" />
+                      <MenuItem fx:id="dataAnalystMenuItem" mnemonicParsing="false" onAction="#updateAccountTypeDataAnalyst" onMenuValidation="#updateAccountTypeDataAnalyst" text="Data Analyst" />
+                        <MenuItem fx:id="dataProtectionOfficerMenuItem" mnemonicParsing="false" onAction="#updateAccountTypeDataProtectionOfficer" text="Data Protection Officer" />
                     </items>
                   </MenuButton>
                   <TextField fx:id="emailTextfield" promptText="Enter email" />
