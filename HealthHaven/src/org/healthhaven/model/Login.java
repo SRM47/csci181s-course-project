@@ -51,6 +51,8 @@ public class Login {
 	private static User createUserInstance(String accountType, String userID, String email, String legalFirstName, String legalLastName,
 										   String address, LocalDate dob){
 		
+		System.out.println(accountType);
+		
 		return switch (accountType) {
 			case "Doctor" -> new Doctor(userID, email, legalFirstName, legalLastName, address, dob);
 			case "Patient" -> new Patient(userID, email, legalFirstName, legalLastName, address, dob);

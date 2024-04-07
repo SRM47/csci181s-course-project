@@ -85,7 +85,7 @@ public class LoginController{
 		        } else if (jsonObj.getString("type").equals("NEW")) {
 		        	errorMessage.setText("");
 		        	// loadAccountCreationPage(email,jsonObj.getString("accountType"));
-		        	loadAccountCreationPage(email,"Patient");
+		        	loadAccountCreationPage(email, jsonObj.getString("userType"));
 		        }
 	        }
 	        
@@ -145,12 +145,11 @@ public class LoginController{
 	private void loadUserPage(User user) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("../gui/user.fxml"));
         Parent root = loader.load();
+        Stage stage = (Stage) Main.getFirstStage().getScene().getWindow();
         
     	UserController userController = loader.getController();
         userController.setCurrentUser(user);   		
         
-        
-        Stage stage = (Stage) Main.getFirstStage().getScene().getWindow();
         stage.setScene(new Scene(root));
         stage.show();
     }

@@ -112,7 +112,7 @@ public class UserDAO {
 
 	}
 
-	private static String getUserAccountType(Connection conn, String userId) {
+	protected static String getUserAccountType(Connection conn, String userId) {
 		String sql = "SELECT * FROM healthhaven.accounts WHERE userid = '" + userId + "'";
 
 		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -126,7 +126,7 @@ public class UserDAO {
 		return "";
 	}
 
-	private static String getEmailFromId(Connection conn, String userId) {
+	protected static String getEmailFromId(Connection conn, String userId) {
 		String sql = "SELECT * FROM healthhaven.authentication WHERE userid = '" + userId + "'";
 
 		try (PreparedStatement stmt = conn.prepareStatement(sql)) {

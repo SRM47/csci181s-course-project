@@ -435,6 +435,7 @@ public class AccountDAO {
 		JSONObject serverResponse = new JSONObject();
 		String result = "SUCCESS";
 		String reason = "";
+		String userType = "";
 
 		// Returns the userId if user is authenticated correctly
 		String sql = "SELECT * FROM healthhaven.authentication WHERE email = '" + email + "'";
@@ -455,6 +456,8 @@ public class AccountDAO {
 					if (!resetValue) {
 						result = "SUCCESS";
 						reason = "NEW";
+						userType = UserDAO.getUserAccountType(conn, getUserIdFromEmail(conn, email));
+						
 					} else {
 						result = "SUCCESS";
 						reason = "EXISTING";
@@ -475,6 +478,7 @@ public class AccountDAO {
 
 		serverResponse.put("result", result);
 		serverResponse.put(result.equals("SUCCESS") ? "type" : "reason", reason);
+		serverResponse.put("userType", userType);
 		System.out.println(serverResponse);
 		return serverResponse;
 	}
