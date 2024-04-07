@@ -174,10 +174,19 @@ public class AccountDAO {
 		JSONObject serverResponse = new JSONObject();
 
 //		TODO: check that PatientUserID is the right way
-		String selectSQL = "SELECT * FROM healthhaven.medical_information WHERE patientid = ? AND doctorid = ?";
+		String selectSQL = "";
+		if (doctorId != null || doctorId != "") {
+			selectSQL = "SELECT * FROM healthhaven.medical_information WHERE patientid = ? AND doctorid = ?";
+		} else {
+			selectSQL = "SELECT * FROM healthhaven.medical_information WHERE patientid = ?";
+		}
+		
 
 		try (PreparedStatement stmt = conn.prepareStatement(selectSQL)) {
 			stmt.setString(1, userId);
+			if (doctorId != null || doctorId != "") {
+				stmt.setString(2, doctorId);
+			}
 
 			try (ResultSet rs = stmt.executeQuery()) {
 				if (!rs.next()) { // If ResultSet is empty, no records are found for the given IDs.

@@ -61,9 +61,19 @@ public class TOTP {
 		int truncatedHash = hashTruncate(hmacDigest);
 		
 		int clearsignOTP = truncatedHash & 0x7FFFFFFF;
-		int rOTP = (int) (clearsignOTP % Math.pow(10,6));
+		int iOTP = (int) (clearsignOTP % Math.pow(10,6));
 		
-		return String.valueOf(rOTP);
+		String sOTP = String.valueOf(iOTP);
+		int lString = sOTP.length();
+		
+		if (lString == 6){
+			return sOTP;
+		} else {
+			for(int i = 0; i < (6 - lString); i++) {
+				sOTP = "0" + sOTP;
+			}
+			return sOTP;
+		}
 	}
 	
 	//genTOTP2 with time input
