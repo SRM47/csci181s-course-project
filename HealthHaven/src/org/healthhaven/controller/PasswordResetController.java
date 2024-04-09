@@ -56,6 +56,8 @@ public class PasswordResetController{
 	private Hyperlink login;
 	
 	private JSONObject json;
+	private String email;
+	
 	private Nbvcxz nbvcxz = new Nbvcxz();
 	
 	
@@ -67,6 +69,7 @@ public class PasswordResetController{
 	
 	@FXML
 	public void handleSubmit() {
+		this.json = null;
 		OTPSection.setVisible(false);
 		passwordResetSection.setVisible(false);
 		
@@ -76,13 +79,12 @@ public class PasswordResetController{
 		} else {
 			submitResponse.setText("");
 			String serverResponse = PasswordReset.verifyEmail(email);
-			if (serverResponse.equals("FAILURE")||serverResponse.equals(null)) {
+			JSONObject jsonObj = new JSONObject(serverResponse);
+			if (jsonObj.getString("result").equals("FAILURE")||serverResponse.equals(null)) {
 				submitResponse.setText("Error");
-				this.json = null;
 			} else {
-				JSONObject jsonObj = new JSONObject(serverResponse);
 				if (jsonObj.getString("result").equals("SUCCESS")) {
-					json = jsonObj;
+					this.email = email;
 					OTPSection.setVisible(true);
 					OTPResponse.setText("OTP sent to your email");
 					emailTextfield.setText("");
@@ -97,7 +99,7 @@ public class PasswordResetController{
 		
 		String otpInput = OTPPasscodeField.getText();
 		
-		String serverResponse = PasswordReset.confirmOTP(json.getString("email"), otpInput);
+		String serverResponse = PasswordReset.confirmOTP(email, otpInput);
 		
 		if (serverResponse.equals(null)) {
 			OTPResponse.setText("Error. Try again");

@@ -138,7 +138,7 @@ public class ServerCommunicator {
 			switch (json.getString("type")){
 			case "EMAIL_CHECK":
 				serverResponse.put("result", "SUCCESS");
-				serverResponse.put("email", "example@example.com");
+				serverResponse.put("email", "example@example.com"); //don't need this
 				return serverResponse.toString();
 			case "VERIFY_OTP":
 				serverResponse.put("result", "SUCCESS");
