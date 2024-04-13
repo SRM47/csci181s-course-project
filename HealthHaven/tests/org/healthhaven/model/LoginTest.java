@@ -38,7 +38,6 @@ public class LoginTest {
 
     @Test
     public void testExistingUserSession() {
-        // Adjust 'accountType' to the expected format used within your system
         JSONObject jsonOb = new JSONObject();
         jsonOb.put("email", "user@example.com");
         jsonOb.put("userID", "userID123");
@@ -46,7 +45,7 @@ public class LoginTest {
         jsonOb.put("last_name", "Doe");
         jsonOb.put("address", "123 Main St");
         jsonOb.put("dob", "1980-01-01");
-        jsonOb.put("accountType", "DOCTOR"); // Use uppercase to match the switch case values
+        jsonOb.put("accountType", "Doctor"); // Assume the method handles this correctly
 
         User user = Login.existingUserSession(jsonOb);
 
@@ -56,10 +55,8 @@ public class LoginTest {
         assertEquals("John", user.getLegal_first_name(), "First name should match the JSON object.");
         assertEquals("Doe", user.getLegal_last_name(), "Last name should match the JSON object.");
         assertEquals("123 Main St", user.getAddress(), "Address should match the JSON object.");
-        // Parsing the 'dob' string to LocalDate for comparison
         assertEquals(LocalDate.parse("1980-01-01"), user.getDob(), "DOB should match the JSON object.");
     }
-
 
     @Test
     public void testAuthenticateOTPLogin() {
@@ -73,7 +70,7 @@ public class LoginTest {
     // Tests for createUserInstance functionality
     @Test
     public void testCreateDoctorInstance() {
-        JSONObject doctorJson = generateUserJson("123456789", "doctor@example.com", "Jane", "Doe", "456 Clinic St", "1975-05-15", "DOCTOR");
+        JSONObject doctorJson = generateUserJson("123456789", "doctor@example.com", "Jane", "Doe", "456 Clinic St", "1975-05-15", "Doctor");
         User user = Login.existingUserSession(doctorJson);
         assertTrue(user instanceof Doctor, "The created user should be an instance of Doctor.");
     }
@@ -81,7 +78,7 @@ public class LoginTest {
     
     @Test
     public void testCreatePatientInstance() {
-        JSONObject patientJson = generateUserJson("987654321", "patient@example.com", "John", "Patient", "123 Health St", "1985-04-20", "PATIENT");
+        JSONObject patientJson = generateUserJson("987654321", "patient@example.com", "John", "Patient", "123 Health St", "1985-04-20", "Patient");
         User user = Login.existingUserSession(patientJson);
         assertTrue(user instanceof Patient, "The created user should be an instance of Patient.");
     }
@@ -89,7 +86,7 @@ public class LoginTest {
 
     @Test
     public void testCreateDataAnalystInstance() {
-        JSONObject dataAnalystJson = generateUserJson("234567890", "analyst@example.com", "Danny", "Data", "456 Data St", "1982-08-15", "DATA_ANALYST");
+        JSONObject dataAnalystJson = generateUserJson("234567890", "analyst@example.com", "Danny", "Data", "456 Data St", "1982-08-15", "Data Analyst");
         User user = Login.existingUserSession(dataAnalystJson);
         assertTrue(user instanceof DataAnalyst, "The created user should be an instance of Data Analyst.");
     }
@@ -97,7 +94,7 @@ public class LoginTest {
 
     @Test
     public void testCreateDPOInstance() {
-        JSONObject dpoJson = generateUserJson("345678901", "dpo@example.com", "Diana", "Privacy", "789 Privacy Ln", "1978-12-05", "DATA_PROTECTION_OFFICER");
+        JSONObject dpoJson = generateUserJson("345678901", "dpo@example.com", "Diana", "Privacy", "789 Privacy Ln", "1978-12-05", "Data Protection Officer");
         User user = Login.existingUserSession(dpoJson);
         assertTrue(user instanceof DataProtectionOfficer, "The created user should be an instance of Data Protection Officer.");
     }
@@ -105,7 +102,7 @@ public class LoginTest {
 
     @Test
     public void testCreateSuperadminInstance() {
-        JSONObject superadminJson = generateUserJson("456789012", "superadmin@example.com", "Sam", "Admin", "123 Admin Blvd", "1975-02-28", "SUPERADMIN");
+        JSONObject superadminJson = generateUserJson("456789012", "superadmin@example.com", "Sam", "Admin", "123 Admin Blvd", "1975-02-28", "Superadmin");
         User user = Login.existingUserSession(superadminJson);
         assertTrue(user instanceof Superadmin, "The created user should be an instance of Superadmin.");
     }

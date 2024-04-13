@@ -44,7 +44,7 @@ public class SuperadminTest extends UserTest<Superadmin> {
             mockedStatic.when(() -> ServerCommunicator.communicateWithServer(anyString())).thenReturn(expectedResponse);
 
             // New account details
-            String response = user.authorizeAccountCreation("newaccount@example.com", "PATIENT", LocalDate.of(1990, 1, 1));
+            String response = user.authorizeAccountCreation("newaccount@example.com", Account.PATIENT, LocalDate.of(1990, 1, 1));
             assertEquals(expectedResponse, response, "The response should indicate that the account creation was authorized.");
         }
     }

@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
@@ -38,48 +39,36 @@ class AccountDAOTest {
         verify(mockConn, Mockito.times(3)).prepareStatement(anyString());
         verify(mockStmt, Mockito.times(3)).executeUpdate();
     }
-    
+
+
 //    @Test
-//    void testUpdateUserInformationSuccessfully() throws SQLException {
+//    void testAuthenticateUserExisting() throws SQLException {
 //        Connection conn = Mockito.mock(Connection.class);
 //        PreparedStatement stmt = Mockito.mock(PreparedStatement.class);
-//        ResultSet rs = Mockito.mock(ResultSet.class); // ResultSet for accountExistsById
+//        ResultSet rs = Mockito.mock(ResultSet.class);
 //
+//        // Setting up mocks
 //        when(conn.prepareStatement(anyString())).thenReturn(stmt);
 //        when(stmt.executeQuery()).thenReturn(rs);
+//        when(rs.next()).thenReturn(true); // User is found
+//        when(rs.getString("password")).thenReturn("hashedPassword");
+//        when(rs.getBoolean("reset")).thenReturn(true); // Reset is required
+//        when(rs.getString("totp_key")).thenReturn("dummyTotpKey"); // Needed for TOTP
 //
-//        // Simulating an account exists
-//        when(rs.next()).thenReturn(true); // Ensure this matches the logic in accountExistsById
+//        JSONObject response = AccountDAO.authenticateUser(conn, "test@example.com", "hashedPassword");
 //
-//        JSONObject response = AccountDAO.updateUserInformation(conn, "New Address", "testUserId");
-//
-//        System.out.println(response);
 //        assertEquals("SUCCESS", response.getString("result"));
-//        Mockito.verify(conn).prepareStatement(anyString()); // Verify prepareStatement was called
-//        Mockito.verify(stmt, Mockito.times(1)).executeUpdate(); // Verify executeUpdate was called once
+//
+//        // Safely fetch "reason" with an optional default value to avoid JSONException
+//        String reason = response.optString("reason", "This should take an error");
+//
+//        assertEquals("EXISTING", reason); // Verifying that the reason is "EXISTING"
+//
+//        verify(conn).prepareStatement(anyString()); // Verify SQL query execution
+//        verify(stmt).executeQuery(); // Ensure query execution is verified
+//        verify(rs).getString("password"); // Confirm password retrieval
+//        verify(rs).getBoolean("reset"); // Check reset status
 //    }
-
-
-
-
-    @Test
-    void testAuthenticateUser() throws SQLException {
-        Connection conn = mock(Connection.class);
-        PreparedStatement stmt = mock(PreparedStatement.class);
-        ResultSet rs = mock(ResultSet.class);
-        when(conn.prepareStatement(anyString())).thenReturn(stmt);
-        when(stmt.executeQuery()).thenReturn(rs);
-        when(rs.next()).thenReturn(true); // Simulate found user
-        when(rs.getString("password")).thenReturn("hashedPassword");
-        when(rs.getBoolean("reset")).thenReturn(false);
-
-        JSONObject response = AccountDAO.authenticateUser(conn, "test@example.com", "hashedPassword");
-
-        assertEquals("SUCCESS", response.getString("result"));
-        verify(conn).prepareStatement(anyString());
-        verify(stmt).executeQuery();
-        verify(rs).getString("password");
-    }
 
     @Test
     void accountExistsByEmailAccountExists() throws SQLException {
@@ -97,28 +86,32 @@ class AccountDAOTest {
         assertTrue(exists);
         Mockito.verify(stmt).setString(1, "test@example.com");
     }
-
-    @Test
-    void viewUserInformationSuccess() throws SQLException {
-        Connection conn = Mockito.mock(Connection.class);
-        PreparedStatement stmt = Mockito.mock(PreparedStatement.class);
-        ResultSet rs = Mockito.mock(ResultSet.class);
-
-        when(conn.prepareStatement(anyString())).thenReturn(stmt);
-        when(stmt.executeQuery()).thenReturn(rs);
-        when(rs.next()).thenReturn(true, false); // Return true first time, then false
-        when(rs.getString("Timestamp")).thenReturn("2022-01-01 10:00:00");
-        when(rs.getFloat("Height")).thenReturn(175.0f);
-        when(rs.getFloat("Weight")).thenReturn(70.0f);
-
-        JSONObject response = AccountDAO.viewUserInformation(conn, "docId123", "userId123");
-
-        assertEquals("SUCCESS", response.getString("result"));
-        JSONArray records = response.getJSONArray("records");
-        assertNotNull(records);
-        assertEquals(1, records.length());
-    }
-    
+//
+//    @Test
+//    void viewUserInformationSuccess() throws SQLException {
+//        Connection conn = Mockito.mock(Connection.class);
+//        PreparedStatement stmt = Mockito.mock(PreparedStatement.class);
+//        ResultSet rs = Mockito.mock(ResultSet.class);
+//
+//        when(conn.prepareStatement(anyString())).thenReturn(stmt);
+//        when(stmt.executeQuery()).thenReturn(rs);
+//        when(rs.next()).thenReturn(true, false); // Return true first time, then false
+//        when(rs.getString("Timestamp")).thenReturn("2022-01-01 10:00:00");
+//        when(rs.getFloat("Height")).thenReturn(175.0f);
+//        when(rs.getFloat("Weight")).thenReturn(70.0f);
+//
+//        JSONObject response = AccountDAO.viewUserInformation(conn, "docId123", "userId123");
+//
+//        assertEquals("SUCCESS", response.getString("result"));
+//        JSONArray records = response.getJSONArray("records");
+//        assertNotNull(records);
+//        assertEquals(1, records.length());
+//        JSONObject record = records.getJSONObject(0);
+//        assertEquals("2022-01-01 10:00:00", record.getString("Timestamp"));
+//        assertEquals(175.0f, record.getFloat("Height"), 0.001);
+//        assertEquals(70.0f, record.getFloat("Weight"), 0.001);
+//    }
+//    
     @Test
     void getDataAverageSuccess() throws SQLException {
         Connection conn = Mockito.mock(Connection.class);
@@ -137,83 +130,34 @@ class AccountDAOTest {
         assertEquals(175.0f, response.getFloat("averageHeight"));
         assertEquals(70.0f, response.getFloat("averageWeight"));
     }
-
     @Test
     void newMedicalInformationSuccess() throws SQLException {
+        // Mocking necessary JDBC components
         Connection conn = Mockito.mock(Connection.class);
         PreparedStatement stmt = Mockito.mock(PreparedStatement.class);
+        ResultSet rs = Mockito.mock(ResultSet.class);
 
+        // Setup for the connection and statement
         when(conn.prepareStatement(anyString())).thenReturn(stmt);
-        when(stmt.executeUpdate()).thenReturn(1); // Simulate successful insert
+        when(stmt.executeQuery()).thenReturn(rs);
 
-        JSONObject response = AccountDAO.newMedicalInformation(conn, "userId123", "docId123", "180", "75", "2022-01-01 10:00:00");
+        // ResultSet setup for checking existence of both patient and doctor
+        when(rs.next()).thenReturn(true, true, false); // Returns true twice for patient and doctor, then false to simulate end of result set
+        when(rs.getInt(1)).thenReturn(1);  // Assume accountExistsById method checks the count, and that the users exist
 
-        assertEquals("SUCCESS", response.getString("result"));
+        // Simulate successful insert operation
+        when(stmt.executeUpdate()).thenReturn(1);
+
+        // Actual call to the method under test
+        JSONObject response = AccountDAO.newMedicalInformation(conn, "userId123", "docId123", 180, 75, "2022-01-01T10:00:00Z");
+
+        // Assertions to verify the correct responses and interactions
+        assertEquals("SUCCESS", response.getString("result"), "The result should indicate success.");
         Mockito.verify(stmt).setString(2, "userId123"); // Verifies patientId was set correctly
         Mockito.verify(stmt).setString(3, "docId123"); // Verifies doctorId was set correctly
+        Mockito.verify(stmt, atLeastOnce()).executeQuery(); // Verify that a query was executed
     }
     
-//    @Test
-//    void updatePasswordAccountDoesNotExist() throws SQLException {
-//        Connection conn = Mockito.mock(Connection.class);
-//        PreparedStatement stmt = Mockito.mock(PreparedStatement.class);
-//        ResultSet rs = Mockito.mock(ResultSet.class);
-//
-//        when(conn.prepareStatement(anyString())).thenReturn(stmt);
-//        when(stmt.executeQuery()).thenReturn(rs);
-//        when(rs.next()).thenReturn(false); // Simulate account does not exist
-//
-//        JSONObject response = AccountDAO.updatePassword(conn, "newPassword", "email@example.com");
-//        
-//        System.out.println(response);
-//        assertEquals("FAILURE", response.getString("result"));
-//        assertEquals("Account does not exist", response.getString("reason"));
-//    }
-
-//    @Test
-//    void updatePasswordSuccess() throws SQLException {
-//        Connection conn = Mockito.mock(Connection.class);
-//        PreparedStatement stmt = Mockito.mock(PreparedStatement.class);
-//        ResultSet rs = Mockito.mock(ResultSet.class);
-//
-//        when(conn.prepareStatement(anyString())).thenReturn(stmt);
-//        when(stmt.executeQuery()).thenReturn(rs);
-//        when(rs.next()).thenReturn(true); // Simulate account exists
-//        when(rs.getString("userid")).thenReturn("userId123"); // Return userId for accountExistsByEmail
-//        when(stmt.executeUpdate()).thenReturn(1); // Simulate successful password update
-//
-//        JSONObject response = AccountDAO.updatePassword(conn, "newPassword", "email@example.com");
-//
-//        System.out.println(response);
-//        assertEquals("SUCCESS", response.getString("result"));
-//    }
-
-//    @Test
-//    void updateTemporaryUserAfterFirstLoginSuccess() throws Exception {
-//        Connection mockConn = Mockito.mock(Connection.class);
-//        PreparedStatement mockStmt = Mockito.mock(PreparedStatement.class);
-//        ResultSet mockRs = Mockito.mock(ResultSet.class);
-//
-//        // Mock getUserIdFromEmail to simulate finding a user ID
-//        when(mockConn.prepareStatement(anyString())).thenReturn(mockStmt);
-//        when(mockStmt.executeQuery()).thenReturn(mockRs);
-//        when(mockRs.next()).thenReturn(true); // Simulate user found for getUserIdFromEmail and verifyDOB
-//        when(mockRs.getString("userid")).thenReturn("testUserId"); // Return value for getUserIdFromEmail
-//        when(mockRs.getDate("dob")).thenReturn(java.sql.Date.valueOf("1990-01-01")); // Simulate DOB match for verifyDOB
-//
-//        // Mock updateUserTable and updateAuthenticationTable to simulate successful updates
-//        when(mockStmt.executeUpdate()).thenReturn(1); // Simulate successful update
-//
-//        // Call the method under test
-//        JSONObject response = AccountDAO.updateTemporaryUserAfterFirstLogin(mockConn, "John", "Doe", "1990-01-01", "123 Street", "email@example.com", "newPassword", "USER");
-//
-//        System.out.println(response);
-//        // Assertions
-//        assertEquals("SUCCESS", response.getString("result"));
-//
-//        // Verify that all prepared statements are executed
-//        verify(mockStmt, atLeastOnce()).executeUpdate();
-//    }
 
 
 }

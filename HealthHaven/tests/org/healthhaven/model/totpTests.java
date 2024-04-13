@@ -46,12 +46,16 @@ public class totpTests{
         
         boolean test1 = TOTP.verTOTP(key,pass);
         System.out.println("test1: " + String.valueOf(test1));
+        assertTrue(test1);
         boolean test2 = TOTP.verTOTP(key,pass2);
         System.out.println("test2: " + String.valueOf(test2));
+        assertTrue(test2);
         boolean test3 = TOTP.verTOTP(key2,pass);
         System.out.println("test3: " + String.valueOf(test3));
+        assertFalse(test3);
         boolean test4 = TOTP.verTOTP(key2,pass2);
         System.out.println("test2: " + String.valueOf(test4));
+        assertFalse(test4);
 
     }
     

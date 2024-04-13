@@ -32,7 +32,7 @@ public class DoctorTest extends UserTest<Doctor> {
             mockedStatic.when(() -> ServerCommunicator.communicateWithServer(anyString())).thenReturn(expectedResponse);
 
             // Example patient ID, height, and weight
-            String response = user.updatePatientRecordOnDB(12345L, "180cm", "75kg");
+            String response = user.updatePatientRecordOnDB("12345", 180, 75);
             assertEquals(expectedResponse, response, "The response should indicate that the record was updated.");
         }
     }
@@ -44,7 +44,7 @@ public class DoctorTest extends UserTest<Doctor> {
             mockedStatic.when(() -> ServerCommunicator.communicateWithServer(anyString())).thenReturn(expectedResponse);
 
             // Example patient ID
-            String response = user.viewPatientRecord(12345L);
+            String response = user.viewPatientRecord("12345");
             assertEquals(expectedResponse, response, "The response should contain the patient record details.");
         }
     }
