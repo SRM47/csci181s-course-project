@@ -38,7 +38,7 @@ public class Server {
 	private int MAX_THREADS;
 	private int MAX_REQUESTS;
 	private static final String protocol = "TLSv1.3";
-	private static final String[] cipherSuites = new String[] { "TLS_AES_128_GCM_SHA256" };
+	private static final String[] cipherSuites = new String[] { "TLS_AES_256_GCM_SHA384" };
 	private static final String path_to_keystore = "src/org/healthhaven/server/cert.jks";
 	private Connection conn;
 
