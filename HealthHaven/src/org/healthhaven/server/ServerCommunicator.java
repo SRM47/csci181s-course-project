@@ -41,7 +41,7 @@ public class ServerCommunicator {
      * @param message The message to send to the server.
      * @return The server's response as a String.
      */
-    public static String communicateWithServer1(String message) {
+    public static String communicateWithServer(String message) {
     	
         
         try {
@@ -104,7 +104,7 @@ public class ServerCommunicator {
     }
     
     //This is to test client side code by mimicking the server response.
-    public static String communicateWithServer(String message) {
+    public static String communicateWithServer1(String message) {
     	System.out.println(message);
     	JSONObject json = new JSONObject(message);
     	JSONObject serverResponse = new JSONObject();
