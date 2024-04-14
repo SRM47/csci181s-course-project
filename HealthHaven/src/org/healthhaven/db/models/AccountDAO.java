@@ -581,22 +581,53 @@ public class AccountDAO {
 		String result = "SUCCESS";
 		String reason = "";
 
-		// Returns the userId if user is authenticated correctly
-//		String sql = "SELECT * FROM healthhaven.authentication WHERE userid = '" + userId + "'";
-//
-//		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-//			ResultSet data_rs = stmt.executeQuery();
-//
-//
-//		} catch (SQLException e) {
-//			result = "FAILURE";
-//			reason = "Error Authenticating User";
-//		}
+        try {
+            conn.setAutoCommit(false); 
 
-		serverResponse.put("result", result);
-		serverResponse.put("reason", reason);
+            if (!deleteUserData(conn, "healthhaven.authentication", userId)) {
+                throw new SQLException("Failed to delete authentication data.");
+            }
+
+            if (!deleteUserData(conn, "healthhaven.accounts", userId)) {
+                throw new SQLException("Failed to delete account data.");
+            }
+
+            if (!deleteUserData(conn, "healthhaven.users", userId)) {
+                throw new SQLException("Failed to delete user data.");
+            }
+
+            conn.commit();
+            serverResponse.put("result", result);
+            serverResponse.put("details", "All data associated with user ID " + userId + " has been permanently deleted.");
+        } catch (SQLException e) {
+            try {
+                conn.rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            result = "FAILURE";
+            reason = "SQL error during deletion: " + e.getMessage();
+            serverResponse.put("result", result);
+            serverResponse.put("reason", reason);
+        } finally {
+            try {
+                conn.setAutoCommit(true); 
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
 		System.out.println(serverResponse);
 		return serverResponse;
 	}
+	
+	private static boolean deleteUserData(Connection conn, String tableName, String userId) throws SQLException {
+        String sql = "DELETE FROM " + tableName + " WHERE userid = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, userId);
+            int affectedRows = stmt.executeUpdate();
+            return (affectedRows > 0);
+        }
+    }
 
 }
