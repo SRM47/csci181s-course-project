@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane fx:id="userProfileSection" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.healthhaven.controller.AccountDeactivationController">
+   <children>
+      <VBox alignment="CENTER" maxWidth="-Infinity" prefHeight="200.0" prefWidth="200.0" StackPane.alignment="CENTER">
+         <children>
+            <Label text="Account Deactivation">
+               <VBox.margin>
+                  <Insets bottom="10.0" />
+               </VBox.margin>
+            </Label>
+            <PasswordField fx:id="passwordField" promptText="Type your current password">
+               <VBox.margin>
+                  <Insets bottom="10.0" />
+               </VBox.margin>
+            </PasswordField>
+            <Label fx:id="response" textFill="#d70e0e" />
+            <HBox alignment="TOP_CENTER">
+               <children>
+                  <Button fx:id="deactivateButton" mnemonicParsing="false" onAction="#handleDeactivation" prefWidth="80.0" text="Deactivate ">
+                     <HBox.margin>
+                        <Insets top="5.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#handleCancel" prefWidth="80.0" text="Cancel">
+                     <HBox.margin>
+                        <Insets top="5.0" />
+                     </HBox.margin>
+                  </Button>
+               </children>
+            </HBox>
+            <VBox fx:id="ConfirmDeactivationSection" alignment="TOP_CENTER" prefWidth="100.0">
+               <children>
+                  <Label text="Are you sure you want to deactivate account?" wrapText="true">
+                     <VBox.margin>
+                        <Insets top="10.0" />
+                     </VBox.margin>
+                  </Label>
+                  <HBox alignment="TOP_CENTER">
+                     <children>
+                        <Button mnemonicParsing="false" onAction="#handleConfirmYes" text="Yes" />
+                        <Button mnemonicParsing="false" onAction="#handleConfirmNo" text="No" />
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+            <Button fx:id="goBackButton" mnemonicParsing="false" onAction="#handleGoBack" text="Go back">
+               <VBox.margin>
+                  <Insets top="40.0" />
+               </VBox.margin>
+            </Button>
+         </children>
+      </VBox>
+   </children>
+</StackPane>

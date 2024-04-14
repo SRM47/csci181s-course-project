@@ -55,14 +55,6 @@ public class UserController {
 				superadminController.setSuperadmin((Superadmin) currentUser);
 				break;
 
-			case DPO:
-				loader.setLocation(getClass().getResource("/org/healthhaven/gui/DataProtectionOfficer.fxml"));
-				mainContentArea.getChildren().clear();
-				mainContentArea.getChildren().add(loader.load());
-				DPOController dpoController = loader.getController();
-				dpoController.setDPO((DataProtectionOfficer) currentUser);
-				break;
-
 			case DATA_ANALYST:
 				loader.setLocation(getClass().getResource("/org/healthhaven/gui/DataAnalyst.fxml"));
 				mainContentArea.getChildren().clear();
@@ -88,7 +80,7 @@ public class UserController {
 			mainContentArea.getChildren().clear();
 			mainContentArea.getChildren().add(loader.load());
 			UserProfileController controller = loader.getController();
-			controller.setUser(currentUser);
+			controller.setUser(currentUser, this);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

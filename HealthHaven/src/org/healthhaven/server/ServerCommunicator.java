@@ -41,7 +41,7 @@ public class ServerCommunicator {
      * @param message The message to send to the server.
      * @return The server's response as a String.
      */
-    public static String communicateWithServer(String message) {
+    public static String communicateWithServer1(String message) {
     	
         
         try {
@@ -104,7 +104,7 @@ public class ServerCommunicator {
     }
     
     //This is to test client side code by mimicking the server response.
-    public static String communicateWithServer1(String message) {
+    public static String communicateWithServer(String message) {
     	System.out.println(message);
     	JSONObject json = new JSONObject(message);
     	JSONObject serverResponse = new JSONObject();
@@ -115,8 +115,8 @@ public class ServerCommunicator {
 				serverResponse.put("result", "SUCCESS");
 				serverResponse.put("type" , "EXISTING"); 
 				//or this for new
-				serverResponse.put("type" , "NEW"); 
-				serverResponse.put("accountType" , "DOCTOR"); //feel free to change here for testing
+				serverResponse.put("type" , "EXISTING"); 
+				serverResponse.put("userType" , "DOCTOR"); //feel free to change here for testing
 				return serverResponse.toString();
 			case "OTP":
 				serverResponse.put("result", "SUCCESS");
@@ -125,7 +125,7 @@ public class ServerCommunicator {
 				serverResponse.put("first_name", "Sae");
 				serverResponse.put("last_name", "Furukawa");
 				serverResponse.put("address", "Claremont, CA");
-				serverResponse.put("accountType", "DATA_ANALYST"); //change the role for testing
+				serverResponse.put("accountType", "SUPERADMIN"); //change the role for testing
 				serverResponse.put("dob", LocalDate.of(2000, 10, 10).toString());
 				return serverResponse.toString();
 
@@ -177,6 +177,25 @@ public class ServerCommunicator {
 			serverResponse.put("result", "SUCCESS");
 			serverResponse.put("height", "180");
 			serverResponse.put("weight", "190");
+			return serverResponse.toString();
+		case "DEACTIVATE_ACCOUNT":
+			switch (json.getString("type")) {
+			case  "VALIDATE_ACCOUNT":
+				serverResponse.put("result", "SUCCESS");
+				return serverResponse.toString();
+			case "DEACTIVATE_ACCOUNT":
+				serverResponse.put("result", "SUCCESS");
+				return serverResponse.toString();
+			}
+		case "SEARCH_ACCOUNT":
+			serverResponse.put("result", "SUCCESS");
+			serverResponse.put("email", "example@email.com");
+			serverResponse.put("userID", "abcdefg"); //might not need this
+			serverResponse.put("first_name", "Sae");
+			serverResponse.put("last_name", "Furukawa");
+			serverResponse.put("address", "Claremont, CA");
+			serverResponse.put("accountType", "SUPERADMIN"); //change the role for testing
+			serverResponse.put("dob", LocalDate.of(2000, 10, 10).toString());
 			return serverResponse.toString();
 		default:
 			serverResponse.put("result", "FAILURE");

@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import org.healthhaven.model.*;
 import org.healthhaven.model.User.Account;
+import org.json.JSONObject;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -28,10 +29,6 @@ public class SuperadminController {
 	@FXML
 	private Button cancelButton;
 	@FXML
-	private Button viewAccountButton;
-	@FXML
-	private TextArea recordTextArea;
-	@FXML
 	private TextField emailTextfield;
 	@FXML
 	private MenuButton accountTypeMenu;
@@ -40,11 +37,24 @@ public class SuperadminController {
 	@FXML
 	private MenuItem doctorMenuItem;
 	@FXML
-	private MenuItem dataProtectionOfficerMenuItem;
-	@FXML
 	private MenuItem dataAnalystMenuItem;
 	@FXML
 	private DatePicker datepicker;
+	@FXML
+	private TextField UserIDField;
+	@FXML
+	private Button searchButton;
+	@FXML
+	private Label deactivationResponse;
+	@FXML
+	private Button deactivateButton;
+	@FXML
+	private TextArea recordTextArea;
+	
+	@FXML
+	private Button viewAccountButton;
+	
+	private String userID;
 
 	public void setSuperadmin(Superadmin superadmin) {
 		this.superadmin = superadmin;
@@ -64,11 +74,6 @@ public class SuperadminController {
 	@FXML
 	public void updateAccountTypePatient() {
 		accountTypeMenu.setText(patientMenuItem.getText());
-	}
-
-	@FXML
-	public void updateAccountTypeDataProtectionOfficer() {
-		accountTypeMenu.setText(dataProtectionOfficerMenuItem.getText());
 	}
 
 	@FXML
@@ -108,13 +113,54 @@ public class SuperadminController {
 		response.setText(serverResponse);
 
 	}
-
+	
+	//TODO: Incomplete
 	private void listAccounts() {
 		String accountRecords = superadmin.viewAccountList();
 		;
 		recordTextArea.setText(accountRecords);
 	}
-
+	
+	@FXML
+	public void handleUserIdSearch() {
+		this.userID = null;
+		deactivationResponse.setText(null);
+		String userID = UserIDField.getText();
+		if (userID.equals("")) {
+			deactivationResponse.setText("Please enter the UserID");
+			return;
+		} 
+		String serverResponse = superadmin.searchByUserId(userID);
+		if (serverResponse.equals(null)) {
+			deactivationResponse.setText("Likely error in communicating with the server");
+		} else {
+			JSONObject json = new JSONObject(serverResponse);
+			if (json.getString("result").equals("FAILURE")) {
+				deactivationResponse.setText(json.getString("reason"));
+			} else if (json.getString("result").equals("SUCCESS")){
+				this.userID = userID;
+				recordTextArea.setText(json.toString());
+				//deactivationResponse.setText("Successfully deactivated");
+			}
+		}
+		
+	}
+	
+	@FXML
+	public void handleDeactivate() {
+		String serverResponse = superadmin.deactivateAccount(userID);
+		if (serverResponse.equals(null)) {
+			deactivationResponse.setText("Likely error in communicating with the server");
+		} else {
+			JSONObject json = new JSONObject(serverResponse);
+			if (json.getString("result").equals("FAILURE")) {
+				deactivationResponse.setText(json.getString("reason"));
+			} else if (json.getString("result").equals("SUCCESS")){
+				deactivationResponse.setText("Successfully deactivated");
+				recordTextArea.setText("");
+			}
+		}
+	}
 	@FXML
 	public void handleCancel() {
 		emailTextfield.setText("");

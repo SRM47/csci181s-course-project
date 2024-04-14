@@ -141,7 +141,7 @@ public class AccountDAO {
 		return serverResponse;
 	}
 
-	public static JSONObject updateUserInformation(Connection conn, String address, String userId) {
+	public static JSONObject updateUserAddress(Connection conn, String address, String userId) {
 		JSONObject serverResponse = new JSONObject();
 		String result = "SUCCESS";
 		String reason = "";
@@ -227,6 +227,19 @@ public class AccountDAO {
 		}
 
 		return serverResponse;
+	}
+	
+	//TODO: Used by superadmin
+	public static JSONObject viewAccountInformation(Connection conn, String userId) {
+		JSONObject serverResponse = new JSONObject();
+		if (!accountExistsById(conn, userId)) {
+			serverResponse.put("result", "FAILURE");
+			serverResponse.put("reason", "User does not exist!");
+			return serverResponse;
+		}
+		//For now, superadmin can see everything
+		return UserDAO.getUserInformation(conn, userId);
+		
 	}
 
 	public static JSONObject getDataAverage(Connection conn) {
@@ -318,7 +331,7 @@ public class AccountDAO {
 	}
 
 	public static JSONObject updatePassword(Connection conn, String newPassword, String email) {
-		JSONObject serverResponse = new JSONObject();
+		JSONObject serverResponse = new JSONObject(); 
 		String result = "SUCCESS";
 		String reason = "";
 		if (!accountExistsByEmail(conn, email)) {
@@ -456,27 +469,37 @@ public class AccountDAO {
 		return false; // Default to account not existing if an error occurs or no match is found
 	}
 
-	public static JSONObject authenticateUser(Connection conn, String email, String candidatePassword) {
+	public static JSONObject authenticateUser(Connection conn, String email, String candidatePassword, String type) {
 		JSONObject serverResponse = new JSONObject();
 		String result = "SUCCESS";
 		String reason = "";
 		String userType = "";
-
+		
+		//TODO: SQL Injection Attack risk.
+		
 		// Returns the userId if user is authenticated correctly
 		String sql = "SELECT * FROM healthhaven.authentication WHERE email = '" + email + "'";
 
 		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 			ResultSet data_rs = stmt.executeQuery();
 			System.out.println("Statement Executed");
+			
+			//No need to check password since a user forgot password
+			if (data_rs.next() & type.equals("PASSWORD_RESET")) {
+				sendTOTPEmail(email, TOTP.genTOTP2(data_rs.getString("totp_key")));
+			}
 
-			if (data_rs.next()) {
+			else if (data_rs.next()) {
 				String truePassword = data_rs.getString("password");
 				// TODO: Hash this password.
 				String hashedCandidatePassword = candidatePassword;
 				if (!hashedCandidatePassword.equals(truePassword)) {
 					result = "FAILURE";
 					reason = "Incorrect Password";
-				} else {
+				} else { //password matches
+					if (type.equals("ACCOUNT_DEACTIVATION")){
+						return serverResponse;
+					}
 					boolean resetValue = data_rs.getBoolean("reset");
 					if (!resetValue) {
 						result = "SUCCESS";
@@ -550,6 +573,30 @@ public class AccountDAO {
 		System.out.println(serverResponse);
 		return serverResponse;
 		
+	}
+	
+	//TODO: Write SQL query that wipes out data associated with given userId, no need to validate whether userID exists.
+	public static JSONObject deactivateAccount(Connection conn, String userId) {
+		JSONObject serverResponse = new JSONObject();
+		String result = "SUCCESS";
+		String reason = "";
+
+		// Returns the userId if user is authenticated correctly
+//		String sql = "SELECT * FROM healthhaven.authentication WHERE userid = '" + userId + "'";
+//
+//		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+//			ResultSet data_rs = stmt.executeQuery();
+//
+//
+//		} catch (SQLException e) {
+//			result = "FAILURE";
+//			reason = "Error Authenticating User";
+//		}
+
+		serverResponse.put("result", result);
+		serverResponse.put("reason", reason);
+		System.out.println(serverResponse);
+		return serverResponse;
 	}
 
 }

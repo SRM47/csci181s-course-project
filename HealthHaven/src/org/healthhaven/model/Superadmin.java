@@ -70,4 +70,22 @@ public class Superadmin extends User {
 	    
 	    return ServerCommunicator.communicateWithServer(json.toString());
 	}
+	
+	public String searchByUserId(String userId) {
+		JSONObject json = new JSONObject();
+	    json.put("request", "SEARCH_ACCOUNT");
+	    json.put("userId", userId);
+	   
+	    return ServerCommunicator.communicateWithServer(json.toString());
+	}
+	
+	public String deactivateAccount(String userId) {
+		JSONObject json = new JSONObject();
+	    json.put("request", "DEACTIVATE_ACCOUNT");
+	    json.put("type", "DEACTIVATE_ACCOUNT");
+	    json.put("userId", userId);
+	   
+	    return ServerCommunicator.communicateWithServer(json.toString());
+	}
+	
 }

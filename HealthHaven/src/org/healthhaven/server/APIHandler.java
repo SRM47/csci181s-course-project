@@ -38,6 +38,12 @@ public class APIHandler{
 			case "CREATE_RECORD":
 				System.out.println("CREATE_RECORD");
 				return createRecord(json, cnn);
+			case "DEACTIVATE_ACCOUNT":
+				System.out.println("DEACTIVATE_ACCOUNT");
+				return handleAccountDeactivation(json, cnn);
+			case "SEARCH_ACCOUNT":
+				System.out.println("SEACH_ACCOUNT");
+				return handleSearchAccount(json, cnn);
 			default:
 				JSONObject serverResponse = new JSONObject();
 				serverResponse.put("result", "FAILURE");
@@ -67,10 +73,19 @@ public class APIHandler{
 	}
 
 	private static JSONObject handleUpdateAccount(JSONObject json, Connection cnn) {
-		String newAddress = json.getString("address");
-		String userId = json.getString("userId");
-		//TODO: needs to be json file
-		return AccountDAO.updateUserInformation(cnn, newAddress, userId);
+		switch (json.getString("updateType")) {
+		case "ADDRESS":
+			return AccountDAO.updateUserAddress(cnn, json.getString("userInput"), json.getString("userId"));
+		case "PASSWORD":
+			return handleUpdatePassword(json, cnn);
+		default:
+			JSONObject serverResponse = new JSONObject();
+			serverResponse.put("result", "FAILURE");
+			serverResponse.put("reason", "incorrect request");
+			return serverResponse;	
+			
+		} 
+		
 	}
 
 	private static JSONObject handleCreateAccount(JSONObject json, Connection cnn) {
@@ -107,33 +122,34 @@ public class APIHandler{
 		JSONObject serverResponse = new JSONObject();
 		switch(json.getString("type")) {
 		case "EMAIL_CHECK":
+			return AccountDAO.authenticateUser(cnn, json.getString("email"),
+					null, "PASSWORD_RESET");
 			
-			String result = "SUCCESS";
-			String reason = "";
-			if (!AccountDAO.accountExistsByEmail(cnn, json.getString("email"))) {
-				result = "FAILURE";
-				reason = "Account doesn't exist";
-			} else {
-				// Send email with OTP to person only if email is verified.
-				try {
-					String OTP = TOTP.genSecretKey().toString();
-					EmailSender.sendDefaultPasswordEmail(json.getString("email"), OTP, "None");
-				} catch (Exception e) {
-					result = "FAILURE";
-					reason = "Error generating OTP";
-				}
-				
-			}
-			serverResponse.put("result", result);
-			serverResponse.put("reason", reason);
-			return serverResponse;
+//			String result = "SUCCESS";
+//			String reason = "";
+//			if (!AccountDAO.accountExistsByEmail(cnn, json.getString("email"))) {
+//				result = "FAILURE";
+//				reason = "Account doesn't exist";
+//			} else {
+//				// Send email with OTP to person only if email is verified.
+//				try {
+//					return AccountDAO.authenticateUser(cnn, json.getString("email"),
+//							null, true);
+//				} catch (Exception e) {
+//					result = "FAILURE"; 
+//					reason = "Error generating OTP";
+//				}
+//				
+//			}
+//			serverResponse.put("result", result);
+//			serverResponse.put("reason", reason);
+//			return serverResponse;
 			
 		case "VERIFY_OTP":
 			return AccountDAO.authenticateOTP(cnn, json.getString("email"), json.getString("otp"));
 				
 		case "UPDATE_PASSWORD":
-			return AccountDAO.updatePassword(cnn, json.getString("password"),
-					json.getString("email"));
+			return handleUpdatePassword(json, cnn);
 		default:
 			serverResponse.put("result", "FAILURE");
 			serverResponse.put("reason", "incorrect request");
@@ -143,13 +159,17 @@ public class APIHandler{
 		}
 		
 	}
+	private static JSONObject handleUpdatePassword(JSONObject json, Connection cnn){ 
+		return AccountDAO.updatePassword(cnn, json.getString("password"), json.getString("email"));
+		
+	}
 
 	private static JSONObject handleLoginRequest(JSONObject json, Connection cnn) {
 		switch (json.getString("type")) {
 		case "PASSWORD":	
 			System.out.println("PASSWORD");
 			return AccountDAO.authenticateUser(cnn, json.getString("email"),
-					json.getString("password"));
+					json.getString("password"), "LOGIN");
 		case "OTP":
 			System.out.println("OTP");
 			return AccountDAO.authenticateOTP(cnn, json.getString("email"), json.getString("otp"));
@@ -159,5 +179,25 @@ public class APIHandler{
 			serverResponse.put("reason", "Invalid Request");
 			return serverResponse;	
 		} 
+	}
+	
+	private static JSONObject handleSearchAccount(JSONObject json, Connection cnn) {
+		return AccountDAO.viewAccountInformation(cnn, json.getString("userId"));
+	}
+	
+	private static JSONObject handleAccountDeactivation(JSONObject json, Connection cnn) {
+		switch (json.getString("type")) {
+		case "VALIDATE_ACCOUNT":
+			return AccountDAO.authenticateUser(cnn, json.getString("email"),
+					json.getString("password"), "ACCOUNT_DEACTIVATION");
+		case "DEACTIVATE_ACCOUNT":
+			return AccountDAO.deactivateAccount(cnn, json.getString("userId"));
+		default:
+			JSONObject serverResponse = new JSONObject();
+			serverResponse.put("result", "FAILURE");
+			serverResponse.put("reason", "Invalid Request");
+			return serverResponse;	
+		}
+		
 	}
 }

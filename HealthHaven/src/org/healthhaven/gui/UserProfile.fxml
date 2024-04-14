@@ -6,7 +6,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.healthhaven.controller.UserProfileController">
+<StackPane fx:id="UserProfileSection" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.healthhaven.controller.UserProfileController">
    <children>
       <VBox alignment="CENTER" maxWidth="-Infinity" prefHeight="200.0" prefWidth="200.0">
          <children>
@@ -15,8 +15,26 @@
                   <Insets bottom="5.0" top="20.0" />
                </VBox.margin>
             </Label>
-            <TextArea fx:id="userInfoArea" prefHeight="200.0" prefWidth="200.0" />
-            <VBox alignment="CENTER" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="150.0">
+            <TextArea fx:id="userInfoArea" prefHeight="100.0" prefWidth="200.0" />
+            <HBox fx:id="updateOptionField" alignment="TOP_CENTER" prefWidth="200.0">
+               <children>
+                  <MenuButton fx:id="updateSelectionMenu" mnemonicParsing="false" text="Update">
+                    <items>
+                      <MenuItem fx:id="upddateAddressMenu" mnemonicParsing="false" onAction="#updateAddressOptionMenu" text="Address" />
+                      <MenuItem fx:id="updatePasswordMenu" mnemonicParsing="false" onAction="#updatePasswordOptionMenu" text="Password" />
+                    </items>
+                     <HBox.margin>
+                        <Insets top="5.0" />
+                     </HBox.margin>
+                  </MenuButton>
+                  <Button fx:id="confirmUpdateButton" mnemonicParsing="false" onAction="#handleUpdateOption" text="Confirm">
+                     <HBox.margin>
+                        <Insets top="5.0" />
+                     </HBox.margin>
+                  </Button>
+               </children>
+            </HBox>
+            <VBox alignment="CENTER" maxWidth="-Infinity" minWidth="-Infinity">
                <children>
                   <Label fx:id="response" textFill="#dd0808">
                      <font>
@@ -28,20 +46,51 @@
                         <Insets bottom="5.0" top="5.0" />
                      </VBox.margin>
                   </TextField>
-                  <HBox alignment="CENTER" maxHeight="-Infinity" prefHeight="50.0" prefWidth="200.0">
+                  <VBox fx:id="updatePasswordSection" alignment="CENTER" prefHeight="99.0" prefWidth="349.0">
                      <children>
-                        <Button fx:id="updateButton" mnemonicParsing="false" onAction="#handleSaveAction" text="Update">
+                        <HBox alignment="CENTER" prefHeight="30.0" prefWidth="200.0">
+                           <children>
+                              <PasswordField fx:id="PasswordField1" onKeyTyped="#realTimePWSec" prefHeight="30.0" promptText="Enter Password">
+                                 <HBox.margin>
+                                    <Insets right="5.0" />
+                                 </HBox.margin>
+                              </PasswordField>
+                              <ProgressBar fx:id="passwordStrengthBar" prefHeight="20.0" prefWidth="161.0" progress="0.0" />
+                           </children>
+                           <VBox.margin>
+                              <Insets bottom="5.0" />
+                           </VBox.margin>
+                        </HBox>
+                        <HBox alignment="CENTER" prefHeight="30.0" prefWidth="200.0">
+                           <children>
+                              <PasswordField fx:id="PasswordField2" prefHeight="30.0" promptText="Retype Password">
+                                 <HBox.margin>
+                                    <Insets right="5.0" />
+                                 </HBox.margin>
+                              </PasswordField>
+                              <Label fx:id="PasswordResetMessage" maxHeight="-Infinity" minHeight="-Infinity" prefWidth="170.0" />
+                           </children>
+                           <VBox.margin>
+                              <Insets top="5.0" />
+                           </VBox.margin>
+                        </HBox>
+                     </children>
+                  </VBox>
+                  <HBox fx:id="updateActionField" alignment="CENTER" maxHeight="-Infinity" prefHeight="50.0" prefWidth="200.0">
+                     <children>
+                        <Button fx:id="updateButton" mnemonicParsing="false" onAction="#handleUpdateAction" text="Update">
                            <HBox.margin>
                               <Insets left="5.0" right="5.0" />
                            </HBox.margin>
                         </Button>
-                        <Button mnemonicParsing="false" onAction="#handleCancelAction" text="Cancel">
+                        <Button fx:id="cancel" mnemonicParsing="false" onAction="#handleCancelAction" text="Cancel">
                            <HBox.margin>
                               <Insets left="5.0" right="5.0" />
                            </HBox.margin>
                         </Button>
                      </children>
                   </HBox>
+                  <Hyperlink fx:id="accountDeactivationLink" onAction="#handleDeactivateAccount" text="Deactivate Account?" />
                </children>
             </VBox>
          </children>

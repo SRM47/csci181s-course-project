@@ -108,6 +108,7 @@ public class LoginController{
 			if (jsonObj.getString("result").equals("FAILURE")) {
 				OTPLoginMessage.setText(jsonObj.getString("reason"));
 			} else if (jsonObj.getString("result").equals("SUCCESS")){
+				System.out.println(jsonObj.toString());
 				User user = Login.existingUserSession(jsonObj);
 		    	loadUserPage(user);
 		    	OTPLoginMessage.setText("");

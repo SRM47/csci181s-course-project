@@ -12,8 +12,13 @@
          <children>
             <Label text="Welcome, Superadmin!">
                <VBox.margin>
-                  <Insets bottom="10.0" />
+                  <Insets bottom="10.0" top="10.0" />
                </VBox.margin>
+            </Label>
+            <Label text="Account Creation">
+               <font>
+                  <Font size="11.0" />
+               </font>
             </Label>
             <HBox>
                <children>
@@ -22,7 +27,6 @@
                         <MenuItem fx:id="patientMenuItem" mnemonicParsing="false" onAction="#updateAccountTypePatient" text="Patient" />
                       <MenuItem fx:id="doctorMenuItem" mnemonicParsing="false" onAction="#updateAccountTypeDoctor" text="Doctor" />
                       <MenuItem fx:id="dataAnalystMenuItem" mnemonicParsing="false" onAction="#updateAccountTypeDataAnalyst" onMenuValidation="#updateAccountTypeDataAnalyst" text="Data Analyst" />
-                        <MenuItem fx:id="dataProtectionOfficerMenuItem" mnemonicParsing="false" onAction="#updateAccountTypeDataProtectionOfficer" text="Data Protection Officer" />
                     </items>
                   </MenuButton>
                   <TextField fx:id="emailTextfield" promptText="Enter email" />
@@ -54,13 +58,38 @@
                   <Insets bottom="5.0" />
                </VBox.margin>
             </HBox>
-            <TextArea fx:id="recordTextArea" prefHeight="150.0" prefWidth="200.0">
+            <Label text="Search Account">
+               <font>
+                  <Font size="11.0" />
+               </font>
+            </Label>
+            <HBox alignment="TOP_CENTER">
+               <children>
+                  <TextField fx:id="UserIDField">
+                     <HBox.margin>
+                        <Insets top="5.0" />
+                     </HBox.margin>
+                  </TextField>
+                  <Button fx:id="searchButton" mnemonicParsing="false" onAction="#handleUserIdSearch" text="Search">
+                     <HBox.margin>
+                        <Insets top="5.0" />
+                     </HBox.margin>
+                  </Button>
+               </children>
+            </HBox>
+            <TextArea fx:id="recordTextArea">
                <VBox.margin>
                   <Insets top="5.0" />
                </VBox.margin></TextArea>
+            <Label fx:id="deactivationResponse">
+               <font>
+                  <Font size="9.0" />
+               </font>
+            </Label>
+            <Button fx:id="deactivateButton" mnemonicParsing="false" onAction="#handleDeactivate" text="Deactivate" />
             <Button fx:id="viewAccountButton" layoutX="51.0" layoutY="110.0" mnemonicParsing="false" onAction="#clickViewAccountList" prefWidth="125.0" text="View Account List">
                <VBox.margin>
-                  <Insets top="5.0" />
+                  <Insets bottom="10.0" top="5.0" />
                </VBox.margin></Button>
          </children>
       </VBox>

@@ -194,17 +194,40 @@ public class User {
 	 * @param newAddress
 	 * @return
 	 */
-	public String updatePersonalRecordOnDB(String newAddress){
-
-		// First set the changes to the object instance.
-		setAddress(newAddress);
+	public String updatePersonalRecordOnDB(String newInput, String updateType){
 		JSONObject json = new JSONObject();
 	    
+		if (updateType.equals("address")) {
+			json.put("updateType", "ADDRESS");
+			json.put("userId", userID);
+		} else if (updateType.equals("password")) {
+			json.put("updateType", "PASSWORD");
+			json.put("email", email);
+			
+		}
 	    // Populate the JSON object with key-value pairs
 	    json.put("request", "UPDATE_ACCOUNT");
-	    json.put("address", newAddress);
-	    json.put("userId", userID);
+	    json.put("userInput", newInput);
 		return ServerCommunicator.communicateWithServer(json.toString());
+	}
+	
+	public String deactivate(String password, String type) {
+		JSONObject json = new JSONObject();
+		json.put("request", "DEACTIVATE_ACCOUNT");
+		switch (type) {
+		case "VALIDATE":
+			json.put("type", "VALIDATE_ACCOUNT");
+			json.put("email", email);
+			json.put("password", password);
+			return ServerCommunicator.communicateWithServer(json.toString());
+		case "DEACTIVATE":
+			json.put("type", "DEACTIVATE_ACCOUNT");
+			json.put("userId", userID);
+			return ServerCommunicator.communicateWithServer(json.toString());
+		default:
+			return null;
+		}
+	
 	}
 
 	@Override

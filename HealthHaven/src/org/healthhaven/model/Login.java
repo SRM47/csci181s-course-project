@@ -54,12 +54,10 @@ public class Login {
 		System.out.println(accountType);
 		
 		return switch (accountType) {
-			case "Doctor" -> new Doctor(userID, email, legalFirstName, legalLastName, address, dob);
-			case "Patient" -> new Patient(userID, email, legalFirstName, legalLastName, address, dob);
-			case "Data Protection Officer" ->
-					new DataProtectionOfficer(userID, email, legalFirstName, legalLastName, address, dob);
-			case "Data Analyst" -> new DataAnalyst(userID, email, legalFirstName, legalLastName, address, dob);
-			case "Superadmin" -> new Superadmin(userID, email, legalFirstName, legalLastName, address, dob);
+			case "Doctor", "DOCTOR" -> new Doctor(userID, email, legalFirstName, legalLastName, address, dob);
+			case "Patient", "PATIENT" -> new Patient(userID, email, legalFirstName, legalLastName, address, dob);
+			case "Data Analyst", "DATA_ANALYST" -> new DataAnalyst(userID, email, legalFirstName, legalLastName, address, dob);
+			case "Superadmin", "SUPERADMIN" -> new Superadmin(userID, email, legalFirstName, legalLastName, address, dob);
 			default -> null;
 		};
 	}
