@@ -581,42 +581,39 @@ public class AccountDAO {
 		String result = "SUCCESS";
 		String reason = "";
 
+        
         try {
             conn.setAutoCommit(false); 
 
-            if (!deleteUserData(conn, "healthhaven.authentication", userId)) {
-                throw new SQLException("Failed to delete authentication data.");
-            }
+            deleteUserData(conn, "healthhaven.authentication", userId);
 
-            if (!deleteUserData(conn, "healthhaven.accounts", userId)) {
-                throw new SQLException("Failed to delete account data.");
-            }
+            deleteUserData(conn, "healthhaven.accounts", userId);
 
-            if (!deleteUserData(conn, "healthhaven.users", userId)) {
-                throw new SQLException("Failed to delete user data.");
-            }
+            deleteUserData(conn, "healthhaven.users", userId);
 
             conn.commit();
             serverResponse.put("result", result);
-            serverResponse.put("details", "All data associated with user ID " + userId + " has been permanently deleted.");
         } catch (SQLException e) {
             try {
                 conn.rollback();
             } catch (SQLException ex) {
-                ex.printStackTrace();
+                serverResponse.put("result", "FAILURE");
+                serverResponse.put("reason", "Error rolling back transaction: " + ex.getMessage());
+                return serverResponse;
             }
-            result = "FAILURE";
-            reason = "SQL error during deletion: " + e.getMessage();
-            serverResponse.put("result", result);
-            serverResponse.put("reason", reason);
+            serverResponse.put("result", "FAILURE");
+            serverResponse.put("reason", "SQL error during deletion: " + e.getMessage());
         } finally {
             try {
                 conn.setAutoCommit(true); 
             } catch (SQLException e) {
-                e.printStackTrace();
+                // If resetting auto-commit fails, consider this a failure in cleanup, not in main operation
+                if (!serverResponse.has("result")) {
+                    serverResponse.put("result", "FAILURE");
+                    serverResponse.put("reason", "Error resetting auto-commit: " + e.getMessage());
+                }
             }
         }
-
 		System.out.println(serverResponse);
 		return serverResponse;
 	}
