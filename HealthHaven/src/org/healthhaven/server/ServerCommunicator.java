@@ -30,7 +30,7 @@ public class ServerCommunicator {
     private static final int SERVER_PORT = 8886; // Example port for account data server
     
     private static final String protocol = "TLSv1.3";
-    private static final String[] cipherSuites = new String[]{"TLS_AES_128_GCM_SHA256"};
+    private static final String[] cipherSuites = new String[]{"TLS_AES_256_GCM_SHA384"};
 
 
     /**

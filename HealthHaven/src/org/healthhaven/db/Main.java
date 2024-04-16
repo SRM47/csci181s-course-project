@@ -9,7 +9,7 @@ import java.sql.SQLException;
 public class Main {
     public static void main(String[] args){
         try (Connection connection =  DatabaseConnectionUtil.connect()){
-//            System.out.println("Connected to the PostgreSQL database.");
+            System.out.println("Connected to the PostgreSQL database.");
 ////            Patient p = new Patient(1234567890, "test@gmail.com", "testpassword", "testfirst", "testlast",
 //// 				   "test street", LocalDate.now());
 ////            boolean succeeded = UserDAO.createUser(connection, p);

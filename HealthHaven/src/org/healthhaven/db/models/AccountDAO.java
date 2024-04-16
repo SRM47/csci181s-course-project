@@ -1,5 +1,6 @@
 package org.healthhaven.db.models;
 
+import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,6 +9,7 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.util.Base64;
 
 import org.healthhaven.model.EmailSender;
 import org.healthhaven.model.TOTP;
@@ -34,6 +36,14 @@ public class AccountDAO {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		// Insert new cookie into database
+		String userCookie = generateAndInsertNewUserCookie(conn, userId);
+		if (userCookie == null) {
+			result = "FAILURE";
+			reason = "Unable to create cookie";
+		}
+
 
 		// Insert user data into users table
 		String sql = "INSERT INTO healthhaven.users (userid, legalfirstname, legallastname, dob, address) VALUES (?, ?, ?, ?, ?)";
@@ -103,9 +113,10 @@ public class AccountDAO {
 			result = "FAILURE";
 			reason = e.getMessage();
 		}
-
+		
 		serverResponse.put("result", result);
 		serverResponse.put("reason", reason);
+		serverResponse.put("cookie", userCookie);
 		return serverResponse;
 	}
 
@@ -483,37 +494,35 @@ public class AccountDAO {
 		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 			ResultSet data_rs = stmt.executeQuery();
 			System.out.println("Statement Executed");
-			
-			//No need to check password since a user forgot password
-			if (data_rs.next() & type.equals("PASSWORD_RESET")) {
-				sendTOTPEmail(email, TOTP.genTOTP2(data_rs.getString("totp_key")));
-			}
 
-			else if (data_rs.next()) {
-				String truePassword = data_rs.getString("password");
-				// TODO: Hash this password.
-				String hashedCandidatePassword = candidatePassword;
-				if (!hashedCandidatePassword.equals(truePassword)) {
-					result = "FAILURE";
-					reason = "Incorrect Password";
-				} else { //password matches
-					if (type.equals("ACCOUNT_DEACTIVATION")){
-						return serverResponse;
-					}
-					boolean resetValue = data_rs.getBoolean("reset");
-					if (!resetValue) {
-						result = "SUCCESS";
-						reason = "NEW";
-						userType = UserDAO.getUserAccountType(conn, getUserIdFromEmail(conn, email));
-						
-					} else {
-						result = "SUCCESS";
-						reason = "EXISTING";
-						sendTOTPEmail(email, TOTP.genTOTP2(data_rs.getString("totp_key")));
-					}
+			if (data_rs.next()) {
+				if (type.equals("PASSWORD_RESET")) {
+					sendTOTPEmail(email, TOTP.genTOTP2(data_rs.getString("totp_key")));
+				} else {
+					String truePassword = data_rs.getString("password");
+					// TODO: Hash this password.
+					String hashedCandidatePassword = candidatePassword;
+					if (!hashedCandidatePassword.equals(truePassword)) {
+						result = "FAILURE";
+						reason = "Incorrect Password";
+					} else { //password matches
+						if (type.equals("ACCOUNT_DEACTIVATION")){
+							return serverResponse;
+						}
+						boolean resetValue = data_rs.getBoolean("reset");
+						if (!resetValue) {
+							result = "SUCCESS";
+							reason = "NEW";
+							userType = UserDAO.getUserAccountType(conn, getUserIdFromEmail(conn, email));
+							
+						} else {
+							result = "SUCCESS";
+							reason = "EXISTING";
+							sendTOTPEmail(email, TOTP.genTOTP2(data_rs.getString("totp_key")));
+						}
 
+					}
 				}
-
 			} else {
 				result = "FAILURE";
 				reason = "Account does not exist";
@@ -550,8 +559,19 @@ public class AccountDAO {
 				String totp_key = data_rs.getString("totp_key");
 				System.out.println(totp_key);
 				if (TOTP.verTOTP(totp_key, otp)) {
-					// Upon success, return all user information
-					JSONObject userInformation = UserDAO.getUserInformation(conn, getUserIdFromEmail(conn, email));
+					// Upon success, return all user information and create cookie to store login information
+					String userId = getUserIdFromEmail(conn, email);
+					String userCookie = generateAndUpdateNewUserCookie(conn, userId);
+					if (userCookie == null) {
+						result = "FAILURE";
+						reason = "Unable to create cookie";
+						serverResponse.put("result", result);
+						serverResponse.put("reason", reason);
+						return serverResponse;
+					}
+					
+					JSONObject userInformation = UserDAO.getUserInformation(conn, userId);
+					userInformation.put("cookie", userCookie);
 					return userInformation;
 				} else {
 					result = "FAILURE";
@@ -570,6 +590,111 @@ public class AccountDAO {
 
 		serverResponse.put("result", result);
 		serverResponse.put(result.equals("SUCCESS") ? "type" : "reason", reason);
+		System.out.println(serverResponse);
+		return serverResponse;
+		
+	}
+	
+	private static String generateAndUpdateNewUserCookie(Connection conn, String userId) {
+		// Cookie Generation
+	    SecureRandom random = new SecureRandom();
+	    byte[] cookieBytes = new byte[32]; // Example: 32-byte cookie value
+	    random.nextBytes(cookieBytes);
+	    String cookieValue = Base64.getUrlEncoder().encodeToString(cookieBytes); 
+
+	    // Database Interaction (Assuming a PreparedStatement)
+	    String sql = "UPDATE healthhaven.cookie SET user_cookie = ?, timestamp = NOW() WHERE userid = ?";
+	    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	        pstmt.setString(1, cookieValue);
+	        pstmt.setString(2, userId);
+	        pstmt.executeUpdate();
+	    } catch (SQLException e) {
+	        return null;
+	    }
+
+	    return cookieValue;
+		
+	}
+	
+	private static String generateAndInsertNewUserCookie(Connection conn, String userId) {
+		// Cookie Generation
+	    SecureRandom random = new SecureRandom();
+	    byte[] cookieBytes = new byte[32]; // Example: 32-byte cookie value
+	    random.nextBytes(cookieBytes);
+	    String cookieValue = Base64.getUrlEncoder().encodeToString(cookieBytes); 
+
+	    // Database Interaction (Assuming a PreparedStatement)
+	    String sql = "INSERT INTO healthhaven.cookie (userid, user_cookie, timestamp) VALUES (?, ?, NOW())";
+	    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	        pstmt.setString(1, userId);
+	        pstmt.setString(2, cookieValue);
+	        pstmt.executeQuery();
+	    } catch (SQLException e) {
+	        return null;
+	    }
+
+	    return cookieValue;
+		
+	}
+	
+	public static JSONObject verifyAuthenticationCookieByEmail(Connection conn, String email, String candidateCookie) {
+		JSONObject serverResponse = new JSONObject();
+		if (email == null || email == "" || candidateCookie == null || candidateCookie == "") {
+			serverResponse.put("result", "FAILURE");
+			serverResponse.put("reason", "email is null or no cookie");
+			System.out.println(serverResponse);
+			return serverResponse;
+		}
+		String userId = getUserIdFromEmail(conn, email);
+		if (userId != null) {
+			return verifyAuthenticationCookieById(conn, userId, candidateCookie);
+		} 
+		
+		serverResponse.put("result", "FAILURE");
+		serverResponse.put("reason", "Email does not exist");
+		System.out.println(serverResponse);
+		return serverResponse;
+		
+	}
+	
+	public static JSONObject verifyAuthenticationCookieById(Connection conn, String userId, String candidateCookie) {
+		System.out.println(userId);
+		JSONObject serverResponse = new JSONObject();
+		if (userId == null || userId == "" || candidateCookie == null || candidateCookie == "") {
+			serverResponse.put("result", "FAILURE");
+			serverResponse.put("reason", "Id is null or no cookie");
+			System.out.println(serverResponse);
+			return serverResponse;
+		}
+		
+		String result = "SUCCESS";
+		String reason = "";
+		
+		String sql = "SELECT user_cookie FROM healthhaven.cookie WHERE userId = ?";
+	    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	        pstmt.setString(1, userId);
+	        ResultSet data_rs = pstmt.executeQuery();
+	        
+	        if (data_rs.next()) {
+				String cookie = data_rs.getString("user_cookie");
+				System.out.println(cookie);
+				if (cookie == null || !candidateCookie.equals(cookie)) {
+					result = "FAILURE";
+					reason = "Incorrect Authentication Cookie";
+				}
+
+			} else {
+				result = "FAILURE";
+				reason = "Account does not exist";
+			}
+
+	    } catch (SQLException e) {
+	    	result = "FAILURE";
+			reason = "SQL error with verifying cookie";
+	    }
+	    
+	    serverResponse.put("result", result);
+		serverResponse.put("reason", reason);
 		System.out.println(serverResponse);
 		return serverResponse;
 		

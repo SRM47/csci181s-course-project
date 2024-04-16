@@ -64,7 +64,7 @@ public class LoginController{
 		this.emailAddress = email;
 
 		String serverResponse= Login.authenticateUserOnDB(email, password);
-		if (serverResponse.equals(null)) {
+		if (serverResponse == null) {
 			errorMessage.setText("Login Error");
 			
 		} else { //either new or existing user

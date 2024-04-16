@@ -53,7 +53,12 @@ public class APIHandler{
 	}
 	
 	private static JSONObject createRecord(JSONObject json, Connection cnn) {
-//		return AccountDAO.updateUserInformation(cnn, newAddress, userId);
+		// The doctor is calling this so we must make sure the doctor is logged in with a cookie.
+		JSONObject verifiedCookieObject = AccountDAO.verifyAuthenticationCookieById(cnn, json.optString("callerID"), json.optString("cookie"));
+		if (verifiedCookieObject.getString("result").equals("FAILURE")) {
+			return verifiedCookieObject;
+		}
+
 		return AccountDAO.newMedicalInformation(cnn, json.getString("patientID"),
         json.getString("doctorID"), 
         json.getFloat("height"),
@@ -63,16 +68,26 @@ public class APIHandler{
 	}
 
 	private static JSONObject handleViewRecord(JSONObject json, Connection cnn) {
+		// Handle Cookie Logic here.
 		return AccountDAO.viewUserInformation(cnn,
 		        json.optString("doctorID"), 
 		        json.getString("patientID"));
 	}
 
 	private static JSONObject handlePatientDataSummary(JSONObject json, Connection cnn) {
+
+		JSONObject verifiedCookieObject = AccountDAO.verifyAuthenticationCookieById(cnn, json.optString("callerId"), json.optString("cookie"));
+		if (verifiedCookieObject.getString("result").equals("FAILURE")) {
+			return verifiedCookieObject;
+		}
 		return AccountDAO.getDataAverage(cnn);
 	}
 
 	private static JSONObject handleUpdateAccount(JSONObject json, Connection cnn) {
+		JSONObject verifiedCookieObject = AccountDAO.verifyAuthenticationCookieById(cnn, json.optString("callerId"), json.optString("cookie"));
+		if (verifiedCookieObject.getString("result").equals("FAILURE")) {
+			return verifiedCookieObject;
+		}
 		switch (json.getString("updateType")) {
 		case "ADDRESS":
 			return AccountDAO.updateUserAddress(cnn, json.getString("userInput"), json.getString("userId"));
@@ -89,6 +104,10 @@ public class APIHandler{
 	}
 
 	private static JSONObject handleCreateAccount(JSONObject json, Connection cnn) {
+		JSONObject verifiedCookieObject = AccountDAO.verifyAuthenticationCookieByEmail(cnn, json.optString("callerEmail"), json.optString("cookie"));
+		if (verifiedCookieObject.getString("result").equals("FAILURE")) {
+			return verifiedCookieObject;
+		}
 		return AccountDAO.updateTemporaryUserAfterFirstLogin(cnn,
 		json.getString("first_name"), json.getString("last_name"),
 		json.getString("dob"), json.getString("address"), json.getString("email"),
@@ -97,6 +116,10 @@ public class APIHandler{
 	}
 
 	private static JSONObject handleAccountCreation(JSONObject json, Connection cnn) {
+		JSONObject verifiedCookieObject = AccountDAO.verifyAuthenticationCookieById(cnn, json.optString("callerId"), json.optString("cookie"));
+		if (verifiedCookieObject.getString("result").equals("FAILURE")) {
+			return verifiedCookieObject;
+		}
 		JSONObject serverResponse = new JSONObject();
 		String email = json.getString("email");
 		String dob = json.getString("dob");
@@ -119,31 +142,15 @@ public class APIHandler{
 	}
 
 	private static JSONObject handlePasswordReset(JSONObject json, Connection cnn) {
+		JSONObject verifiedCookieObject = AccountDAO.verifyAuthenticationCookieByEmail(cnn, json.optString("callerEmail"), json.optString("cookie"));
+		if (verifiedCookieObject.getString("result").equals("FAILURE")) {
+			return verifiedCookieObject;
+		}
 		JSONObject serverResponse = new JSONObject();
 		switch(json.getString("type")) {
 		case "EMAIL_CHECK":
 			return AccountDAO.authenticateUser(cnn, json.getString("email"),
 					null, "PASSWORD_RESET");
-			
-//			String result = "SUCCESS";
-//			String reason = "";
-//			if (!AccountDAO.accountExistsByEmail(cnn, json.getString("email"))) {
-//				result = "FAILURE";
-//				reason = "Account doesn't exist";
-//			} else {
-//				// Send email with OTP to person only if email is verified.
-//				try {
-//					return AccountDAO.authenticateUser(cnn, json.getString("email"),
-//							null, true);
-//				} catch (Exception e) {
-//					result = "FAILURE"; 
-//					reason = "Error generating OTP";
-//				}
-//				
-//			}
-//			serverResponse.put("result", result);
-//			serverResponse.put("reason", reason);
-//			return serverResponse;
 			
 		case "VERIFY_OTP":
 			return AccountDAO.authenticateOTP(cnn, json.getString("email"), json.getString("otp"));
@@ -163,8 +170,10 @@ public class APIHandler{
 		return AccountDAO.updatePassword(cnn, json.getString("password"), json.getString("email"));
 		
 	}
+	
 
 	private static JSONObject handleLoginRequest(JSONObject json, Connection cnn) {
+		
 		switch (json.getString("type")) {
 		case "PASSWORD":	
 			System.out.println("PASSWORD");
@@ -186,11 +195,20 @@ public class APIHandler{
 	}
 	
 	private static JSONObject handleAccountDeactivation(JSONObject json, Connection cnn) {
+		JSONObject verifiedCookieObject;
 		switch (json.getString("type")) {
 		case "VALIDATE_ACCOUNT":
+			verifiedCookieObject = AccountDAO.verifyAuthenticationCookieByEmail(cnn, json.optString("callerEmail"), json.optString("cookie"));
+			if (verifiedCookieObject.getString("result").equals("FAILURE")) {
+				return verifiedCookieObject;
+			}
 			return AccountDAO.authenticateUser(cnn, json.getString("email"),
 					json.getString("password"), "ACCOUNT_DEACTIVATION");
 		case "DEACTIVATE_ACCOUNT":
+			verifiedCookieObject = AccountDAO.verifyAuthenticationCookieById(cnn, json.optString("callerId"), json.optString("cookie"));
+			if (verifiedCookieObject.getString("result").equals("FAILURE")) {
+				return verifiedCookieObject;
+			}
 			return AccountDAO.deactivateAccount(cnn, json.getString("userId"));
 		default:
 			JSONObject serverResponse = new JSONObject();
