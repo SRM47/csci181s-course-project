@@ -752,4 +752,21 @@ public class AccountDAO {
         }
     }
 
+	public static JSONObject logoutUser(Connection conn, String userId) {
+		JSONObject serverResponse = new JSONObject();
+		String result = "SUCCESS";
+		String reason = "";
+		String sql = "UPDATE healthhaven.cookie SET user_cookie = NULL, timestamp = NOW() WHERE userId = ?";
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	        pstmt.setString(1, userId);
+	        pstmt.executeUpdate();
+	    } catch (SQLException e) {
+	        result = "FAILURE";
+	        reason = "SQL error failed to logout";
+	    }
+		serverResponse.put("result", result);
+        serverResponse.put("reason", reason);
+        return serverResponse;
+	}
+
 }

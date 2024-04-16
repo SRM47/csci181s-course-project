@@ -44,12 +44,24 @@ public class APIHandler{
 			case "SEARCH_ACCOUNT":
 				System.out.println("SEACH_ACCOUNT");
 				return handleSearchAccount(json, cnn);
+			case "LOGOUT":
+				System.out.println("LOGOUT");
+				return handleLogout(json, cnn);
 			default:
 				JSONObject serverResponse = new JSONObject();
 				serverResponse.put("result", "FAILURE");
 				serverResponse.put("reason", "Invalid Request");
 				return serverResponse;	
 		}
+	}
+	
+	private static JSONObject handleLogout(JSONObject json, Connection cnn) {
+		JSONObject verifiedCookieObject = AccountDAO.verifyAuthenticationCookieById(cnn, json.optString("callerID"), json.optString("cookie"));
+		if (verifiedCookieObject.getString("result").equals("FAILURE")) {
+			return verifiedCookieObject;
+		}
+
+		return AccountDAO.logoutUser(cnn, json.getString("userId"));
 	}
 	
 	private static JSONObject createRecord(JSONObject json, Connection cnn) {
