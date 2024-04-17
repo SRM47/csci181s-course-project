@@ -727,7 +727,7 @@ public class AccountDAO {
 		String result = "SUCCESS";
 		String reason = "";
 		
-		String sql = "SELECT user_cookie FROM healthhaven.cookie WHERE userId = ?";
+		String sql = "SELECT user_cookie FROM healthhaven.cookie WHERE userid = ?";
 	    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 	        pstmt.setString(1, userId);
 	        ResultSet data_rs = pstmt.executeQuery();
