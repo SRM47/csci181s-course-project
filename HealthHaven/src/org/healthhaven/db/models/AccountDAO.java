@@ -750,7 +750,7 @@ public class AccountDAO {
 
 	    } catch (SQLException e) {
 	    	result = "FAILURE";
-			reason = "SQL error with verifying cookie";
+			reason = e.getMessage();
 	    }
 	    
 	    serverResponse.put("result", result);
