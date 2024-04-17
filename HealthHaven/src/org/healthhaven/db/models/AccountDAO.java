@@ -681,6 +681,9 @@ public class AccountDAO {
 				if (cookie == null || !candidateCookie.equals(cookie)) {
 					result = "FAILURE";
 					reason = "Incorrect Authentication Cookie";
+				} else {
+					serverResponse.put("callerId", data_rs.getString("userId")); //TODO: Check with Sam if this is correct
+					serverResponse.put("accountType", UserDAO.getUserAccountType(conn, userId));
 				}
 
 			} else {

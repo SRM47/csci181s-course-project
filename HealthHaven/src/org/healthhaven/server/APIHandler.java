@@ -13,45 +13,43 @@ import org.json.JSONObject;
 public class APIHandler{
 	
 	public static JSONObject processAPIRequest(JSONObject json, Connection cnn) {
+		
 		switch(json.getString("request")) {
 			case "LOGIN":
-				System.out.println("LOGIN");
+				System.out.println("LOGIN"); //any user
 				return handleLoginRequest(json, cnn);
-			case "PASSWORD_RESET":
+			case "PASSWORD_RESET": //any user
 				System.out.println("PASSWORD_RESET");
 				return handlePasswordReset(json, cnn);
-			case "ALLOW_ACCOUNT_CREATION":
+			case "ALLOW_ACCOUNT_CREATION": //doctor or super admin
 				System.out.println("ALLOW_ACCOUNT_CREATION");
 				return handleAccountCreation(json, cnn);
-			case "CREATE_ACCOUNT":
+			case "CREATE_ACCOUNT": // any user
 				System.out.println("CREATE_ACCOUNT");
 				return handleCreateAccount(json, cnn);
-			case "UPDATE_ACCOUNT":
+			case "UPDATE_ACCOUNT": //any user
 				System.out.println("UPDATE_ACCOUNT");
 				return handleUpdateAccount(json, cnn);
-			case "REQUEST_PATIENT_DATA_SUMMARY":
+			case "REQUEST_PATIENT_DATA_SUMMARY": //data analyst
 				System.out.println("REQUEST_PATIENT_DATA_SUMMARY");
 				return handlePatientDataSummary(json, cnn);
-			case "VIEW_RECORD":
+			case "VIEW_RECORD": //doctor or patient
 				System.out.println("VIEW_RECORD");
 				return handleViewRecord(json, cnn);
-			case "CREATE_RECORD":
+			case "CREATE_RECORD": //doctor
 				System.out.println("CREATE_RECORD");
 				return createRecord(json, cnn);
-			case "DEACTIVATE_ACCOUNT":
+			case "DEACTIVATE_ACCOUNT": //any user for themselves or admin for everyone
 				System.out.println("DEACTIVATE_ACCOUNT");
 				return handleAccountDeactivation(json, cnn);
-			case "SEARCH_ACCOUNT":
+			case "SEARCH_ACCOUNT": //super admin
 				System.out.println("SEACH_ACCOUNT");
 				return handleSearchAccount(json, cnn);
-			case "LOGOUT":
+			case "LOGOUT": //any user
 				System.out.println("LOGOUT");
 				return handleLogout(json, cnn);
 			default:
-				JSONObject serverResponse = new JSONObject();
-				serverResponse.put("result", "FAILURE");
-				serverResponse.put("reason", "Invalid Request");
-				return serverResponse;	
+				return returnFailureResponse("Invalid Request");	
 		}
 	}
 	
@@ -60,7 +58,7 @@ public class APIHandler{
 		if (verifiedCookieObject.getString("result").equals("FAILURE")) {
 			return verifiedCookieObject;
 		}
-
+		
 		return AccountDAO.logoutUser(cnn, json.getString("userId"));
 	}
 	
@@ -70,6 +68,11 @@ public class APIHandler{
 		if (verifiedCookieObject.getString("result").equals("FAILURE")) {
 			return verifiedCookieObject;
 		}
+		
+		//Role based authorization
+		if(!checkAuthorization(verifiedCookieObject.getString("accountType"), verifiedCookieObject.getString("userId"), json)) {
+			return returnFailureResponse("Invalid Request");
+		};
 
 		return AccountDAO.newMedicalInformation(cnn, json.getString("patientID"),
         json.getString("doctorID"), 
@@ -81,21 +84,38 @@ public class APIHandler{
 
 	private static JSONObject handleViewRecord(JSONObject json, Connection cnn) {
 		// Handle Cookie Logic here.
+		JSONObject verifiedCookieObject = AccountDAO.verifyAuthenticationCookieById(cnn, json.optString("callerId"), json.optString("cookie"));
+		if (verifiedCookieObject.getString("result").equals("FAILURE")) {
+			return verifiedCookieObject;
+		}
+		
+		//Role based authorization
+		if(!checkAuthorization(verifiedCookieObject.getString("accountType"), verifiedCookieObject.getString("userId"), json)) {
+			return returnFailureResponse("Invalid Request");
+		};
+
 		return AccountDAO.viewUserInformation(cnn,
 		        json.optString("doctorID"), 
 		        json.getString("patientID"));
 	}
 
 	private static JSONObject handlePatientDataSummary(JSONObject json, Connection cnn) {
-
+		//Cookie
 		JSONObject verifiedCookieObject = AccountDAO.verifyAuthenticationCookieById(cnn, json.optString("callerId"), json.optString("cookie"));
 		if (verifiedCookieObject.getString("result").equals("FAILURE")) {
 			return verifiedCookieObject;
 		}
+		
+		//Role based authorization
+		if(!checkAuthorization(verifiedCookieObject.getString("accountType"), verifiedCookieObject.getString("userId"), json)) {
+			return returnFailureResponse("Invalid Request");
+		};
+
 		return AccountDAO.getDataAverage(cnn);
 	}
 
 	private static JSONObject handleUpdateAccount(JSONObject json, Connection cnn) {
+		//Cookie
 		JSONObject verifiedCookieObject = AccountDAO.verifyAuthenticationCookieById(cnn, json.optString("callerId"), json.optString("cookie"));
 		if (verifiedCookieObject.getString("result").equals("FAILURE")) {
 			return verifiedCookieObject;
@@ -106,16 +126,14 @@ public class APIHandler{
 		case "PASSWORD":
 			return handleUpdatePassword(json, cnn);
 		default:
-			JSONObject serverResponse = new JSONObject();
-			serverResponse.put("result", "FAILURE");
-			serverResponse.put("reason", "incorrect request");
-			return serverResponse;	
+			return returnFailureResponse("Invalid Request");	
 			
 		} 
 		
 	}
 
 	private static JSONObject handleCreateAccount(JSONObject json, Connection cnn) {
+		//Cookie
 		JSONObject verifiedCookieObject = AccountDAO.verifyAuthenticationCookieByEmail(cnn, json.optString("callerEmail"), json.optString("cookie"));
 		if (verifiedCookieObject.getString("result").equals("FAILURE")) {
 			return verifiedCookieObject;
@@ -128,18 +146,23 @@ public class APIHandler{
 	}
 
 	private static JSONObject handleAccountCreation(JSONObject json, Connection cnn) {
+		//Handle cookie
 		JSONObject verifiedCookieObject = AccountDAO.verifyAuthenticationCookieById(cnn, json.optString("callerId"), json.optString("cookie"));
 		if (verifiedCookieObject.getString("result").equals("FAILURE")) {
 			return verifiedCookieObject;
 		}
+		
+		//Role based authorization
+		if(!checkAuthorization(verifiedCookieObject.getString("accountType"), verifiedCookieObject.getString("userId"), json)) {
+			return returnFailureResponse("Invalid Request");
+		};
+				
 		JSONObject serverResponse = new JSONObject();
 		String email = json.getString("email");
 		String dob = json.getString("dob");
 		String userType = json.getString("userType"); //TODO this is same as accountType but accounttype is better
 		if (AccountDAO.accountExistsByEmail(cnn, email)) {
-			serverResponse.put("result", "FAILURE");
-			serverResponse.put("reason", "Email already exists");
-			return serverResponse;
+			return returnFailureResponse("Email already exists");
 		}
 		String generatedPassword = PasswordGenerator.generate(16);
 		UserIdGenerator g = new UserIdGenerator(16);
@@ -154,10 +177,13 @@ public class APIHandler{
 	}
 
 	private static JSONObject handlePasswordReset(JSONObject json, Connection cnn) {
+		
+		//Cookie
 		JSONObject verifiedCookieObject = AccountDAO.verifyAuthenticationCookieByEmail(cnn, json.optString("callerEmail"), json.optString("cookie"));
 		if (verifiedCookieObject.getString("result").equals("FAILURE")) {
 			return verifiedCookieObject;
 		}
+		
 		JSONObject serverResponse = new JSONObject();
 		switch(json.getString("type")) {
 		case "EMAIL_CHECK":
@@ -170,15 +196,19 @@ public class APIHandler{
 		case "UPDATE_PASSWORD":
 			return handleUpdatePassword(json, cnn);
 		default:
-			serverResponse.put("result", "FAILURE");
-			serverResponse.put("reason", "incorrect request");
-			return serverResponse;	
+			return returnFailureResponse("Invalid Request");	
 			
 			
 		}
 		
 	}
-	private static JSONObject handleUpdatePassword(JSONObject json, Connection cnn){ 
+	private static JSONObject handleUpdatePassword(JSONObject json, Connection cnn){
+		//Handle cookie
+		JSONObject verifiedCookieObject = AccountDAO.verifyAuthenticationCookieById(cnn, json.optString("callerId"), json.optString("cookie"));
+		if (verifiedCookieObject.getString("result").equals("FAILURE")) {
+			return verifiedCookieObject;
+		}
+				
 		return AccountDAO.updatePassword(cnn, json.getString("password"), json.getString("email"));
 		
 	}
@@ -195,14 +225,21 @@ public class APIHandler{
 			System.out.println("OTP");
 			return AccountDAO.authenticateOTP(cnn, json.getString("email"), json.getString("otp"));
 		default:
-			JSONObject serverResponse = new JSONObject();
-			serverResponse.put("result", "FAILURE");
-			serverResponse.put("reason", "Invalid Request");
-			return serverResponse;	
+			return returnFailureResponse("Invalid Request");	
 		} 
 	}
 	
 	private static JSONObject handleSearchAccount(JSONObject json, Connection cnn) {
+		//Handle cookie
+		JSONObject verifiedCookieObject = AccountDAO.verifyAuthenticationCookieById(cnn, json.optString("callerId"), json.optString("cookie"));
+		if (verifiedCookieObject.getString("result").equals("FAILURE")) {
+			return verifiedCookieObject;
+		}
+		
+		//Role based authorization
+		if(!checkAuthorization(verifiedCookieObject.getString("accountType"), verifiedCookieObject.getString("userId"), json)) {
+			return returnFailureResponse("Invalid Request");
+		};
 		return AccountDAO.viewAccountInformation(cnn, json.getString("userId"));
 	}
 	
@@ -214,6 +251,11 @@ public class APIHandler{
 			if (verifiedCookieObject.getString("result").equals("FAILURE")) {
 				return verifiedCookieObject;
 			}
+			
+			//Role based authorization
+			if(!checkAuthorization(verifiedCookieObject.getString("accountType"), verifiedCookieObject.getString("userId"), json)) {
+				return returnFailureResponse("Invalid Request");
+			};
 			return AccountDAO.authenticateUser(cnn, json.getString("email"),
 					json.getString("password"), "ACCOUNT_DEACTIVATION");
 		case "DEACTIVATE_ACCOUNT":
@@ -221,13 +263,60 @@ public class APIHandler{
 			if (verifiedCookieObject.getString("result").equals("FAILURE")) {
 				return verifiedCookieObject;
 			}
+			
+			//Role based authorization
+			if(!checkAuthorization(verifiedCookieObject.getString("accountType"), verifiedCookieObject.getString("userId"), json)) {
+				return returnFailureResponse("Invalid Request");
+			};
+			
 			return AccountDAO.deactivateAccount(cnn, json.getString("userId"));
 		default:
-			JSONObject serverResponse = new JSONObject();
-			serverResponse.put("result", "FAILURE");
-			serverResponse.put("reason", "Invalid Request");
-			return serverResponse;	
+			return returnFailureResponse("Invalid Request");
 		}
 		
+	}
+	
+	private static boolean checkAuthorization(String accountType, String callerId, JSONObject json) {
+		switch (json.getString("request")) {
+		case "ALLOW_ACCOUNT_CREATION": 
+			if (accountType.toUpperCase().equals("SUPERADMIN")) {
+				return true;
+			} else if (accountType.toUpperCase().equals("DOCTOR")) {
+				return json.getString("userType").toUpperCase().equals("PATIENT");
+			} else {
+				return false;
+				
+			}
+			
+		case "REQUEST_PATIENT_DATA_SUMMARY": //data analyst	
+			return accountType.toUpperCase().equals("DATA_ANALYST");
+			
+		case "VIEW_RECORD": //doctor or patient
+			if (accountType.toUpperCase().equals("PATIENT")) {
+				return json.getString("patientID").equals(callerId);
+			} else if (accountType.toUpperCase().equals("DOCTOR")) {
+				return true;
+			} else {
+				return false;		
+			}
+			
+		case "CREATE_RECORD": //doctor
+			return accountType.toUpperCase().equals("DOCTOR");
+			
+		case "DEACTIVATE_ACCOUNT": //any user for themselves or admin for everyone
+			System.out.println("DEACTIVATE_ACCOUNT");
+			
+		case "SEARCH_ACCOUNT": //super admin
+			return accountType.toUpperCase().equals("SUPERADMIN");
+		default:
+			return false;	
+		}
+	}
+	
+	private static JSONObject returnFailureResponse(String reason) {
+		JSONObject serverResponse = new JSONObject();
+		serverResponse.put("result", "FAILURE");
+		serverResponse.put("reason", reason);
+		return serverResponse;	
 	}
 }
