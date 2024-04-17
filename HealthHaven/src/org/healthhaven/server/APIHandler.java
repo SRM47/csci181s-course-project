@@ -241,35 +241,35 @@ public class APIHandler{
 	private static boolean checkAuthorization(String accountType, String callerId, JSONObject json) {
 		switch (json.getString("request")) {
 		case "ALLOW_ACCOUNT_CREATION": 
-			if (accountType.toUpperCase().equals("SUPERADMIN")) {
+			if (accountType.toUpperCase().equals("Superadmin")) {
 				return true;
-			} else if (accountType.toUpperCase().equals("DOCTOR")) {
-				return json.getString("userType").toUpperCase().equals("PATIENT");
+			} else if (accountType.toUpperCase().equals("Doctor")) {
+				return json.getString("userType").toUpperCase().equals("Patient");
 			} else {
 				return false;
 				
 			}
 			
 		case "REQUEST_PATIENT_DATA_SUMMARY": //data analyst	
-			return accountType.toUpperCase().equals("DATA_ANALYST");
+			return accountType.toUpperCase().equals("Data Analyst");
 			
 		case "VIEW_RECORD": //doctor or patient
-			if (accountType.toUpperCase().equals("PATIENT")) {
+			if (accountType.toUpperCase().equals("Patient")) {
 				return json.getString("patientID").equals(callerId);
-			} else if (accountType.toUpperCase().equals("DOCTOR")) {
+			} else if (accountType.toUpperCase().equals("Doctor")) {
 				return true;
 			} else {
 				return false;		
 			}
 			
 		case "CREATE_RECORD": //doctor
-			return accountType.toUpperCase().equals("DOCTOR");
+			return accountType.toUpperCase().equals("Doctor");
 			
 		case "DEACTIVATE_ACCOUNT": //any user for themselves or admin for everyone
 			System.out.println("DEACTIVATE_ACCOUNT");
 			
 		case "SEARCH_ACCOUNT": //super admin
-			return accountType.toUpperCase().equals("SUPERADMIN");
+			return accountType.toUpperCase().equals("Superadmin");
 		default:
 			return false;	
 		}
