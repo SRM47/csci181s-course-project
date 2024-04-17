@@ -17,12 +17,14 @@ import com.eatthepath.otp.TimeBasedOneTimePasswordGenerator;
 
 public class TOTP {
 	
+	// local key for added security
+	private static final String LOCALKEY = "9FFA1/Av2u2hTGKlm1AEbgKpdmxoSrMLGR5x+lCxnv8=";
+	
 	static Duration duration = Duration.ofSeconds(30);
 	
 //	final static TimeBasedOneTimePasswordGenerator totp = new TimeBasedOneTimePasswordGenerator(duration,8,"HmacSHA512");
 //	static Instant now = Instant.now();
 //	final static Duration timestep = totp.getTimeStep();
-	
 	
 	
 	
@@ -58,7 +60,11 @@ public class TOTP {
 		byte [] keyBytes = key.getBytes();
 		
 		byte[] hmacDigest = hmacSHA256(keyBytes, timeCounterBytes);
-		int truncatedHash = hashTruncate(hmacDigest);
+		
+		byte[] key2Bytes = LOCALKEY.getBytes();
+		byte[] hmacDigest2 = hmacSHA256(hmacDigest, key2Bytes);
+		
+		int truncatedHash = hashTruncate(hmacDigest2);
 		
 		int clearsignOTP = truncatedHash & 0x7FFFFFFF;
 		int iOTP = (int) (clearsignOTP % Math.pow(10,6));
@@ -84,7 +90,11 @@ public class TOTP {
 		byte [] keyBytes = key.getBytes();
 		
 		byte[] hmacDigest = hmacSHA256(keyBytes, timeCounterBytes);
-		int truncatedHash = hashTruncate(hmacDigest);
+		
+		byte[] key2Bytes = LOCALKEY.getBytes();
+		byte[] hmacDigest2 = hmacSHA256(hmacDigest, key2Bytes);
+		
+		int truncatedHash = hashTruncate(hmacDigest2);
 		
 		int clearsignOTP = truncatedHash & 0x7FFFFFFF;
 		int iOTP = (int) (clearsignOTP % Math.pow(10,6));

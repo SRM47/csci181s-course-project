@@ -51,18 +51,33 @@ public class saltyhashTest{
     	String salt1 = SaltyHash.genSalt();
     	String salt2 = SaltyHash.genSalt();
 
-    	
-    	String hash = SaltyHash.pwHash("Test",salt1);
-    	
-    	System.out.println(salt1);
-    	System.out.println(hash);
+    	System.out.println("salt1 " + salt1);
+    	System.out.println("salt2 " + salt2);
     	
     	
+    	String hash1 = SaltyHash.pwHash("Test",salt1);
     	String hash2 = SaltyHash.pwHash("Test",salt2);
-    	System.out.println(hash2);
+    	String hash3 = SaltyHash.pwHash("Test1",salt1);
+    	String hash4 = SaltyHash.pwHash("Test1",salt2);
     	
-    	Boolean testout = SaltyHash.checkPassword("Test", salt2, hash2);
-    	System.out.println(testout);
+  
+    	System.out.println("hash1 " + hash1);
+    	System.out.println("hash2 " + hash2);
+    	System.out.println("hash3 " + hash3);
+    	System.out.println("hash4 " + hash4);
+    	
+    	
+    	Boolean testout1 = SaltyHash.checkPassword("Test", salt1, hash1);
+    	Boolean testout2 = SaltyHash.checkPassword("Test", salt1, hash2);
+    	Boolean testout3 = SaltyHash.checkPassword("Test1", salt1, hash3);
+    	Boolean testout4 = SaltyHash.checkPassword("Test1", salt2, hash2);
+    	
+    	System.out.println("testout1 " + testout1);
+    	System.out.println("testout2 " + testout2);
+    	System.out.println("testout3 " + testout3);
+    	System.out.println("testout4 " + testout4);
+    	
+    	
     }
     
     
