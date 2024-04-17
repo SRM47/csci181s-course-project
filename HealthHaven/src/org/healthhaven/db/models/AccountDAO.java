@@ -39,13 +39,6 @@ public class AccountDAO {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		// Insert new cookie into database
-		String userCookie = generateAndInsertNewUserCookie(conn, userId);
-		if (userCookie == null) {
-			result = "FAILURE";
-			reason = "Unable to create cookie";
-		}
 
 
 		// Insert user data into users table
@@ -132,6 +125,14 @@ public class AccountDAO {
 			result = "FAILURE";
 			reason = e.getMessage();
 		}
+		
+		// Insert new cookie into database
+		String userCookie = generateAndInsertNewUserCookie(conn, userId);
+		if (userCookie == null) {
+			result = "FAILURE";
+			reason = "Unable to create cookie";
+		}
+				
 		
 		serverResponse.put("result", result);
 		serverResponse.put("reason", reason);
@@ -419,15 +420,17 @@ public class AccountDAO {
 			stmt.setString(1, hashedPassword);
 			stmt.setString(2, totp_key);
 			stmt.setBoolean(3, reset);
-			stmt.setString(4, userId);
-			
 			String salt = SaltyHash.genSalt();
-			stmt.setString(5, salt);
+			stmt.setString(4, salt);
+			
+			
+			
+			
 			
 			String hashpass;
 			try {
 				hashpass = SaltyHash.pwHash(password, salt);
-				stmt.setString(6,hashpass);
+				stmt.setString(5,hashpass);
 			} catch (NoSuchAlgorithmException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -435,6 +438,7 @@ public class AccountDAO {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			stmt.setString(6, userId);
 			
 
 			int rowsUpdated = stmt.executeUpdate();
@@ -685,8 +689,12 @@ public class AccountDAO {
 	    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 	        pstmt.setString(1, userId);
 	        pstmt.setString(2, cookieValue);
-	        pstmt.executeQuery();
+	        int rowsAffected = pstmt.executeUpdate();
+			if (rowsAffected > 0) {
+				return cookieValue;
+			}
 	    } catch (SQLException e) {
+	    	e.printStackTrace();
 	        return null;
 	    }
 

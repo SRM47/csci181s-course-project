@@ -71,7 +71,7 @@ public class APIHandler{
 	private static JSONObject createRecord(JSONObject json, Connection cnn) {
 		
 		//Role based authorization
-		if(!checkAuthorization(json.getString("accountType"), json.getString("userId"), json)) {
+		if(!checkAuthorization(json.getString("accountType"), json.getString("callerId"), json)) {
 			return returnFailureResponse("Invalid Request");
 		};
 
@@ -86,7 +86,7 @@ public class APIHandler{
 	private static JSONObject handleViewRecord(JSONObject json, Connection cnn) {
 		
 		//Role based authorization
-		if(!checkAuthorization(json.getString("accountType"), json.getString("userId"), json)) {
+		if(!checkAuthorization(json.getString("accountType"), json.getString("callerId"), json)) {
 			return returnFailureResponse("Invalid Request");
 		};
 
@@ -98,7 +98,7 @@ public class APIHandler{
 	private static JSONObject handlePatientDataSummary(JSONObject json, Connection cnn) {
 		
 		//Role based authorization
-		if(!checkAuthorization(json.getString("accountType"), json.getString("userId"), json)) {
+		if(!checkAuthorization(json.getString("accountType"), json.getString("callerId"), json)) {
 			return returnFailureResponse("Invalid Request");
 		};
 
@@ -109,7 +109,7 @@ public class APIHandler{
 
 		switch (json.getString("updateType")) {
 		case "ADDRESS":
-			return AccountDAO.updateUserAddress(cnn, json.getString("userInput"), json.getString("userId"));
+			return AccountDAO.updateUserAddress(cnn, json.getString("userInput"), json.getString("callerId"));
 		case "PASSWORD":
 			return handleUpdatePassword(json, cnn);
 		default:
@@ -131,7 +131,7 @@ public class APIHandler{
 
 		
 		//Role based authorization
-		if(!checkAuthorization(json.getString("accountType"), json.getString("userId"), json)) {
+		if(!checkAuthorization(json.getString("accountType"), json.getString("callerId"), json)) {
 			return returnFailureResponse("Invalid Request");
 		};
 				
@@ -208,7 +208,7 @@ public class APIHandler{
 	private static JSONObject handleSearchAccount(JSONObject json, Connection cnn) {
 		
 		//Role based authorization
-		if(!checkAuthorization(json.getString("accountType"), json.getString("userId"), json)) {
+		if(!checkAuthorization(json.getString("accountType"), json.getString("callerId"), json)) {
 			return returnFailureResponse("Invalid Request");
 		};
 		return AccountDAO.viewAccountInformation(cnn, json.getString("userId"));
@@ -219,7 +219,7 @@ public class APIHandler{
 		switch (json.getString("type")) {
 		case "VALIDATE_ACCOUNT":
 			//Role based authorization
-			if(!checkAuthorization(json.getString("accountType"), json.getString("userId"), json)) {
+			if(!checkAuthorization(json.getString("accountType"), json.getString("callerId"), json)) {
 				return returnFailureResponse("Invalid Request");
 			};
 			return AccountDAO.authenticateUser(cnn, json.getString("email"),
@@ -227,7 +227,7 @@ public class APIHandler{
 		case "DEACTIVATE_ACCOUNT":
 			
 			//Role based authorization
-			if(!checkAuthorization(json.getString("accountType"), json.getString("userId"), json)) {
+			if(!checkAuthorization(json.getString("accountType"), json.getString("callerId"), json)) {
 				return returnFailureResponse("Invalid Request");
 			};
 			
@@ -241,9 +241,9 @@ public class APIHandler{
 	private static boolean checkAuthorization(String accountType, String callerId, JSONObject json) {
 		switch (json.getString("request")) {
 		case "ALLOW_ACCOUNT_CREATION": 
-			if (accountType.toUpperCase().equals("Superadmin")) {
+			if (accountType.equals("Superadmin")) {
 				return true;
-			} else if (accountType.toUpperCase().equals("Doctor")) {
+			} else if (accountType.equals("Doctor")) {
 				return json.getString("userType").toUpperCase().equals("Patient");
 			} else {
 				return false;
@@ -251,10 +251,10 @@ public class APIHandler{
 			}
 			
 		case "REQUEST_PATIENT_DATA_SUMMARY": //data analyst	
-			return accountType.toUpperCase().equals("Data Analyst");
+			return accountType.equals("Data Analyst");
 			
 		case "VIEW_RECORD": //doctor or patient
-			if (accountType.toUpperCase().equals("Patient")) {
+			if (accountType.equals("Patient")) {
 				return json.getString("patientID").equals(callerId);
 			} else if (accountType.toUpperCase().equals("Doctor")) {
 				return true;
@@ -263,13 +263,13 @@ public class APIHandler{
 			}
 			
 		case "CREATE_RECORD": //doctor
-			return accountType.toUpperCase().equals("Doctor");
+			return accountType.equals("Doctor");
 			
 		case "DEACTIVATE_ACCOUNT": //any user for themselves or admin for everyone
 			System.out.println("DEACTIVATE_ACCOUNT");
 			
 		case "SEARCH_ACCOUNT": //super admin
-			return accountType.toUpperCase().equals("Superadmin");
+			return accountType.equals("Superadmin");
 		default:
 			return false;	
 		}
