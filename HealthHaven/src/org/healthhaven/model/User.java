@@ -25,7 +25,6 @@ public class User {
 		PATIENT("Patient"),
 		DATA_ANALYST("Data Analyst"),
 		SUPERADMIN("Superadmin"),
-		DPO("Data Protection Officer"),
 		NONE("NONE");
 		private String account_name;
 		private Account(String account_name) {
@@ -222,7 +221,6 @@ public class User {
 	public String deactivate(String password, String type) {
 		JSONObject json = new JSONObject();
 		json.put("request", "DEACTIVATE_ACCOUNT");
-		json.put("callerEmail", getEmail());
 		json.put("callerId", getUserID());
 	    json.put("cookie", getCookie());
 		switch (type) {

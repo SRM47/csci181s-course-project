@@ -25,7 +25,6 @@ public class AccountCreationService {
 		case "PATIENT" -> User.Account.PATIENT;
 		case "DOCTOR" -> User.Account.DOCTOR;
 		case "DATA_ANALYST" -> User.Account.DATA_ANALYST;
-		case "DPO" -> User.Account.DPO;
 		case "SUPERADMIN" -> User.Account.SUPERADMIN;
 		default -> User.Account.NONE;
 		};
@@ -36,7 +35,6 @@ public class AccountCreationService {
 
     protected static String insertNewAccountIntoDB(User.Account userType, String email, String password, String first_name, String last_name, String address, LocalDate dob){
         Instant timestamp = Instant.now();
-        String account = userType.getAccountName();
  
      // Create a JSONObject and populate it with account data
         JSONObject json = new JSONObject();

@@ -112,7 +112,7 @@ public class UserDAO {
 
 	}
 
-	protected static String getUserAccountType(Connection conn, String userId) {
+	public static String getUserAccountType(Connection conn, String userId) {
 		String sql = "SELECT * FROM healthhaven.accounts WHERE userid = '" + userId + "'";
 
 		try (PreparedStatement stmt = conn.prepareStatement(sql)) {

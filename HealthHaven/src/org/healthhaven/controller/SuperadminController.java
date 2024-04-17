@@ -97,9 +97,6 @@ public class SuperadminController {
 		case "Data Analyst":
 			userAccountType = Account.DATA_ANALYST;
 			break;
-		case "Data Protection Officer":
-			userAccountType = Account.DPO;
-			break;
 
 		}
 		String email = emailTextfield.getText();

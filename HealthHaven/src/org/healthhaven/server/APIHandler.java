@@ -1,18 +1,28 @@
 package org.healthhaven.server;
 
-import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 
 import org.healthhaven.db.models.AccountDAO;
+import org.healthhaven.db.models.UserDAO;
 import org.healthhaven.model.EmailSender;
 import org.healthhaven.model.PasswordGenerator;
-import org.healthhaven.model.TOTP;
 import org.healthhaven.model.UserIdGenerator;
 import org.json.JSONObject;
 
 public class APIHandler{
 	
 	public static JSONObject processAPIRequest(JSONObject json, Connection cnn) {
+		
+		String request = json.getString("request");
+		if (!(request.equals("LOGIN") || request.equals("CREATE_ACCOUNT"))) {
+			// For any request apart from LOGIN and CREATE_ACCOUNT, we must validate that the user is logged in with a cookie.
+			JSONObject verifiedCookieObject = AccountDAO.verifyAuthenticationCookieById(cnn, json.optString("callerId"), json.optString("cookie"));
+			if (verifiedCookieObject.getString("result").equals("FAILURE")) {
+				return verifiedCookieObject;
+			}
+		}
+		
+		json.put("accountType", UserDAO.getUserAccountType(cnn, json.optString("callerId")));
 		
 		switch(json.getString("request")) {
 			case "LOGIN":
@@ -54,23 +64,14 @@ public class APIHandler{
 	}
 	
 	private static JSONObject handleLogout(JSONObject json, Connection cnn) {
-		JSONObject verifiedCookieObject = AccountDAO.verifyAuthenticationCookieById(cnn, json.optString("callerId"), json.optString("cookie"));
-		if (verifiedCookieObject.getString("result").equals("FAILURE")) {
-			return verifiedCookieObject;
-		}
 		
 		return AccountDAO.logoutUser(cnn, json.getString("userId"));
 	}
 	
 	private static JSONObject createRecord(JSONObject json, Connection cnn) {
-		// The doctor is calling this so we must make sure the doctor is logged in with a cookie.
-		JSONObject verifiedCookieObject = AccountDAO.verifyAuthenticationCookieById(cnn, json.optString("callerId"), json.optString("cookie"));
-		if (verifiedCookieObject.getString("result").equals("FAILURE")) {
-			return verifiedCookieObject;
-		}
 		
 		//Role based authorization
-		if(!checkAuthorization(verifiedCookieObject.getString("accountType"), verifiedCookieObject.getString("userId"), json)) {
+		if(!checkAuthorization(json.getString("accountType"), json.getString("userId"), json)) {
 			return returnFailureResponse("Invalid Request");
 		};
 
@@ -83,14 +84,9 @@ public class APIHandler{
 	}
 
 	private static JSONObject handleViewRecord(JSONObject json, Connection cnn) {
-		// Handle Cookie Logic here.
-		JSONObject verifiedCookieObject = AccountDAO.verifyAuthenticationCookieById(cnn, json.optString("callerId"), json.optString("cookie"));
-		if (verifiedCookieObject.getString("result").equals("FAILURE")) {
-			return verifiedCookieObject;
-		}
 		
 		//Role based authorization
-		if(!checkAuthorization(verifiedCookieObject.getString("accountType"), verifiedCookieObject.getString("userId"), json)) {
+		if(!checkAuthorization(json.getString("accountType"), json.getString("userId"), json)) {
 			return returnFailureResponse("Invalid Request");
 		};
 
@@ -100,14 +96,9 @@ public class APIHandler{
 	}
 
 	private static JSONObject handlePatientDataSummary(JSONObject json, Connection cnn) {
-		//Cookie
-		JSONObject verifiedCookieObject = AccountDAO.verifyAuthenticationCookieById(cnn, json.optString("callerId"), json.optString("cookie"));
-		if (verifiedCookieObject.getString("result").equals("FAILURE")) {
-			return verifiedCookieObject;
-		}
 		
 		//Role based authorization
-		if(!checkAuthorization(verifiedCookieObject.getString("accountType"), verifiedCookieObject.getString("userId"), json)) {
+		if(!checkAuthorization(json.getString("accountType"), json.getString("userId"), json)) {
 			return returnFailureResponse("Invalid Request");
 		};
 
@@ -115,11 +106,7 @@ public class APIHandler{
 	}
 
 	private static JSONObject handleUpdateAccount(JSONObject json, Connection cnn) {
-		//Cookie
-		JSONObject verifiedCookieObject = AccountDAO.verifyAuthenticationCookieById(cnn, json.optString("callerId"), json.optString("cookie"));
-		if (verifiedCookieObject.getString("result").equals("FAILURE")) {
-			return verifiedCookieObject;
-		}
+
 		switch (json.getString("updateType")) {
 		case "ADDRESS":
 			return AccountDAO.updateUserAddress(cnn, json.getString("userInput"), json.getString("userId"));
@@ -133,11 +120,6 @@ public class APIHandler{
 	}
 
 	private static JSONObject handleCreateAccount(JSONObject json, Connection cnn) {
-		//Cookie
-		JSONObject verifiedCookieObject = AccountDAO.verifyAuthenticationCookieByEmail(cnn, json.optString("callerEmail"), json.optString("cookie"));
-		if (verifiedCookieObject.getString("result").equals("FAILURE")) {
-			return verifiedCookieObject;
-		}
 		return AccountDAO.updateTemporaryUserAfterFirstLogin(cnn,
 		json.getString("first_name"), json.getString("last_name"),
 		json.getString("dob"), json.getString("address"), json.getString("email"),
@@ -146,14 +128,10 @@ public class APIHandler{
 	}
 
 	private static JSONObject handleAccountCreation(JSONObject json, Connection cnn) {
-		//Handle cookie
-		JSONObject verifiedCookieObject = AccountDAO.verifyAuthenticationCookieById(cnn, json.optString("callerId"), json.optString("cookie"));
-		if (verifiedCookieObject.getString("result").equals("FAILURE")) {
-			return verifiedCookieObject;
-		}
+
 		
 		//Role based authorization
-		if(!checkAuthorization(verifiedCookieObject.getString("accountType"), verifiedCookieObject.getString("userId"), json)) {
+		if(!checkAuthorization(json.getString("accountType"), json.getString("userId"), json)) {
 			return returnFailureResponse("Invalid Request");
 		};
 				
@@ -178,11 +156,6 @@ public class APIHandler{
 
 	private static JSONObject handlePasswordReset(JSONObject json, Connection cnn) {
 		
-		//Cookie
-		JSONObject verifiedCookieObject = AccountDAO.verifyAuthenticationCookieByEmail(cnn, json.optString("callerEmail"), json.optString("cookie"));
-		if (verifiedCookieObject.getString("result").equals("FAILURE")) {
-			return verifiedCookieObject;
-		}
 		
 		JSONObject serverResponse = new JSONObject();
 		switch(json.getString("type")) {
@@ -203,11 +176,6 @@ public class APIHandler{
 		
 	}
 	private static JSONObject handleUpdatePassword(JSONObject json, Connection cnn){
-		//Handle cookie
-		JSONObject verifiedCookieObject = AccountDAO.verifyAuthenticationCookieById(cnn, json.optString("callerId"), json.optString("cookie"));
-		if (verifiedCookieObject.getString("result").equals("FAILURE")) {
-			return verifiedCookieObject;
-		}
 				
 		return AccountDAO.updatePassword(cnn, json.getString("password"), json.getString("email"));
 		
@@ -223,21 +191,24 @@ public class APIHandler{
 					json.getString("password"), "LOGIN");
 		case "OTP":
 			System.out.println("OTP");
-			return AccountDAO.authenticateOTP(cnn, json.getString("email"), json.getString("otp"));
+			JSONObject userInformation = AccountDAO.authenticateOTP(cnn, json.getString("email"), json.getString("otp"));
+			// Create and add a cookie because they're successfully authenticated into the system
+			String userCookie = AccountDAO.generateAndUpdateNewUserCookie(cnn, userInformation.getString("userID"));
+			if (userCookie == null) {
+				return returnFailureResponse("Unable to create cookie");
+			}
+			userInformation.put("cookie", userCookie);
+			return userInformation;
+			
 		default:
 			return returnFailureResponse("Invalid Request");	
 		} 
 	}
 	
 	private static JSONObject handleSearchAccount(JSONObject json, Connection cnn) {
-		//Handle cookie
-		JSONObject verifiedCookieObject = AccountDAO.verifyAuthenticationCookieById(cnn, json.optString("callerId"), json.optString("cookie"));
-		if (verifiedCookieObject.getString("result").equals("FAILURE")) {
-			return verifiedCookieObject;
-		}
 		
 		//Role based authorization
-		if(!checkAuthorization(verifiedCookieObject.getString("accountType"), verifiedCookieObject.getString("userId"), json)) {
+		if(!checkAuthorization(json.getString("accountType"), json.getString("userId"), json)) {
 			return returnFailureResponse("Invalid Request");
 		};
 		return AccountDAO.viewAccountInformation(cnn, json.getString("userId"));
@@ -247,25 +218,16 @@ public class APIHandler{
 		JSONObject verifiedCookieObject;
 		switch (json.getString("type")) {
 		case "VALIDATE_ACCOUNT":
-			verifiedCookieObject = AccountDAO.verifyAuthenticationCookieByEmail(cnn, json.optString("callerEmail"), json.optString("cookie"));
-			if (verifiedCookieObject.getString("result").equals("FAILURE")) {
-				return verifiedCookieObject;
-			}
-			
 			//Role based authorization
-			if(!checkAuthorization(verifiedCookieObject.getString("accountType"), verifiedCookieObject.getString("userId"), json)) {
+			if(!checkAuthorization(json.getString("accountType"), json.getString("userId"), json)) {
 				return returnFailureResponse("Invalid Request");
 			};
 			return AccountDAO.authenticateUser(cnn, json.getString("email"),
 					json.getString("password"), "ACCOUNT_DEACTIVATION");
 		case "DEACTIVATE_ACCOUNT":
-			verifiedCookieObject = AccountDAO.verifyAuthenticationCookieById(cnn, json.optString("callerId"), json.optString("cookie"));
-			if (verifiedCookieObject.getString("result").equals("FAILURE")) {
-				return verifiedCookieObject;
-			}
 			
 			//Role based authorization
-			if(!checkAuthorization(verifiedCookieObject.getString("accountType"), verifiedCookieObject.getString("userId"), json)) {
+			if(!checkAuthorization(json.getString("accountType"), json.getString("userId"), json)) {
 				return returnFailureResponse("Invalid Request");
 			};
 			

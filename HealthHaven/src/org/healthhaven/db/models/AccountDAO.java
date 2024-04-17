@@ -617,18 +617,18 @@ public class AccountDAO {
 				System.out.println(totp_key);
 				if (TOTP.verTOTP(totp_key, otp)) {
 					// Upon success, return all user information and create cookie to store login information
-					String userId = getUserIdFromEmail(conn, email);
-					String userCookie = generateAndUpdateNewUserCookie(conn, userId);
-					if (userCookie == null) {
-						result = "FAILURE";
-						reason = "Unable to create cookie";
-						serverResponse.put("result", result);
-						serverResponse.put("reason", reason);
-						return serverResponse;
-					}
+					String userId = data_rs.getString("userid");
+//					String userCookie = generateAndUpdateNewUserCookie(conn, userId);
+//					if (userCookie == null) {
+//						result = "FAILURE";
+//						reason = "Unable to create cookie";
+//						serverResponse.put("result", result);
+//						serverResponse.put("reason", reason);
+//						return serverResponse;
+//					}
 					
 					JSONObject userInformation = UserDAO.getUserInformation(conn, userId);
-					userInformation.put("cookie", userCookie);
+//					userInformation.put("cookie", userCookie);
 					return userInformation;
 				} else {
 					result = "FAILURE";
@@ -652,7 +652,7 @@ public class AccountDAO {
 		
 	}
 	
-	private static String generateAndUpdateNewUserCookie(Connection conn, String userId) {
+	public static String generateAndUpdateNewUserCookie(Connection conn, String userId) {
 		// Cookie Generation
 	    SecureRandom random = new SecureRandom();
 	    byte[] cookieBytes = new byte[32]; // Example: 32-byte cookie value
@@ -738,9 +738,6 @@ public class AccountDAO {
 				if (cookie == null || !candidateCookie.equals(cookie)) {
 					result = "FAILURE";
 					reason = "Incorrect Authentication Cookie";
-				} else {
-					serverResponse.put("callerId", data_rs.getString("userId")); //TODO: Check with Sam if this is correct
-					serverResponse.put("accountType", UserDAO.getUserAccountType(conn, userId));
 				}
 
 			} else {
