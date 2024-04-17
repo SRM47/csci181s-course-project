@@ -56,7 +56,7 @@ public class APIHandler{
 	}
 	
 	private static JSONObject handleLogout(JSONObject json, Connection cnn) {
-		JSONObject verifiedCookieObject = AccountDAO.verifyAuthenticationCookieById(cnn, json.optString("callerID"), json.optString("cookie"));
+		JSONObject verifiedCookieObject = AccountDAO.verifyAuthenticationCookieById(cnn, json.optString("callerId"), json.optString("cookie"));
 		if (verifiedCookieObject.getString("result").equals("FAILURE")) {
 			return verifiedCookieObject;
 		}
@@ -66,7 +66,7 @@ public class APIHandler{
 	
 	private static JSONObject createRecord(JSONObject json, Connection cnn) {
 		// The doctor is calling this so we must make sure the doctor is logged in with a cookie.
-		JSONObject verifiedCookieObject = AccountDAO.verifyAuthenticationCookieById(cnn, json.optString("callerID"), json.optString("cookie"));
+		JSONObject verifiedCookieObject = AccountDAO.verifyAuthenticationCookieById(cnn, json.optString("callerId"), json.optString("cookie"));
 		if (verifiedCookieObject.getString("result").equals("FAILURE")) {
 			return verifiedCookieObject;
 		}

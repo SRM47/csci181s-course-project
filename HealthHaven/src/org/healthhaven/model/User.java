@@ -202,6 +202,8 @@ public class User {
 	 */
 	public String updatePersonalRecordOnDB(String newInput, String updateType){
 		JSONObject json = new JSONObject();
+		json.put("callerId", getUserID());
+	    json.put("cookie", getCookie());
 	    
 		if (updateType.equals("address")) {
 			json.put("updateType", "ADDRESS");
@@ -220,6 +222,9 @@ public class User {
 	public String deactivate(String password, String type) {
 		JSONObject json = new JSONObject();
 		json.put("request", "DEACTIVATE_ACCOUNT");
+		json.put("callerEmail", getEmail());
+		json.put("callerId", getUserID());
+	    json.put("cookie", getCookie());
 		switch (type) {
 		case "VALIDATE":
 			json.put("type", "VALIDATE_ACCOUNT");
@@ -234,6 +239,16 @@ public class User {
 			return null;
 		}
 	
+	}
+	
+	public String logout() {
+		JSONObject json = new JSONObject();
+		json.put("request", "LOGOUT");
+		json.put("callerId", getUserID());
+		json.put("userId", getUserID());
+	    json.put("cookie", getCookie());
+	    return ServerCommunicator.communicateWithServer(json.toString());
+		
 	}
 
 	@Override

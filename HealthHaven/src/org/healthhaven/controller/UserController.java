@@ -93,6 +93,8 @@ public class UserController {
 
 	@FXML
 	public void handleLogout() {
+		
+		currentUser.logout();
 
 		try {
 			FXMLLoader loader = new FXMLLoader();
