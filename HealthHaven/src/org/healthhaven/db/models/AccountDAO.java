@@ -1,6 +1,8 @@
 package org.healthhaven.db.models;
 
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,6 +14,7 @@ import java.time.Instant;
 import java.util.Base64;
 
 import org.healthhaven.model.EmailSender;
+import org.healthhaven.model.SaltyHash;
 import org.healthhaven.model.TOTP;
 import org.healthhaven.model.UserIdGenerator;
 import org.json.JSONArray;
@@ -87,7 +90,7 @@ public class AccountDAO {
 			reason = e.getMessage();
 		}
 
-		sql = "INSERT INTO healthhaven.authentication (userid, email, password, reset, totp_key) VALUES (?, ?, ?, ?, ?)";
+		sql = "INSERT INTO healthhaven.authentication (userid, email, password, reset, totp_key, salt, hashpass) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
 		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 			stmt.setString(1, userId);
@@ -103,6 +106,22 @@ public class AccountDAO {
 			
 			// Set the 'reset' column to false
 			stmt.setString(5, "NONE");
+			
+			String salt = SaltyHash.genSalt();
+			stmt.setString(6, salt);
+			
+			try {
+				String hashpass = SaltyHash.pwHash(password, salt);
+				stmt.setString(7, hashpass);
+			} catch (NoSuchAlgorithmException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvalidKeySpecException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			
 
 			rowsInserted = stmt.executeUpdate();
 			if (rowsInserted <= 0) {
@@ -139,7 +158,7 @@ public class AccountDAO {
 			// Step 3: Update users table
 			// Step 5: Update authentication table (with password update)
 			String usersUpdateSql = "UPDATE healthhaven.users SET legalfirstname = ?, legallastname = ?, address = ? WHERE userid = ?";
-			String authenticationUpdateSql = "UPDATE healthhaven.authentication SET password = ?, totp_key = ?, reset = ? WHERE userid = ?";
+			String authenticationUpdateSql = "UPDATE healthhaven.authentication SET password = ?, totp_key = ?, reset = ?, salt = ?, hashpass=? WHERE userid = ?";
 			if (!updateUserTable(conn, usersUpdateSql, legalfirstname, legallastname, address, userId)
 					|| !updateAuthenticationTable(conn, authenticationUpdateSql, password, true, TOTP.genSecretKey(),
 							userId)) {
@@ -349,7 +368,7 @@ public class AccountDAO {
 			result = "FAILURE";
 			reason = "Account does not exist";
 		}
-		String authenticationUpdateSql = "UPDATE healthhaven.authentication SET password = ? WHERE userid = ?";
+		String authenticationUpdateSql = "UPDATE healthhaven.authentication SET password = ?, salt = ?, hashpass = ? WHERE userid = ?";
 		if (!updateAuthenticationTable(conn, authenticationUpdateSql, newPassword, getUserIdFromEmail(conn, email))) {
 			result = "FAILURE";
 			reason = "Database Entry Error";
@@ -365,8 +384,24 @@ public class AccountDAO {
 		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 			// IMPORTANT: Replace with your password hashing mechanism
 			String hashedPassword = password;
+			
 			stmt.setString(1, hashedPassword);
-			stmt.setString(2, userId);
+			
+			String salt = SaltyHash.genSalt();
+			stmt.setString(2, salt);
+			
+			try {
+				String hashpass = SaltyHash.pwHash(password, salt);
+				stmt.setString(3, hashpass);
+			} catch (NoSuchAlgorithmException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvalidKeySpecException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			stmt.setString(4, userId);
 
 			int rowsUpdated = stmt.executeUpdate();
 			return rowsUpdated > 0;
@@ -385,6 +420,22 @@ public class AccountDAO {
 			stmt.setString(2, totp_key);
 			stmt.setBoolean(3, reset);
 			stmt.setString(4, userId);
+			
+			String salt = SaltyHash.genSalt();
+			stmt.setString(5, salt);
+			
+			String hashpass;
+			try {
+				hashpass = SaltyHash.pwHash(password, salt);
+				stmt.setString(6,hashpass);
+			} catch (NoSuchAlgorithmException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvalidKeySpecException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 
 			int rowsUpdated = stmt.executeUpdate();
 			return rowsUpdated > 0;
@@ -500,9 +551,15 @@ public class AccountDAO {
 					sendTOTPEmail(email, TOTP.genTOTP2(data_rs.getString("totp_key")));
 				} else {
 					String truePassword = data_rs.getString("password");
+					
+					String trueHash = data_rs.getString("hashpass");
+					String trueSalt = data_rs.getString("salt");
+					
+					Boolean hashCheck = SaltyHash.checkPassword(candidatePassword, trueSalt, trueHash);
+
 					// TODO: Hash this password.
 					String hashedCandidatePassword = candidatePassword;
-					if (!hashedCandidatePassword.equals(truePassword)) {
+					if (!hashCheck) {
 						result = "FAILURE";
 						reason = "Incorrect Password";
 					} else { //password matches
@@ -528,7 +585,7 @@ public class AccountDAO {
 				reason = "Account does not exist";
 			}
 
-		} catch (SQLException e) {
+		} catch (SQLException | NoSuchAlgorithmException | InvalidKeySpecException e) {
 			result = "FAILURE";
 			reason = "Error Authenticating User";
 		}
