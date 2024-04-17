@@ -17,6 +17,7 @@ public class User {
 	private String legal_last_name;
 	private String address;
 	private LocalDate dob;
+	private String cookie;
 	
 	
 	public static enum Account{
@@ -67,13 +68,14 @@ public class User {
 	 * @param address
 	 * @param dob
 	 */
-	public User(String userID, String email, String legal_first_name, String legal_last_name, String address, LocalDate dob) {
+	public User(String userID, String email, String legal_first_name, String legal_last_name, String address, LocalDate dob, String cookie) {
 		this.userID = userID;
 		this.email = email;
 		this.legal_first_name = legal_first_name;
 		this.legal_last_name = legal_last_name;
 		this.address = address;
 		this.dob = dob;
+		this.cookie = cookie;
 		
 	}
 	
@@ -185,6 +187,10 @@ public class User {
 	 */
 	public void setDob(LocalDate dob) {
 		this.dob = dob;
+	}
+	
+	public String getCookie() {
+		return this.cookie;
 	}
 
 	/**

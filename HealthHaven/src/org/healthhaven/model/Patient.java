@@ -44,8 +44,8 @@ public class Patient extends User {
 	 * @param dob
 	 */
 	public Patient(String userID, String email, String legal_first_name, String legal_last_name,
-				   String address, LocalDate dob){
-        super(userID, email, legal_first_name, legal_last_name, address, dob);
+				   String address, LocalDate dob, String cookie){
+        super(userID, email, legal_first_name, legal_last_name, address, dob, cookie);
 
     }
 	
@@ -65,7 +65,8 @@ public class Patient extends User {
 	    // Populate the JSON object with key-value pairs
 	    json.put("request", "VIEW_RECORD");
 	    json.put("patientID", getUserID());
-	   
+	    json.put("callerId", getUserID());
+	    json.put("cookie", getCookie());
 	    
 	    // Send the JSON string to the server
 	    return ServerCommunicator.communicateWithServer(json.toString());

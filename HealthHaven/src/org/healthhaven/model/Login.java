@@ -49,15 +49,15 @@ public class Login {
 	 * @return
 	 */
 	private static User createUserInstance(String accountType, String userID, String email, String legalFirstName, String legalLastName,
-										   String address, LocalDate dob){
+										   String address, LocalDate dob, String cookie){
 		
 		System.out.println(accountType);
 		
 		return switch (accountType) {
-			case "Doctor", "DOCTOR" -> new Doctor(userID, email, legalFirstName, legalLastName, address, dob);
-			case "Patient", "PATIENT" -> new Patient(userID, email, legalFirstName, legalLastName, address, dob);
-			case "Data Analyst", "DATA_ANALYST" -> new DataAnalyst(userID, email, legalFirstName, legalLastName, address, dob);
-			case "Superadmin", "SUPERADMIN" -> new Superadmin(userID, email, legalFirstName, legalLastName, address, dob);
+			case "Doctor", "DOCTOR" -> new Doctor(userID, email, legalFirstName, legalLastName, address, dob, cookie);
+			case "Patient", "PATIENT" -> new Patient(userID, email, legalFirstName, legalLastName, address, dob, cookie);
+			case "Data Analyst", "DATA_ANALYST" -> new DataAnalyst(userID, email, legalFirstName, legalLastName, address, dob, cookie);
+			case "Superadmin", "SUPERADMIN" -> new Superadmin(userID, email, legalFirstName, legalLastName, address, dob, cookie);
 			default -> null;
 		};
 	}
@@ -75,8 +75,9 @@ public class Login {
 			String address = jsonOb.getString("address");
 			LocalDate dob = LocalDate.parse(jsonOb.getString("dob"), DateTimeFormatter.ISO_LOCAL_DATE);
 			String accountType = jsonOb.getString("accountType");
+			String cookie = jsonOb.getString("cookie");
 
-            return createUserInstance(accountType, userID, email, legalFirstName, legalLastName, address, dob);
+            return createUserInstance(accountType, userID, email, legalFirstName, legalLastName, address, dob, cookie);
 
 	}
 

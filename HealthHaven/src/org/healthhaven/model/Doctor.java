@@ -47,8 +47,8 @@ public class Doctor extends User {
      * @param dob
      */
     public Doctor(String userID, String email, String legal_first_name, String legal_last_name,
-                   String address, LocalDate dob){
-        super(userID, email, legal_first_name, legal_last_name, address, dob);
+                   String address, LocalDate dob, String cookie){
+        super(userID, email, legal_first_name, legal_last_name, address, dob, cookie);
 
     }
 	
@@ -76,6 +76,8 @@ public class Doctor extends User {
         json.put("height", height);
         json.put("weight", weight);
         json.put("timestamp", timestamp.toString());
+        json.put("callerId", getUserID());
+	    json.put("cookie", getCookie());
 
         /// Send the JSON string to the server
         return ServerCommunicator.communicateWithServer(json.toString());
@@ -94,6 +96,8 @@ public class Doctor extends User {
 	    json.put("request", "VIEW_RECORD");
 	    json.put("patientID", patientID);
 	    json.put("doctorID", getUserID());
+	    json.put("callerId", getUserID());
+	    json.put("cookie", getCookie());
 	   
 	    
 	    // Send the JSON string to the server
@@ -108,6 +112,8 @@ public class Doctor extends User {
 	    json.put("email", email);
 	    json.put("userType", User.Account.PATIENT.getAccountName());
 	    json.put("dob", dob.toString());
+	    json.put("callerId", getUserID());
+	    json.put("cookie", getCookie());
 	    
 	    return ServerCommunicator.communicateWithServer(json.toString());
 	}

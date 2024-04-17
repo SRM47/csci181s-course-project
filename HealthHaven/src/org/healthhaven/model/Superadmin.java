@@ -39,8 +39,8 @@ public class Superadmin extends User {
 	 * @param dob
 	 */
 	public Superadmin(String userID, String email, String legal_first_name, String legal_last_name, String address,
-					  LocalDate dob) {
-		super(userID, email, legal_first_name, legal_last_name, address, dob);
+					  LocalDate dob, String cookie) {
+		super(userID, email, legal_first_name, legal_last_name, address, dob, cookie);
 	}
 	
 	
@@ -67,6 +67,8 @@ public class Superadmin extends User {
 	    json.put("email", email);
 	    json.put("userType", accountType.getAccountName());
 	    json.put("dob", dob.toString());
+	    json.put("callerId", getUserID());
+	    json.put("cookie", getCookie());
 	    
 	    return ServerCommunicator.communicateWithServer(json.toString());
 	}
@@ -75,6 +77,8 @@ public class Superadmin extends User {
 		JSONObject json = new JSONObject();
 	    json.put("request", "SEARCH_ACCOUNT");
 	    json.put("userId", userId);
+	    json.put("callerId", getUserID());
+	    json.put("cookie", getCookie());
 	   
 	    return ServerCommunicator.communicateWithServer(json.toString());
 	}
@@ -84,6 +88,8 @@ public class Superadmin extends User {
 	    json.put("request", "DEACTIVATE_ACCOUNT");
 	    json.put("type", "DEACTIVATE_ACCOUNT");
 	    json.put("userId", userId);
+	    json.put("callerId", getUserID());
+	    json.put("cookie", getCookie());
 	   
 	    return ServerCommunicator.communicateWithServer(json.toString());
 	}

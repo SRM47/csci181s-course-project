@@ -45,8 +45,8 @@ public class DataAnalyst extends User {
 	 * @param dob
 	 */
 	public DataAnalyst(String userID, String email,  String legal_first_name, String legal_last_name, String address,
-					   LocalDate dob) {
-		super(userID, email, legal_first_name, legal_last_name, address, dob);
+					   LocalDate dob, String cookie) {
+		super(userID, email, legal_first_name, legal_last_name, address, dob, cookie);
 	}
 	
 	@Override
@@ -61,8 +61,9 @@ public class DataAnalyst extends User {
 	public String performDataAnalysis(){
 		JSONObject json = new JSONObject();
 		json.put("request", "REQUEST_PATIENT_DATA_SUMMARY");
-//		System.out.println("message");
-		return(ServerCommunicator.communicateWithServer(json.toString()));
+		json.put("callerId", getUserID());
+	    json.put("cookie", getCookie());
+		return ServerCommunicator.communicateWithServer(json.toString());
 	}
 
 
