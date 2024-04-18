@@ -207,14 +207,15 @@ public class User {
 		if (updateType.equals("address")) {
 			json.put("updateType", "ADDRESS");
 			json.put("userId", userID);
+			json.put("address", newInput);
 		} else if (updateType.equals("password")) {
 			json.put("updateType", "PASSWORD");
 			json.put("email", email);
+		    json.put("password", newInput);
 			
 		}
 	    // Populate the JSON object with key-value pairs
 	    json.put("request", "UPDATE_ACCOUNT");
-	    json.put("userInput", newInput);
 		return ServerCommunicator.communicateWithServer(json.toString());
 	}
 	

@@ -109,7 +109,7 @@ public class APIHandler{
 
 		switch (json.getString("updateType")) {
 		case "ADDRESS":
-			return AccountDAO.updateUserAddress(cnn, json.getString("userInput"), json.getString("callerId"));
+			return AccountDAO.updateUserAddress(cnn, json.getString("address"), json.getString("callerId"));
 		case "PASSWORD":
 			return handleUpdatePassword(json, cnn);
 		default:
