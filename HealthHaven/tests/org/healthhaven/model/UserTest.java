@@ -17,15 +17,16 @@ import org.mockito.MockedStatic;
 
 public abstract class UserTest<T extends User> {
 	
-	T user;
+    T user;
+    private final String cookie = "sample_cookie_string";
 
-	/**
-	 * Creates an instance of T extending User for testing.
-	 * @return a new instance of T
-	 */
-	public abstract T createUser();
-	
-	@BeforeEach
+    /**
+     * Creates an instance of T extending User for testing, with a cookie.
+     * @return a new instance of T
+     */
+    public abstract T createUser();
+
+    @BeforeEach
     public void setUp() {
         user = createUser();
     }
@@ -89,29 +90,22 @@ public abstract class UserTest<T extends User> {
     @Test
     public void testUpdatePersonalRecordOnDB() {
         try (MockedStatic<ServerCommunicator> mockedStatic = mockStatic(ServerCommunicator.class)) {
-            // Prepare the mock to return a dummy response
             String expectedResponse = "Server response";
             mockedStatic.when(() -> ServerCommunicator.communicateWithServer(anyString())).thenReturn(expectedResponse);
 
-            // Update the address
-            String newAddress = "456 Elm St";
-            User user = new User("userID123", "user@example.com", "John", "Doe", "123 Main St", LocalDate.parse("1980-01-01"));
-            String actualResponse = user.updatePersonalRecordOnDB(newAddress);
+            String newAddress = "123 Main St";
+            User user = createUser();  // Using the createUser method that now includes a cookie
+            String actualResponse = user.updatePersonalRecordOnDB(newAddress, "address");
 
-            // Capture the JSON payload sent to the server
             ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
             mockedStatic.verify(() -> ServerCommunicator.communicateWithServer(captor.capture()), atLeastOnce());
             String capturedJson = captor.getValue();
 
-            // Assert the local change
             assertEquals(newAddress, user.getAddress(), "Address should be updated in the User object");
-
-            // Assert the server communication
             assertEquals(expectedResponse, actualResponse, "Should return the server response");
 
-            // Validate the JSON payload
             JSONObject json = new JSONObject(capturedJson);
-            assertEquals("UPDATE_ACCOUNT", json.getString("request")); // Ensure this matches your actual request key
+            assertEquals("UPDATE_ACCOUNT", json.getString("request"));
             assertEquals(newAddress, json.getString("address"));
         }
     }

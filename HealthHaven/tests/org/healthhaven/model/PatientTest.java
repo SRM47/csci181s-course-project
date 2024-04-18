@@ -12,11 +12,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 
 public class PatientTest extends UserTest<Patient> {
+	
+	private final String cookie = "admin_session_cookie";
 
     @Override
     public Patient createUser() {
         // Ensure this matches exactly with the UserTest setup for consistency
-        return new Patient("patientID123", "example@example.com", "John", "Doe", "123 Main St", LocalDate.of(1980, 1, 1));
+        return new Patient("patientID123", "example@example.com", "John", "Doe", "123 Main St", LocalDate.of(1980, 1, 1), cookie);
     }
 
     @Override

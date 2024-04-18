@@ -13,11 +13,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
 public class DataAnalystTest extends UserTest<DataAnalyst> {
+	
+	private final String cookie = "admin_session_cookie";
 
     @Override
     public DataAnalyst createUser() {
         // Assuming the userID is now a String and needs to be passed in the constructor
-        return new DataAnalyst("1234567890","example@example.com", "John", "Doe", "123 Main St", LocalDate.of(1980, 1, 1));
+        return new DataAnalyst("1234567890","example@example.com", "John", "Doe", "123 Main St", LocalDate.of(1980, 1, 1), cookie);
     }
 
     @BeforeEach
@@ -41,7 +43,7 @@ public class DataAnalystTest extends UserTest<DataAnalyst> {
             mockedStatic.when(() -> ServerCommunicator.communicateWithServer(anyString())).thenReturn(expectedServerResponse);
 
             // Assuming 'user' is an instance of DataAnalyst
-            DataAnalyst analyst = new DataAnalyst("userID", "email@example.com", "John", "Doe", "123 Main St", LocalDate.now());
+            DataAnalyst analyst = new DataAnalyst("userID", "email@example.com", "John", "Doe", "123 Main St", LocalDate.now(), cookie);
 
             // Execute the method under test
             String response = analyst.performDataAnalysis();
