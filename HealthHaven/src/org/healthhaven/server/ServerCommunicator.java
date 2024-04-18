@@ -27,7 +27,7 @@ import org.json.JSONObject;
 public class ServerCommunicator {
 
     private static final String SERVER_ADDRESS = "localhost";
-    private static final int SERVER_PORT = 8886; // Example port for account data server
+    private static final int SERVER_PORT = 8888; // Example port for account data server
     
     private static final String protocol = "TLSv1.3";
     private static final String[] cipherSuites = new String[]{"TLS_AES_256_GCM_SHA384"};

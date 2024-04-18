@@ -143,8 +143,8 @@ public class APIHandler{
 			return returnFailureResponse("Email already exists");
 		}
 		String generatedPassword = PasswordGenerator.generate(16);
-		UserIdGenerator g = new UserIdGenerator(16);
-		String generatedUserId = g.generate();
+		UserIdGenerator generator = new UserIdGenerator(16);
+		String generatedUserId = generator.generate();
 		serverResponse = AccountDAO.createTemporaryUser(cnn, generatedUserId, email, generatedPassword, dob, userType);
 		if (serverResponse.get("result").equals("FAILURE")) {
 			// If there was an error in updating the database, do not send email and return failure right away.

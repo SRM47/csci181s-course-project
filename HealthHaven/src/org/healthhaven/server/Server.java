@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.security.KeyStore;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.locks.ReentrantLock;
@@ -52,6 +53,8 @@ public class Server {
 
 	public void start() throws Exception {
 		this.conn = DatabaseConnectionUtil.connect();
+		// Implement Atomic: All or nothing.
+		this.conn.setAutoCommit(false);
 		// Create the thread pool. With a CachedThreadPoo, the number of threads will
 		// grow as needed, and unused threads will be terminated.
 		ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newCachedThreadPool();

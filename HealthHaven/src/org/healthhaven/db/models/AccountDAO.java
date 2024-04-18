@@ -23,9 +23,6 @@ import org.json.JSONObject;
 public class AccountDAO {
 	public static JSONObject createTemporaryUser(Connection conn, String userId, String email, String password,
 			String dob, String accountType) {
-		JSONObject serverResponse = new JSONObject();
-		String result = "SUCCESS";
-		String reason = "";
 		int rowsInserted = 0;
 		// Set the 'dob' column to the dob to verify later
 		// Convert the String dob into a java.sql.Date
@@ -38,106 +35,86 @@ public class AccountDAO {
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return returnFailureResponse("Unable to parse DOB");
 		}
-
-
-		// Insert user data into users table
-		String sql = "INSERT INTO healthhaven.users (userid, legalfirstname, legallastname, dob, address) VALUES (?, ?, ?, ?, ?)";
-
-		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+		
+		String sql;
+		
+		try {
+			// Insert into users table.
+			sql = "INSERT INTO healthhaven.users (userid, dob) VALUES (?, ?)";
+			
+			PreparedStatement stmt = conn.prepareStatement(sql);
 			stmt.setString(1, userId);
-
-			stmt.setString(2, "NONE");
-
-			stmt.setString(3, "NONE");
-
-			stmt.setDate(4, sqlDate);
-
-			stmt.setString(5, "NONE");
-
+			stmt.setDate(2, sqlDate);
+			
 			rowsInserted = stmt.executeUpdate();
 			if (rowsInserted <= 0) {
-				result = "FAILURE";
-				reason = "Database entry error";
+				// Rollback because nothing updated and this is an error.
+				return returnFailureResponse(conn, "Unable to create entry in user's table.");
 			}
-		} catch (SQLException e) {
-			result = "FAILURE";
-			reason = e.getMessage();
-		}
-
-		// Insert account type into account information.
-		sql = "INSERT INTO healthhaven.accounts (userid, accounttype) VALUES (?, ?)";
-
-		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+			
+			// Insert into accounts
+			sql = "INSERT INTO healthhaven.accounts (userid, accounttype) VALUES (?, ?)";
+			
+			stmt = conn.prepareStatement(sql);
 			stmt.setString(1, userId);
-
 			stmt.setString(2, accountType);
 
 			rowsInserted = stmt.executeUpdate();
 			if (rowsInserted <= 0) {
-				result = "FAILURE";
-				reason = "Database entry error";
+				return returnFailureResponse(conn, "Unable to create entry in accounttype table.");
 			}
-		} catch (SQLException e) {
-			result = "FAILURE";
-			reason = e.getMessage();
-		}
-
-		sql = "INSERT INTO healthhaven.authentication (userid, email, password, reset, totp_key, salt, hashpass) VALUES (?, ?, ?, ?, ?, ?, ?)";
-
-		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+			
+			// Insert into authentication table
+			sql = "INSERT INTO healthhaven.authentication (userid, email, password, reset, salt, hashpass) VALUES (?, ?, ?, ?, ?, ?)";
+			
+			stmt = conn.prepareStatement(sql);
 			stmt.setString(1, userId);
-
 			stmt.setString(2, email);
-
-			// TODO: Salt and hash this password
-			String saltedHashedPassword = password;
-			stmt.setString(3, saltedHashedPassword);
-
-			// Set the 'reset' column to false
+			stmt.setString(3, password); // TODO: Remove this at some point.
 			stmt.setBoolean(4, false);
-			
-			// Set the 'reset' column to false
-			stmt.setString(5, "NONE");
-			
 			String salt = SaltyHash.genSalt();
-			stmt.setString(6, salt);
+			stmt.setString(5, salt);
 			
 			try {
-				String hashpass = SaltyHash.pwHash(password, salt);
-				stmt.setString(7, hashpass);
-			} catch (NoSuchAlgorithmException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InvalidKeySpecException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				stmt.setString(6, SaltyHash.pwHash(password, salt));
+			} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+				return returnFailureResponse(conn, e.getMessage());
 			}
 			
-			
-
 			rowsInserted = stmt.executeUpdate();
 			if (rowsInserted <= 0) {
-				result = "FAILURE";
-				reason = "Database entry error";
+				return returnFailureResponse(conn, "Unable to create entry in authentication table.");
 			}
+			
+			// Insert into cookie table.
+		    sql = "INSERT INTO healthhaven.cookie (userid, user_cookie, timestamp) VALUES (?, ?, NOW())";
+		    
+		    stmt = conn.prepareStatement(sql);
+		    stmt.setString(1, userId);
+	        stmt.setString(2, null);
+	        
+	        rowsInserted = stmt.executeUpdate();
+			if (rowsInserted <= 0) {
+				return returnFailureResponse(conn, "Unable to create entry in cookie table.");
+			}
+			
+			// Commit everything at once.
+			conn.commit();
+			
 		} catch (SQLException e) {
-			result = "FAILURE";
-			reason = e.getMessage();
+			try {
+				conn.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+				return returnFailureResponse(e1.getMessage());
+			}
+			return returnFailureResponse(e.getMessage());
 		}
 		
-		// Insert new cookie into database
-		String userCookie = generateAndInsertNewUserCookie(conn, userId);
-		if (userCookie == null) {
-			result = "FAILURE";
-			reason = "Unable to create cookie";
-		}
-				
-		
-		serverResponse.put("result", result);
-		serverResponse.put("reason", reason);
-		serverResponse.put("cookie", userCookie);
-		return serverResponse;
+		// Return success response.
+		return returnSuccessResponse("");
 	}
 
 	public static JSONObject updateTemporaryUserAfterFirstLogin(Connection conn, String legalfirstname,
@@ -165,7 +142,20 @@ public class AccountDAO {
 							userId)) {
 				result = "FAILURE";
 				reason = "Database Entry Error";
+			} else {
+				try {
+					conn.commit();
+				} catch (SQLException e) {
+					try {
+						conn.rollback();
+					} catch (SQLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					e.printStackTrace();
+				}
 			}
+			
 		}
 		serverResponse.put("result", result);
 		serverResponse.put("reason", reason);
@@ -191,13 +181,19 @@ public class AccountDAO {
 					result = "FAILURE";
 					reason = "Database entry error"; // TODO: need better reason
 				}
+				conn.commit();
 			} catch (SQLException e) {
 				result = "FAILURE";
 				reason = e.getMessage();
+				try {
+					conn.rollback();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		}
 
-	
 		serverResponse.put("result", result);
 		serverResponse.put("reason", reason);
 		return serverResponse;
@@ -227,8 +223,6 @@ public class AccountDAO {
 				stmt.setString(2, doctorId);
 			}
 			
-			
-
 			try (ResultSet rs = stmt.executeQuery()) {
 				if (!rs.next()) { // If ResultSet is empty, no records are found for the given IDs.
 					serverResponse.put("result", "FAILURE");
@@ -333,13 +327,28 @@ public class AccountDAO {
 			} else {
 				response.put("result", "FAILURE");
 				response.put("reason", "No rows affected");
+				conn.rollback();
 			}
+			
+			conn.commit();
 		} catch (SQLException e) {
 			response.put("result", "FAILURE");
 			response.put("reason", e.getMessage());
+			try {
+				conn.rollback();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		} catch (IllegalArgumentException e) {
 			response.put("result", "FAILURE");
 			response.put("reason", "Invalid timestamp format: " + e.getMessage());
+			try {
+				conn.rollback();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		}
 
 		return response;
@@ -353,8 +362,11 @@ public class AccountDAO {
 			stmt.setString(3, address);
 			stmt.setString(4, userId);
 
-			int rowsUpdated = stmt.executeUpdate();
-			return rowsUpdated > 0;
+			int rowsAffected = stmt.executeUpdate();
+			if (rowsAffected <= 0) {
+				conn.rollback();
+			}
+			return rowsAffected > 0;
 		} catch (SQLException e) {
 			System.err.println("Error during table update: " + e.getMessage());
 			return false;
@@ -373,7 +385,13 @@ public class AccountDAO {
 		if (!updateAuthenticationTable(conn, authenticationUpdateSql, newPassword, getUserIdFromEmail(conn, email))) {
 			result = "FAILURE";
 			reason = "Database Entry Error";
-
+		} else {
+			try {
+				conn.commit();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		serverResponse.put("result", result);
 		serverResponse.put("reason", reason);
@@ -405,6 +423,9 @@ public class AccountDAO {
 			stmt.setString(4, userId);
 
 			int rowsUpdated = stmt.executeUpdate();
+			if (rowsUpdated <= 0) {
+				conn.rollback();
+			}
 			return rowsUpdated > 0;
 		} catch (SQLException e) {
 			System.err.println("Error updating authentication: " + e.getMessage());
@@ -422,11 +443,7 @@ public class AccountDAO {
 			stmt.setBoolean(3, reset);
 			String salt = SaltyHash.genSalt();
 			stmt.setString(4, salt);
-			
-			
-			
-			
-			
+
 			String hashpass;
 			try {
 				hashpass = SaltyHash.pwHash(password, salt);
@@ -442,6 +459,9 @@ public class AccountDAO {
 			
 
 			int rowsUpdated = stmt.executeUpdate();
+			if (rowsUpdated <= 0) {
+				conn.rollback();
+			}
 			return rowsUpdated > 0;
 		} catch (SQLException e) {
 			System.err.println("Error updating authentication: " + e.getMessage());
@@ -669,7 +689,15 @@ public class AccountDAO {
 	        pstmt.setString(1, cookieValue);
 	        pstmt.setString(2, userId);
 	        pstmt.executeUpdate();
+	        conn.commit();
 	    } catch (SQLException e) {
+	    	try {
+				conn.rollback();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+				return null;
+			}
 	        return null;
 	    }
 
@@ -677,27 +705,12 @@ public class AccountDAO {
 		
 	}
 	
-	private static String generateAndInsertNewUserCookie(Connection conn, String userId) {
+	private static String generateNewUserCookie() {
 		// Cookie Generation
 	    SecureRandom random = new SecureRandom();
 	    byte[] cookieBytes = new byte[32]; // Example: 32-byte cookie value
 	    random.nextBytes(cookieBytes);
 	    String cookieValue = Base64.getUrlEncoder().encodeToString(cookieBytes); 
-
-	    // Database Interaction (Assuming a PreparedStatement)
-	    String sql = "INSERT INTO healthhaven.cookie (userid, user_cookie, timestamp) VALUES (?, ?, NOW())";
-	    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-	        pstmt.setString(1, userId);
-	        pstmt.setString(2, cookieValue);
-	        int rowsAffected = pstmt.executeUpdate();
-			if (rowsAffected > 0) {
-				return cookieValue;
-			}
-	    } catch (SQLException e) {
-	    	e.printStackTrace();
-	        return null;
-	    }
-
 	    return cookieValue;
 		
 	}
@@ -773,15 +786,7 @@ public class AccountDAO {
 
         
         try {
-            conn.setAutoCommit(false); 
-            // No need because I set on delete cascade for forgien keys
-
-//            deleteUserData(conn, "healthhaven.authentication", userId);
-//
-//            deleteUserData(conn, "healthhaven.accounts", userId);
-
             deleteUserData(conn, "healthhaven.users", userId);
-
             conn.commit();
             serverResponse.put("result", result);
         } catch (SQLException e) {
@@ -826,7 +831,14 @@ public class AccountDAO {
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 	        pstmt.setString(1, userId);
 	        pstmt.executeUpdate();
+	        conn.commit();
 	    } catch (SQLException e) {
+	    	try {
+				conn.rollback();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 	        result = "FAILURE";
 	        reason = "SQL error failed to logout";
 	    }
@@ -834,5 +846,25 @@ public class AccountDAO {
         serverResponse.put("reason", reason);
         return serverResponse;
 	}
+	
+	private static JSONObject returnFailureResponse(String reason) {
+		JSONObject serverResponse = new JSONObject();
+		serverResponse.put("result", "FAILURE");
+		serverResponse.put("reason", reason);
+		return serverResponse;	
+	}
+	
+	private static JSONObject returnFailureResponse(Connection conn, String reason) throws SQLException {
+		conn.rollback();
+		return returnFailureResponse(reason);
+	}
+	
+	private static JSONObject returnSuccessResponse(String reason) {
+		JSONObject serverResponse = new JSONObject();
+		serverResponse.put("result", "SUCCESS");
+		serverResponse.put("reason", reason);
+		return serverResponse;	
+	}
+	
 
 }
