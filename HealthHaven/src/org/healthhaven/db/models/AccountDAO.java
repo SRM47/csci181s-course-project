@@ -788,6 +788,7 @@ public class AccountDAO {
         
         try {
             deleteUserData(conn, "healthhaven.users", userId);
+            deleteMedicalData(conn, userId);
             conn.commit();
             serverResponse.put("result", result);
         } catch (SQLException e) {
@@ -800,16 +801,6 @@ public class AccountDAO {
             }
             serverResponse.put("result", "FAILURE");
             serverResponse.put("reason", "SQL error during deletion: " + e.getMessage());
-        } finally {
-            try {
-                conn.setAutoCommit(true); 
-            } catch (SQLException e) {
-                // If resetting auto-commit fails, consider this a failure in cleanup, not in main operation
-                if (!serverResponse.has("result")) {
-                    serverResponse.put("result", "FAILURE");
-                    serverResponse.put("reason", "Error resetting auto-commit: " + e.getMessage());
-                }
-            }
         }
 		System.out.println(serverResponse);
 		return serverResponse;
@@ -823,6 +814,16 @@ public class AccountDAO {
             return (affectedRows > 0);
         }
     }
+	
+	private static boolean deleteMedicalData(Connection conn, String patientId) throws SQLException {
+        String sql = "DELETE FROM healthhaven.medical_information WHERE patientid = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, patientId);
+            int affectedRows = stmt.executeUpdate();
+            return (affectedRows > 0);
+        }
+    }
+	
 
 	public static JSONObject logoutUser(Connection conn, String userId) {
 		JSONObject serverResponse = new JSONObject();

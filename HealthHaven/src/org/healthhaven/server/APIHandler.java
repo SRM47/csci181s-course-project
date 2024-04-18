@@ -260,7 +260,7 @@ public class APIHandler{
 		case "VIEW_RECORD": //doctor or patient
 			if (accountType.equals("Patient")) {
 				return json.getString("patientID").equals(callerId);
-			} else if (accountType.toUpperCase().equals("Doctor")) {
+			} else if (accountType.equals("Doctor")) {
 				return true;
 			} else {
 				return false;		

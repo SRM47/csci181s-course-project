@@ -40,14 +40,14 @@ public class SaltyHash {
 
 
 	public static boolean checkPassword(String password, String salt, String expectedHash) throws NoSuchAlgorithmException, InvalidKeySpecException{
+		if (password == null || salt == null || expectedHash == null) {
+			return false;
+		}
 		
 		String testHash = pwHash(password, salt);
 		
-		if(testHash.equals(expectedHash)) {
-			return true;
-		} else {
-			return false;
-		}
+		return testHash.equals(expectedHash);
+	
 		
 	}
 }
