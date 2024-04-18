@@ -22,10 +22,10 @@ public class AccountCreationService {
 	
 	private static User.Account getUserType(String accountType){
 		return switch (accountType.toUpperCase()) {
-		case "Patient" -> User.Account.PATIENT;
-		case "Doctor" -> User.Account.DOCTOR;
-		case "Data Analyst" -> User.Account.DATA_ANALYST;
-		case "Superadmin" -> User.Account.SUPERADMIN;
+		case "PATIENT" -> User.Account.PATIENT;
+		case "DOCTOR" -> User.Account.DOCTOR;
+		case "DATA ANALYST" -> User.Account.DATA_ANALYST;
+		case "SUPERADMIN" -> User.Account.SUPERADMIN;
 		default -> User.Account.NONE;
 		};
 	}

@@ -46,6 +46,7 @@ public class LoginTest {
         jsonOb.put("address", "123 Main St");
         jsonOb.put("dob", "1980-01-01");
         jsonOb.put("accountType", "Doctor"); // Assume the method handles this correctly
+        jsonOb.put("cookie", "cookie");
 
         User user = Login.existingUserSession(jsonOb);
 
@@ -70,7 +71,7 @@ public class LoginTest {
     // Tests for createUserInstance functionality
     @Test
     public void testCreateDoctorInstance() {
-        JSONObject doctorJson = generateUserJson("123456789", "doctor@example.com", "Jane", "Doe", "456 Clinic St", "1975-05-15", "Doctor");
+        JSONObject doctorJson = generateUserJson("123456789", "doctor@example.com", "Jane", "Doe", "456 Clinic St", "1975-05-15", "Doctor", "cookie");
         User user = Login.existingUserSession(doctorJson);
         assertTrue(user instanceof Doctor, "The created user should be an instance of Doctor.");
     }
@@ -78,7 +79,7 @@ public class LoginTest {
     
     @Test
     public void testCreatePatientInstance() {
-        JSONObject patientJson = generateUserJson("987654321", "patient@example.com", "John", "Patient", "123 Health St", "1985-04-20", "Patient");
+        JSONObject patientJson = generateUserJson("987654321", "patient@example.com", "John", "Patient", "123 Health St", "1985-04-20", "Patient", "cookie");
         User user = Login.existingUserSession(patientJson);
         assertTrue(user instanceof Patient, "The created user should be an instance of Patient.");
     }
@@ -86,23 +87,15 @@ public class LoginTest {
 
     @Test
     public void testCreateDataAnalystInstance() {
-        JSONObject dataAnalystJson = generateUserJson("234567890", "analyst@example.com", "Danny", "Data", "456 Data St", "1982-08-15", "Data Analyst");
+        JSONObject dataAnalystJson = generateUserJson("234567890", "analyst@example.com", "Danny", "Data", "456 Data St", "1982-08-15", "Data Analyst", "cookie");
         User user = Login.existingUserSession(dataAnalystJson);
         assertTrue(user instanceof DataAnalyst, "The created user should be an instance of Data Analyst.");
     }
 
 
     @Test
-    public void testCreateDPOInstance() {
-        JSONObject dpoJson = generateUserJson("345678901", "dpo@example.com", "Diana", "Privacy", "789 Privacy Ln", "1978-12-05", "Data Protection Officer");
-        User user = Login.existingUserSession(dpoJson);
-        assertTrue(user instanceof DataProtectionOfficer, "The created user should be an instance of Data Protection Officer.");
-    }
-
-
-    @Test
     public void testCreateSuperadminInstance() {
-        JSONObject superadminJson = generateUserJson("456789012", "superadmin@example.com", "Sam", "Admin", "123 Admin Blvd", "1975-02-28", "Superadmin");
+        JSONObject superadminJson = generateUserJson("456789012", "superadmin@example.com", "Sam", "Admin", "123 Admin Blvd", "1975-02-28", "Superadmin", "cookie");
         User user = Login.existingUserSession(superadminJson);
         assertTrue(user instanceof Superadmin, "The created user should be an instance of Superadmin.");
     }
@@ -112,7 +105,7 @@ public class LoginTest {
     // Add similar tests for Patient, Data_Analyst, Data_Protection_Officer, and Superadmin
     // Implement generateUserJsonResponse and any additional helper methods as needed.
 
-    private JSONObject generateUserJson(String userID, String email, String firstName, String lastName, String address, String dob, String accountType) {
+    private JSONObject generateUserJson(String userID, String email, String firstName, String lastName, String address, String dob, String accountType, String cookie) {
         return new JSONObject()
                 .put("userID", userID)
                 .put("email", email)
@@ -120,7 +113,8 @@ public class LoginTest {
                 .put("last_name", lastName)
                 .put("address", address)
                 .put("dob", dob)
-                .put("accountType", accountType);
+                .put("accountType", accountType)
+        		.put("cookie", cookie);
     }
 
 }

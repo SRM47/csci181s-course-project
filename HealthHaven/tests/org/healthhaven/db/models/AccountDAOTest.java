@@ -36,8 +36,8 @@ class AccountDAOTest {
 
         // Verify and assert the result
         assertEquals("SUCCESS", result.getString("result"));
-        verify(mockConn, Mockito.times(3)).prepareStatement(anyString());
-        verify(mockStmt, Mockito.times(3)).executeUpdate();
+        verify(mockConn, Mockito.times(4)).prepareStatement(anyString());
+        verify(mockStmt, Mockito.times(4)).executeUpdate();
     }
 
 

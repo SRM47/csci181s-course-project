@@ -11,6 +11,7 @@ import org.mockito.Mockito;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 
 public class AccountCreationServiceTest {
@@ -26,7 +27,7 @@ public class AccountCreationServiceTest {
     @Test
     public void testCreateUserForAllUserTypes() {
         // An array of all user types to test, including an undefined type to trigger the default case
-        String[] userTypes = {"PATIENT", "DOCTOR", "DATA_ANALYST", "DPO", "SUPERADMIN", "UNDEFINED"};
+        String[] userTypes = {"Patient", "Doctor", "Data_Analyst", "Superadmin", "UNDEFINED"};
         for (String userType : userTypes) {
             String result = AccountCreationService.createUser(userType, "test@example.com", "password", "John", "Doe", "123 Main St", LocalDate.of(1980, 1, 1));
             assertEquals("Mock Response", result, "The response for userType " + userType + " should be 'Mock Response'");
@@ -42,20 +43,20 @@ public class AccountCreationServiceTest {
 
     @Test
     public void testDetailsForPatientAccountCreation() {
-        // Using ArgumentCaptor to capture the JSON string sent to ServerCommunicator
         ArgumentCaptor<String> argumentCaptor = ArgumentCaptor.forClass(String.class);
-        
-        // Perform the operation to capture the argument
-        AccountCreationService.createUser("PATIENT", "jane.doe@example.com", "securepassword", "Jane", "Doe", "456 Elm Street", LocalDate.of(1990, 5, 15));
-        
-        // Capture the argument passed to communicateWithServer
+        AccountCreationService.createUser("Patient", "jane.doe@example.com", "securepassword", "Jane", "Doe", "456 Elm Street", LocalDate.of(1990, 5, 15));
+
         mockedServerCommunicator.verify(() -> ServerCommunicator.communicateWithServer(argumentCaptor.capture()));
         String capturedArgument = argumentCaptor.getValue();
 
+        // Print the argument to check what is actually captured
+        System.out.println(capturedArgument);
+
         // Assertions can be expanded to check for specific JSON fields
-        assertEquals(true, capturedArgument.contains("\"accountType\":\"Patient\""), "The JSON must contain the patient account type.");
-        assertEquals(true, capturedArgument.contains("\"email\":\"jane.doe@example.com\""), "The JSON must contain the correct email.");
+        assertTrue(capturedArgument.contains("\"accountType\":\"Patient\""), "The JSON must contain the patient account type.");
+        assertTrue(capturedArgument.contains("\"email\":\"jane.doe@example.com\""), "The JSON must contain the correct email.");
     }
+
 
 
     @AfterEach

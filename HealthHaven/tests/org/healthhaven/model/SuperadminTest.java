@@ -12,11 +12,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 
 public class SuperadminTest extends UserTest<Superadmin> {
+	
+	private final String cookie = "admin_session_cookie";
 
     @Override
     public Superadmin createUser() {
         // Aligns with the UserTest setup for consistency
-        return new Superadmin("superadminID123", "example@example.com", "John", "Doe", "123 Main St", LocalDate.of(1980, 1, 1));
+        return new Superadmin("superadminID123", "example@example.com", "John", "Doe", "123 Main St", LocalDate.of(1980, 1, 1), cookie);
     }
 
     @Override
