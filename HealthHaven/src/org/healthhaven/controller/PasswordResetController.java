@@ -123,7 +123,7 @@ public class PasswordResetController{
 
 		Result result = nbvcxz.estimate(PasswordField1.getText());
 		
-		System.out.println(PasswordField1.getText());
+		//System.out.println(PasswordField1.getText());
 		
 		Float prog = ((float) result.getBasicScore())/4;
 		

@@ -160,7 +160,7 @@ public class PasswordGenerator {
         
         
     	for(String item: responseList) {
-    		System.out.println("checking" + item); 
+    		//System.out.println("checking" + item); 
     		if(item.contains(suffix.toUpperCase())) {
     			System.out.println("compromised"); 
     			return 1;

@@ -19,7 +19,7 @@
           </font>
         </Label>
             <PasswordField fx:id="passwordTextfield" layoutX="240.0" layoutY="211.0" promptText="Password" />
-            <Label fx:id="errorMessage" layoutX="261.0" layoutY="283.0" prefHeight="11.0" prefWidth="20.0" textFill="#e40c16">
+            <Label fx:id="errorMessage" layoutX="261.0" layoutY="283.0" textFill="#e40c16">
                <font>
                   <Font size="9.0" />
                </font>
