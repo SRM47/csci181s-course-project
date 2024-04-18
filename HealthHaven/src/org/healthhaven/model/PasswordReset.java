@@ -24,6 +24,7 @@ public class PasswordReset{
 		JSONObject json = new JSONObject();
 	    json.put("request", "PASSWORD_RESET");
 	    json.put("type", "VERIFY_OTP");
+	    json.put("otp", otpInput);
 	    json.put("email", email);
 	    json.put("timestamp", timestamp.toString());
 
@@ -38,6 +39,7 @@ public class PasswordReset{
 		json.put("request", "PASSWORD_RESET");
 		json.put("type", "UPDATE_PASSWORD");
 		json.put("email", email);
+		json.put("password", password);
 		json.put("timestamp", timestamp.toString());
 		
 		return(ServerCommunicator.communicateWithServer(json.toString()));

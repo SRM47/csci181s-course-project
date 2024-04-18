@@ -588,6 +588,7 @@ public class AccountDAO {
 						reason = "Incorrect Password";
 					} else { //password matches
 						if (type.equals("ACCOUNT_DEACTIVATION")){
+							serverResponse.put("result", result);
 							return serverResponse;
 						}
 						boolean resetValue = data_rs.getBoolean("reset");

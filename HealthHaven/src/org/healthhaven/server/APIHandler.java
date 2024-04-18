@@ -14,14 +14,15 @@ public class APIHandler{
 	public static JSONObject processAPIRequest(JSONObject json, Connection cnn) {
 		
 		String request = json.getString("request");
-		if (!(request.equals("LOGIN") || request.equals("CREATE_ACCOUNT"))) {
+		if (!(request.equals("LOGIN") || request.equals("CREATE_ACCOUNT")||request.equals("PASSWORD_RESET"))) {
+			System.out.println("inside if statement");
 			// For any request apart from LOGIN and CREATE_ACCOUNT, we must validate that the user is logged in with a cookie.
 			JSONObject verifiedCookieObject = AccountDAO.verifyAuthenticationCookieById(cnn, json.optString("callerId"), json.optString("cookie"));
 			if (verifiedCookieObject.getString("result").equals("FAILURE")) {
 				return verifiedCookieObject;
 			}
 		}
-		
+		System.out.print("outside if statement");
 		json.put("accountType", UserDAO.getUserAccountType(cnn, json.optString("callerId")));
 		
 		switch(json.getString("request")) {
@@ -266,7 +267,14 @@ public class APIHandler{
 			return accountType.equals("Doctor");
 			
 		case "DEACTIVATE_ACCOUNT": //any user for themselves or admin for everyone
-			System.out.println("DEACTIVATE_ACCOUNT");
+			if (json.getString("type").equals("VALIDATE_ACCOUNT")) {
+				return true;
+			}
+			if (accountType.equals("Superadmin")) {
+				return true;
+			} else {
+				return json.getString("userId").equals(callerId);
+			}
 			
 		case "SEARCH_ACCOUNT": //super admin
 			return accountType.equals("Superadmin");
