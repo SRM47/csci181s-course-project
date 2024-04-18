@@ -81,7 +81,7 @@ public class PasswordResetController{
 			String serverResponse = PasswordReset.verifyEmail(email);
 			JSONObject jsonObj = new JSONObject(serverResponse);
 			if (jsonObj.getString("result").equals("FAILURE")||serverResponse.equals(null)) {
-				submitResponse.setText("Error");
+				submitResponse.setText(jsonObj.getString("reason"));
 			} else {
 				if (jsonObj.getString("result").equals("SUCCESS")) {
 					this.email = email;
