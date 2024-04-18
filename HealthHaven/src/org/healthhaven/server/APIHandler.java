@@ -193,6 +193,9 @@ public class APIHandler{
 		case "OTP":
 			System.out.println("OTP");
 			JSONObject userInformation = AccountDAO.authenticateOTP(cnn, json.getString("email"), json.getString("otp"));
+			if (!userInformation.getString("result").equals("SUCCESS")) {
+				return returnFailureResponse(userInformation.getString("reason"));
+			}
 			// Create and add a cookie because they're successfully authenticated into the system
 			String userCookie = AccountDAO.generateAndUpdateNewUserCookie(cnn, userInformation.getString("userID"));
 			if (userCookie == null) {
