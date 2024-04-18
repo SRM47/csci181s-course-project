@@ -248,7 +248,7 @@ public class APIHandler{
 			if (accountType.equals("Superadmin")) {
 				return true;
 			} else if (accountType.equals("Doctor")) {
-				return json.getString("userType").toUpperCase().equals("Patient");
+				return json.getString("userType").equals("Patient");
 			} else {
 				return false;
 				
