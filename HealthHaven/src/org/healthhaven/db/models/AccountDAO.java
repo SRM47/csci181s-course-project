@@ -774,10 +774,11 @@ public class AccountDAO {
         
         try {
             conn.setAutoCommit(false); 
+            // No need because I set on delete cascade for forgien keys
 
-            deleteUserData(conn, "healthhaven.authentication", userId);
-
-            deleteUserData(conn, "healthhaven.accounts", userId);
+//            deleteUserData(conn, "healthhaven.authentication", userId);
+//
+//            deleteUserData(conn, "healthhaven.accounts", userId);
 
             deleteUserData(conn, "healthhaven.users", userId);
 
