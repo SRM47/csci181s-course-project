@@ -110,6 +110,11 @@ public class DoctorController {
 			return;
 		}
 		
+		if(weight < 0 || height < 0) {
+			updateRecordResponse.setText("No negative numbers!");
+			return;
+		}
+		
 
 		String response = doctor.updatePatientRecordOnDB(patientID, height, weight);
 
