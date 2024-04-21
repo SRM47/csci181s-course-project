@@ -58,11 +58,19 @@ public class DataAnalyst extends User {
 	 * Get and print the data summary
 	 * @param scanner
 	 */
-	public String performDataAnalysis(){
+	public String performDataAnalysis(boolean after, boolean before, LocalDate date){
 		JSONObject json = new JSONObject();
-		json.put("request", "REQUEST_PATIENT_DATA_SUMMARY");
+		json.put("request", "REQUEST_PATIENT_DATA");
 		json.put("callerId", getUserID());
 	    json.put("cookie", getCookie());
+	    if (after) {
+	    	json.put("when", ">=");
+	    } else if (before) {
+	    	json.put("when", "<=");
+	    } else {
+	    	json.put("when", "<=");
+	    }
+	    json.put("date", date.toString());
 		return ServerCommunicator.communicateWithServer(json.toString());
 	}
 

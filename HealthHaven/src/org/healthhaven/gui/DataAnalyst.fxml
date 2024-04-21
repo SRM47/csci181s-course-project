@@ -16,11 +16,17 @@
                   <Insets bottom="10.0" top="20.0" />
                </VBox.margin>
             </Label>
-            <TextArea fx:id="recordTextArea" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="200.0">
-               <VBox.margin>
-                  <Insets top="50.0" />
-               </VBox.margin>
-            </TextArea>
+            <CheckBox fx:id="beforeCheckBox" mnemonicParsing="false" text="Before" />
+            <CheckBox fx:id="afterCheckBox" mnemonicParsing="false" text="After" />
+            <DatePicker fx:id="datePicker" />
+            <Button fx:id="requestDataButton" mnemonicParsing="false" onAction="#requestData" text="Request Data" />
+            <TableView fx:id="dataTable" maxWidth="-Infinity" prefHeight="200.0" prefWidth="225.0">
+              <columns>
+                <TableColumn fx:id="heightColumn" editable="false" prefWidth="75.0" sortable="false" text="Height" />
+                <TableColumn fx:id="weightColumn" editable="false" prefWidth="75.0" sortable="false" text="Weight" />
+                  <TableColumn fx:id="timestampColumn" editable="false" prefWidth="75.0" sortable="false" text="Timestamp" />
+              </columns>
+            </TableView>
          </children>
       </VBox>
    </children>

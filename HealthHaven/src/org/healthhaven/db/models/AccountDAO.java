@@ -824,6 +824,49 @@ public class AccountDAO {
         }
     }
 	
+	public static JSONObject getMedicalInformationDataByQuery(Connection conn, String when, String date) {
+	    JSONObject serverResponse = new JSONObject();
+	    String result = "SUCCESS";
+	    String reason = "";
+	    
+	    String sql = "SELECT * FROM healthhaven.medical_information WHERE CAST(timestamp AS DATE) " + when + " DATE '" + date + "'";
+
+	    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	        System.out.println(pstmt.toString());
+	        ResultSet data_rs = pstmt.executeQuery();
+
+	        // Create an array to store the entries
+	        JSONArray entriesArray = new JSONArray();
+
+	        while (data_rs.next()) {
+	            float height = data_rs.getFloat("height");
+	            float weight = data_rs.getFloat("weight");
+	            java.util.Date entryDate = data_rs.getDate("timestamp");
+
+	            // Create a JSON object for each entry
+	            JSONObject entry = new JSONObject();
+	            entry.put("height", height);
+	            entry.put("weight", weight);
+	            entry.put("entryDate", entryDate.toString()); // Or format the date as needed
+
+	            // Add the entry to the array
+	            entriesArray.put(entry);
+	        }
+
+	        // Add the array to the response
+	        serverResponse.put("entries", entriesArray);
+
+	    } catch (SQLException e) {
+	        result = "FAILURE";
+	        reason = e.getMessage();
+	    }
+
+	    serverResponse.put("result", result);
+	    serverResponse.put("reason", reason);
+
+	    return serverResponse;
+	}
+	
 
 	public static JSONObject logoutUser(Connection conn, String userId) {
 		JSONObject serverResponse = new JSONObject();

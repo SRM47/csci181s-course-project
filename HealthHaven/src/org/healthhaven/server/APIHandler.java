@@ -41,9 +41,9 @@ public class APIHandler{
 			case "UPDATE_ACCOUNT": //any user
 				System.out.println("UPDATE_ACCOUNT");
 				return handleUpdateAccount(json, cnn);
-			case "REQUEST_PATIENT_DATA_SUMMARY": //data analyst
-				System.out.println("REQUEST_PATIENT_DATA_SUMMARY");
-				return handlePatientDataSummary(json, cnn);
+			case "REQUEST_PATIENT_DATA": //data analyst
+				System.out.println("REQUEST_PATIENT_DATA");
+				return handleGetMedicalInformation(json, cnn);
 			case "VIEW_RECORD": //doctor or patient
 				System.out.println("VIEW_RECORD");
 				return handleViewRecord(json, cnn);
@@ -96,14 +96,15 @@ public class APIHandler{
 		        json.getString("patientID"));
 	}
 
-	private static JSONObject handlePatientDataSummary(JSONObject json, Connection cnn) {
+	private static JSONObject handleGetMedicalInformation(JSONObject json, Connection cnn) {
 		
 		//Role based authorization
 		if(!checkAuthorization(json.getString("accountType"), json.getString("callerId"), json)) {
 			return returnFailureResponse("Invalid Request");
 		};
 
-		return AccountDAO.getDataAverage(cnn);
+		// return AccountDAO.getDataAverage(cnn);
+		return AccountDAO.getMedicalInformationDataByQuery(cnn, json.getString("when"), json.getString("date"));
 	}
 
 	private static JSONObject handleUpdateAccount(JSONObject json, Connection cnn) {
@@ -254,7 +255,7 @@ public class APIHandler{
 				
 			}
 			
-		case "REQUEST_PATIENT_DATA_SUMMARY": //data analyst	
+		case "REQUEST_PATIENT_DATA": //data analyst	
 			return accountType.equals("Data Analyst");
 			
 		case "VIEW_RECORD": //doctor or patient
