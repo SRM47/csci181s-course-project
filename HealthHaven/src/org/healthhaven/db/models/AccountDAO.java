@@ -770,7 +770,7 @@ public class AccountDAO {
 	            if (storedCookie != null && storedCookie.equals(cookie) && timestamp != null) {
 	                long currentTimeMillis = System.currentTimeMillis();
 	                long cookieTimeMillis = timestamp.getTime();
-	                long expiryTimeMillis = 3 * 3600 * 1000; // 3 hours in milliseconds
+	                long expiryTimeMillis = 10 * 60 * 1000; // 10 min in milliseconds
 	                
 	                if ((currentTimeMillis - cookieTimeMillis) < expiryTimeMillis) {
 	                    return true;
