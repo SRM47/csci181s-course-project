@@ -136,7 +136,7 @@ public class Server {
 
 			JSONObject requestData = new JSONObject(msg);
 			System.out.println(requestData);
-			JSONObject serverResponse = APIHandler.processAPIRequest(requestData, this.conn);
+			JSONObject serverResponse = APIHandler.processAPIRequest(requestData, this.conn, client);
 			System.out.println(serverResponse);
 
 			// Respond to client with appropriate response.

@@ -643,14 +643,6 @@ public class AccountDAO {
 				if (TOTP.verTOTP(totp_key, otp)) {
 					// Upon success, return all user information and create cookie to store login information
 					String userId = data_rs.getString("userid");
-//					String userCookie = generateAndUpdateNewUserCookie(conn, userId);
-//					if (userCookie == null) {
-//						result = "FAILURE";
-//						reason = "Unable to create cookie";
-//						serverResponse.put("result", result);
-//						serverResponse.put("reason", reason);
-//						return serverResponse;
-//					}
 					
 					JSONObject userInformation = UserDAO.getUserInformation(conn, userId);
 //					userInformation.put("cookie", userCookie);
@@ -738,45 +730,29 @@ public class AccountDAO {
 	
 	public static JSONObject verifyAuthenticationCookieById(Connection conn, String userId, String candidateCookie) {
 		System.out.println(userId);
-		JSONObject serverResponse = new JSONObject();
 		if (userId == null || userId == "" || candidateCookie == null || candidateCookie == "") {
-			serverResponse.put("result", "FAILURE");
-			serverResponse.put("reason", "Id is null or no cookie");
-			System.out.println(serverResponse);
-			return serverResponse;
+			return returnFailureResponse("Must provide both identification and cookie");
 		}
-		
-		String result = "SUCCESS";
-		String reason = "";
 		
 		String sql = "SELECT user_cookie FROM healthhaven.cookie WHERE userid = ?";
 	    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 	        pstmt.setString(1, userId);
-	        ResultSet data_rs = pstmt.executeQuery();
 	        
+	        ResultSet data_rs = pstmt.executeQuery();
 	        if (data_rs.next()) {
 				String cookie = data_rs.getString("user_cookie");
-				System.out.println(cookie);
 				if (cookie == null || !candidateCookie.equals(cookie)) {
-					result = "FAILURE";
-					reason = "Incorrect Authentication Cookie";
+					return returnFailureResponse("Incorrect Authentication Cookie");
 				}
-
 			} else {
-				result = "FAILURE";
-				reason = "Account does not exist";
+				return returnFailureResponse("Account does not exist");
 			}
 
 	    } catch (SQLException e) {
-	    	result = "FAILURE";
-			reason = e.getMessage();
+			return returnFailureResponse(e.getMessage());
 	    }
 	    
-	    serverResponse.put("result", result);
-		serverResponse.put("reason", reason);
-		System.out.println(serverResponse);
-		return serverResponse;
-		
+		return returnSuccessResponse("Successfully authentiated");	
 	}
 	
 	//TODO: Write SQL query that wipes out data associated with given userId, no need to validate whether userID exists.

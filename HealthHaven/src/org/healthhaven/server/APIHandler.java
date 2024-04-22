@@ -2,6 +2,8 @@ package org.healthhaven.server;
 
 import java.sql.Connection;
 
+import javax.net.ssl.SSLSocket;
+
 import org.healthhaven.db.models.AccountDAO;
 import org.healthhaven.db.models.UserDAO;
 import org.healthhaven.model.EmailSender;
@@ -11,24 +13,22 @@ import org.json.JSONObject;
 
 public class APIHandler{
 	
-	public static JSONObject processAPIRequest(JSONObject json, Connection cnn) {
+	public static JSONObject processAPIRequest(JSONObject json, Connection cnn, SSLSocket clientSocket) {
 		
 		String request = json.getString("request");
 		if (!(request.equals("LOGIN") || request.equals("CREATE_ACCOUNT")||request.equals("PASSWORD_RESET"))) {
-			System.out.println("inside if statement");
 			// For any request apart from LOGIN and CREATE_ACCOUNT, we must validate that the user is logged in with a cookie.
-			JSONObject verifiedCookieObject = AccountDAO.verifyAuthenticationCookieById(cnn, json.optString("callerId"), json.optString("cookie"));
-			if (verifiedCookieObject.getString("result").equals("FAILURE")) {
-				return verifiedCookieObject;
+			JSONObject authentication = AuthenticationService.verifyAuthenticationCookie(cnn, json, clientSocket);
+			if (authentication.getString("result").equals("FAILURE")) {
+				return authentication;
 			}
 		}
-		System.out.print("outside if statement");
 		json.put("accountType", UserDAO.getUserAccountType(cnn, json.optString("callerId")));
 		
 		switch(json.getString("request")) {
 			case "LOGIN":
 				System.out.println("LOGIN"); //any user
-				return handleLoginRequest(json, cnn);
+				return handleLoginRequest(json, cnn, clientSocket);
 			case "PASSWORD_RESET": //any user
 				System.out.println("PASSWORD_RESET");
 				return handlePasswordReset(json, cnn);
@@ -184,26 +184,28 @@ public class APIHandler{
 	}
 	
 
-	private static JSONObject handleLoginRequest(JSONObject json, Connection cnn) {
+	private static JSONObject handleLoginRequest(JSONObject json, Connection cnn, SSLSocket clientSocket) {
 		
 		switch (json.getString("type")) {
 		case "PASSWORD":	
 			System.out.println("PASSWORD");
-			return AccountDAO.authenticateUser(cnn, json.getString("email"),
-					json.getString("password"), "LOGIN");
+//			return AccountDAO.authenticateUser(cnn, json.getString("email"),
+//					json.getString("password"), "LOGIN");
+			return AuthenticationService.authenticateUserWithPassword(cnn, json, clientSocket);
 		case "OTP":
 			System.out.println("OTP");
-			JSONObject userInformation = AccountDAO.authenticateOTP(cnn, json.getString("email"), json.getString("otp"));
-			if (!userInformation.getString("result").equals("SUCCESS")) {
-				return returnFailureResponse(userInformation.getString("reason"));
-			}
-			// Create and add a cookie because they're successfully authenticated into the system
-			String userCookie = AccountDAO.generateAndUpdateNewUserCookie(cnn, userInformation.getString("userID"));
-			if (userCookie == null) {
-				return returnFailureResponse("Unable to create cookie");
-			}
-			userInformation.put("cookie", userCookie);
-			return userInformation;
+//			JSONObject userInformation = AccountDAO.authenticateOTP(cnn, json.getString("email"), json.getString("otp"));
+//			if (!userInformation.getString("result").equals("SUCCESS")) {
+//				return returnFailureResponse(userInformation.getString("reason"));
+//			}
+//			// Create and add a cookie because they're successfully authenticated into the system
+//			String userCookie = AccountDAO.generateAndUpdateNewUserCookie(cnn, userInformation.getString("userID"));
+//			if (userCookie == null) {
+//				return returnFailureResponse("Unable to create cookie");
+//			}
+//			userInformation.put("cookie", userCookie);
+//			return userInformation;
+			return AuthenticationService.authenticateUserWithOTP(cnn, json, clientSocket);
 			
 		default:
 			return returnFailureResponse("Invalid Request");	
