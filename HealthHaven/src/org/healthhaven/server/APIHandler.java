@@ -25,6 +25,15 @@ public class APIHandler{
 		}
 		json.put("accountType", UserDAO.getUserAccountType(cnn, json.optString("callerId")));
 		
+		// Authorize request
+		if (!(request.equals("LOGIN") || request.equals("CREATE_ACCOUNT")||request.equals("PASSWORD_RESET"))) {
+			boolean isAuthorized = ReferenceMonitor.authorizeRequest(clientSocket, json.getString("accountType"), json.optString("callerId"), json);
+			if (!isAuthorized) {
+				return returnFailureResponse("User is not authorized to perform this command");
+			}
+		}
+		
+		
 		switch(json.getString("request")) {
 			case "LOGIN":
 				System.out.println("LOGIN"); //any user
@@ -130,7 +139,6 @@ public class APIHandler{
 	}
 
 	private static JSONObject handleAccountCreation(JSONObject json, Connection cnn) {
-
 		
 		//Role based authorization
 		if(!checkAuthorization(json.getString("accountType"), json.getString("callerId"), json)) {

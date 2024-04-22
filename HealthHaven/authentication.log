@@ -1,0 +1,14 @@
+[2024-04-21 19:54:31] - 127.0.0.1 - request:LOGIN caller_email:sameerrajmalik+1@gmail.com result:SUCCESS reason:EXISTING
+
+[2024-04-21 19:55:49] - 127.0.0.1 - request:LOGIN caller_email:sameerrajmalik+1@gmail.com result:SUCCESS reason:EXISTING
+
+[2024-04-21 19:55:59] - 127.0.0.1 - request:LOGIN caller_email:sameerrajmalik+1@gmail.com result:SUCCESS reason:
+
+[2024-04-21 19:56:59] - 127.0.0.1 - request:LOGIN caller_email:sameerrajmalik+1@gmail.com result:SUCCESS reason:EXISTING
+
+[2024-04-21 19:57:03] - 127.0.0.1 - request:LOGIN caller_email:sameerrajmalik+1@gmail.com result:SUCCESS reason:
+
+[2024-04-21 19:57:27] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:DD6HP7OI7UXBANEB result:SUCCESS reason:Successfully authentiated
+
+[2024-04-21 19:58:32] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:DD6HP7OI7UXBANEB result:SUCCESS reason:Successfully authentiated
+

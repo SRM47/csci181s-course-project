@@ -3,6 +3,9 @@
  */
 package org.healthhaven.server;
 
+import javax.net.ssl.SSLSocket;
+
+import org.healthhaven.logging.Logger;
 import org.json.JSONObject;
 
 /**
@@ -10,47 +13,74 @@ import org.json.JSONObject;
  */
 public class ReferenceMonitor {
 	
-	protected static boolean authorizeRequest(String accountType, String callerId, JSONObject json) {
+	private static final String AUTHORIZATION_LOG_FILE_PATH = "authorization.log";
+	
+	protected static boolean authorizeRequest(SSLSocket clientSocket, String accountType, String callerId, JSONObject json) {
+		boolean res = false;
 		switch (json.getString("request")) {
 		case "ALLOW_ACCOUNT_CREATION": 
 			if (accountType.equals("Superadmin")) {
-				return true;
+				res = true;
 			} else if (accountType.equals("Doctor")) {
-				return json.getString("userType").equals("Patient");
+				res = json.getString("userType").equals("Patient");
 			} else {
-				return false;
+				res = false;
 			}
+			break;
 			
 		case "REQUEST_PATIENT_DATA": //data analyst	
-			return accountType.equals("Data Analyst");
+			res = accountType.equals("Data Analyst");
+			break;
 			
 		case "VIEW_RECORD": //doctor or patient
 			if (accountType.equals("Patient")) {
-				return json.getString("patientID").equals(callerId);
+				res = json.getString("patientID").equals(callerId);
 			} else if (accountType.equals("Doctor")) {
-				return true;
+				res = true;
 			} else {
-				return false;		
+				res = false;		
 			}
+			break;
 			
 		case "CREATE_RECORD": //doctor
-			return accountType.equals("Doctor");
+			res = accountType.equals("Doctor");
+			break;
 			
 		case "DEACTIVATE_ACCOUNT": //any user for themselves or admin for everyone
 			if (json.getString("type").equals("VALIDATE_ACCOUNT")) {
-				return true;
+				res = true;
 			}
 			if (accountType.equals("Superadmin")) {
-				return true;
+				res = true;
 			} else {
-				return json.getString("userId").equals(callerId);
+				res = json.getString("userId").equals(callerId);
 			}
+			break;
 			
 		case "SEARCH_ACCOUNT": //super admin
-			return accountType.equals("Superadmin");
+			res = accountType.equals("Superadmin");
+			break;
+			
+		case "LOGIN":
+		case "PASSWORD_RESET":
+		case "CREATE_ACCOUNT":
+		case "UPDATE_ACCOUNT":
+		case "LOGOUT":
+			res = true;
+			break;
 		default:
-			return false;	
+			res = false;	
+			break;
 		}
+		
+		String logMessage = String.format("request:%s caller_id:%s result:%s reason:%s\n", json.getString("request"),
+				callerId, res ? "SUCCESS" : "FAILURE", "");
+		log(clientSocket, logMessage);
+		return res;
+	}
+	
+	private static void log(SSLSocket clientSocket, String message) {
+		Logger.log(AUTHORIZATION_LOG_FILE_PATH, clientSocket.getInetAddress().getHostAddress(), message);
 	}
 
 }

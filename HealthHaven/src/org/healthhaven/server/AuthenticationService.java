@@ -16,7 +16,7 @@ import org.json.JSONObject;
  */
 public class AuthenticationService {
 
-	private static final String AUTH_LOG_FILE_PATH = "auth_log_file.log";
+	private static final String AUTHENTICATION_LOG_FILE_PATH = "authentication.log";
 
 	public static JSONObject verifyAuthenticationCookie(Connection conn, JSONObject request, SSLSocket clientSocket) {
 		JSONObject isAuthenticated = AccountDAO.verifyAuthenticationCookieById(conn, request.optString("callerId"),
@@ -36,7 +36,7 @@ public class AuthenticationService {
 
 		String logMessage = String.format("request:%s caller_email:%s result:%s reason:%s\n", request.getString("request"),
 				request.optString("email"), isAuthenticatedByPassword.getString("result"),
-				isAuthenticatedByPassword.getString("reason"));
+				isAuthenticatedByPassword.optString("reason"));
 		log(clientSocket, logMessage);
 
 		return isAuthenticatedByPassword;
@@ -46,7 +46,7 @@ public class AuthenticationService {
 		JSONObject userInformation = AccountDAO.authenticateOTP(conn, request.getString("email"),
 				request.getString("otp"));
 
-		if (userInformation.getString("result").equals("FAILURE")) {
+		if (userInformation.getString("result").equals("SUCCESS")) {
 			// Create and add a cookie because they're successfully authenticated into the
 			// system
 			String userCookie = AccountDAO.generateAndUpdateNewUserCookie(conn, userInformation.getString("userID"));
@@ -57,14 +57,14 @@ public class AuthenticationService {
 		}
 
 		String logMessage = String.format("request:%s caller_email:%s result:%s reason:%s\n", request.getString("request"),
-				request.optString("email"), userInformation.getString("result"), userInformation.getString("reason"));
+				request.optString("email"), userInformation.getString("result"), userInformation.optString("reason"));
 		log(clientSocket, logMessage);
 
 		return userInformation;
 	}
 
 	private static void log(SSLSocket clientSocket, String message) {
-		Logger.log(AUTH_LOG_FILE_PATH, clientSocket.getInetAddress().getHostAddress(), message);
+		Logger.log(AUTHENTICATION_LOG_FILE_PATH, clientSocket.getInetAddress().getHostAddress(), message);
 	}
 
 	private static JSONObject returnFailureResponse(String reason) {

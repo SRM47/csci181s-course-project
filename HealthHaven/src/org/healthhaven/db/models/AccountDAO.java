@@ -616,7 +616,8 @@ public class AccountDAO {
 		}
 
 		serverResponse.put("result", result);
-		serverResponse.put(result.equals("SUCCESS") ? "type" : "reason", reason);
+		serverResponse.put("reason", reason);
+		serverResponse.put("type" , reason);
 		serverResponse.put("userType", userType);
 		System.out.println(serverResponse);
 		return serverResponse;
@@ -663,7 +664,8 @@ public class AccountDAO {
 		}
 
 		serverResponse.put("result", result);
-		serverResponse.put(result.equals("SUCCESS") ? "type" : "reason", reason);
+		serverResponse.put("type" , reason);
+		serverResponse.put("reason", reason);
 		System.out.println(serverResponse);
 		return serverResponse;
 		
