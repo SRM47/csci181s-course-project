@@ -782,6 +782,22 @@ public class AccountDAO {
 	    }
 	    return false;
 	}
+	
+	public static boolean updateCookieTimestamp(Connection conn, String userId) {
+	    String sql = "UPDATE healthhaven.cookie SET timestamp = NOW() WHERE userid = ?";
+	    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	        pstmt.setString(1, userId);
+	        int affectedRows = pstmt.executeUpdate();
+	        if (affectedRows > 0) {
+	            return true;
+	        }
+	    } catch (SQLException e) {
+	        System.err.println("Error updating cookie timestamp: " + e.getMessage());
+	        return false;
+	    }
+	    return false;
+	}
+
 
 	//TODO: Write SQL query that wipes out data associated with given userId, no need to validate whether userID exists.
 	public static JSONObject deactivateAccount(Connection conn, String userId) {

@@ -25,6 +25,10 @@ public class AuthenticationService {
 	    if (!AccountDAO.isCookieValid(conn, userId, cookie)) {
 	        return returnFailureResponse("Session expired. Please log in again.");
 	    }
+	    
+	    if (!AccountDAO.updateCookieTimestamp(conn, userId)) {
+	        return returnFailureResponse("Failed to update session timestamp.");
+	    }
 		
 		JSONObject isAuthenticated = AccountDAO.verifyAuthenticationCookieById(conn, request.optString("callerId"),
 				request.optString("cookie"));
