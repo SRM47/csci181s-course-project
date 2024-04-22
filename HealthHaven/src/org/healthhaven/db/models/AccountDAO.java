@@ -757,6 +757,32 @@ public class AccountDAO {
 		return returnSuccessResponse("Successfully authentiated");	
 	}
 	
+	public static boolean isCookieValid(Connection conn, String userId, String cookie) {
+	    String sql = "SELECT user_cookie, timestamp FROM healthhaven.cookie WHERE userid = ?";
+	    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	        pstmt.setString(1, userId);
+	        ResultSet rs = pstmt.executeQuery();
+	        if (rs.next()) {
+	            String storedCookie = rs.getString("user_cookie");
+	            Timestamp timestamp = rs.getTimestamp("timestamp");
+	            
+	            // Check if the cookie matches and verify its expiry
+	            if (storedCookie != null && storedCookie.equals(cookie) && timestamp != null) {
+	                long currentTimeMillis = System.currentTimeMillis();
+	                long cookieTimeMillis = timestamp.getTime();
+	                long expiryTimeMillis = 3 * 3600 * 1000; // 3 hours in milliseconds
+	                
+	                if ((currentTimeMillis - cookieTimeMillis) < expiryTimeMillis) {
+	                    return true;
+	                }
+	            }
+	        }
+	    } catch (SQLException e) {
+	        System.err.println("Error checking cookie validity: " + e.getMessage());
+	    }
+	    return false;
+	}
+
 	//TODO: Write SQL query that wipes out data associated with given userId, no need to validate whether userID exists.
 	public static JSONObject deactivateAccount(Connection conn, String userId) {
 		JSONObject serverResponse = new JSONObject();
