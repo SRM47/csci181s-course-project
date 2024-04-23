@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 
 import org.healthhaven.model.*;
+import org.healthhaven.model.User.Account;
 import org.json.JSONObject;
 
 import javafx.fxml.FXML;
@@ -57,6 +58,8 @@ public class UserProfileController {
     @FXML 
     private Button updateButton;
     @FXML
+    private Hyperlink dataSharingLink;
+    @FXML
     private Hyperlink accountDeactivationLink;
 
     private User currentUser;
@@ -71,6 +74,11 @@ public class UserProfileController {
         updateActionField.setVisible(false);
         response.setText(null);
         displayUserInfo();
+        dataSharingLink.setVisible(false);
+        
+        if (currentUser.getAccountType() == Account.PATIENT) {
+        	dataSharingLink.setVisible(true);
+        }
     }
     
     private void displayUserInfo() {
@@ -143,6 +151,19 @@ public class UserProfileController {
     		handlePasswordUpdate();
     	} else {
     		response.setText("Error! Try again");
+    	}
+    }
+    
+    @FXML
+    public void handleDataPrivacySetting() {
+    	try {
+    		FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/healthhaven/gui/DataSharingSetting.fxml"));
+    		UserProfileSection.getChildren().clear();
+    		UserProfileSection.getChildren().add(loader.load());
+        	DataSharingSettingController controller = loader.getController();
+        	controller.setUser((Patient) currentUser, userController);
+    	} catch (Exception e) {
+    		e.printStackTrace();
     	}
     }
     

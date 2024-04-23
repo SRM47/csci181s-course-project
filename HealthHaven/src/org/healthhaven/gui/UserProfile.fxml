@@ -90,6 +90,7 @@
                         </Button>
                      </children>
                   </HBox>
+                  <Hyperlink fx:id="dataSharingLink" onAction="#handleDataPrivacySetting" text="About Data Sharing" />
                   <Hyperlink fx:id="accountDeactivationLink" onAction="#handleDeactivateAccount" text="Deactivate Account?" />
                </children>
             </VBox>

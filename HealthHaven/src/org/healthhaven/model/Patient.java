@@ -19,6 +19,7 @@ import org.healthhaven.server.ServerCommunicator;
  */
 public class Patient extends User {
 	private static Account ACCOUNT_TYPE = Account.PATIENT;
+	private boolean dataSharing;
 
 	/**
 	 * For new doctor
@@ -44,11 +45,31 @@ public class Patient extends User {
 	 * @param dob
 	 */
 	public Patient(String userID, String email, String legal_first_name, String legal_last_name,
-				   String address, LocalDate dob, String cookie){
+				   String address, LocalDate dob, String cookie, boolean dataSharing){
         super(userID, email, legal_first_name, legal_last_name, address, dob, cookie);
-
+        this.dataSharing = dataSharing;
     }
 	
+	public boolean getDataSharingSetting() {
+		return dataSharing;
+	}
+	
+	public void setDataSharingSetting(boolean setting) {
+		this.dataSharing = setting;
+	}
+	
+	public String updateDataSharingSetting(boolean setting) {
+		JSONObject json = new JSONObject();
+	    
+	    // Populate the JSON object with key-value pairs
+	    json.put("request", "UPDATE_DATA_SHARING");
+	    json.put("callerId", getUserID());
+	    json.put("data_sharing", String.valueOf(setting));
+	    json.put("cookie", getCookie());
+	    
+	    // Send the JSON string to the server
+	    return ServerCommunicator.communicateWithServer(json.toString());
+	}
 	@Override
 	public Account getAccountType() {
 		return ACCOUNT_TYPE;

@@ -1,6 +1,7 @@
 package org.healthhaven.controller;
 
 import org.healthhaven.model.User;
+import org.healthhaven.model.*;
 import org.json.JSONObject;
 
 import javafx.fxml.FXML;

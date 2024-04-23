@@ -49,13 +49,13 @@ public class Login {
 	 * @return
 	 */
 	private static User createUserInstance(String accountType, String userID, String email, String legalFirstName, String legalLastName,
-										   String address, LocalDate dob, String cookie){
+										   String address, LocalDate dob, String cookie, boolean dataSharing){
 		
 		System.out.println(accountType);
 		
 		return switch (accountType) {
 			case "Doctor", "DOCTOR" -> new Doctor(userID, email, legalFirstName, legalLastName, address, dob, cookie);
-			case "Patient", "PATIENT" -> new Patient(userID, email, legalFirstName, legalLastName, address, dob, cookie);
+			case "Patient", "PATIENT" -> new Patient(userID, email, legalFirstName, legalLastName, address, dob, cookie, dataSharing);
 			case "Data Analyst", "DATA_ANALYST" -> new DataAnalyst(userID, email, legalFirstName, legalLastName, address, dob, cookie);
 			case "Superadmin", "SUPERADMIN" -> new Superadmin(userID, email, legalFirstName, legalLastName, address, dob, cookie);
 			default -> null;
@@ -76,8 +76,15 @@ public class Login {
 			LocalDate dob = LocalDate.parse(jsonOb.getString("dob"), DateTimeFormatter.ISO_LOCAL_DATE);
 			String accountType = jsonOb.getString("accountType");
 			String cookie = jsonOb.getString("cookie");
+			boolean dataSharing = false;
+			
+			
+			if (accountType.equals("PATIENT")||accountType.equals("Patient")) {
+				dataSharing = Boolean.parseBoolean("true");
+				//dataSharing = Boolean.parseBoolean(jsonOb.getString("data_sharing"));
+			}
 
-            return createUserInstance(accountType, userID, email, legalFirstName, legalLastName, address, dob, cookie);
+            return createUserInstance(accountType, userID, email, legalFirstName, legalLastName, address, dob, cookie, dataSharing);
 
 	}
 

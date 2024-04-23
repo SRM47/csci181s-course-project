@@ -7,7 +7,7 @@ import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
 import org.json.JSONObject;
-
+import org.healthhaven.model.User.Account;
 import org.healthhaven.server.ServerCommunicator;
 
 public class AccountCreationService {
@@ -47,6 +47,10 @@ public class AccountCreationService {
         json.put("dob", dob.toString()); // Converting LocalDate to String
         json.put("timestamp", timestamp.toString()); // Converting Instant to String
         json.put("accountType", userType.getAccountName());
+        
+        if (userType.equals(Account.PATIENT)) {
+        	json.put("data_sharing", true);
+        }
        
         return ServerCommunicator.communicateWithServer(json.toString());
 
