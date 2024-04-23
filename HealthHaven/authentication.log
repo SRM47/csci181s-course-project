@@ -96,3 +96,31 @@
 
 [2024-04-22 19:40:45] - 127.0.0.1 - request:LOGOUT caller_id:3EAJHGKF8KF92Q91 result:SUCCESS reason:Successfully authentiated
 
+[2024-04-22 21:53:55] - 127.0.0.1 - request:LOGIN caller_email:sae20021005@gmail.com result:SUCCESS reason:EXISTING
+
+[2024-04-22 21:54:14] - 127.0.0.1 - request:LOGIN caller_email:sae20021005@gmail.com result:SUCCESS reason:
+
+[2024-04-22 21:54:15] - 127.0.0.1 - request:VIEW_RECORD caller_id:66776HP7JAER36KN result:SUCCESS reason:Successfully authentiated
+
+[2024-04-22 21:54:29] - 127.0.0.1 - request:UPDATE_DATA_SHARING caller_id:66776HP7JAER36KN result:SUCCESS reason:Successfully authentiated
+
+[2024-04-22 21:54:35] - 127.0.0.1 - request:LOGOUT caller_id:66776HP7JAER36KN result:SUCCESS reason:Successfully authentiated
+
+[2024-04-22 21:54:50] - 127.0.0.1 - request:LOGIN caller_email:saesae1005@icloud.com result:SUCCESS reason:EXISTING
+
+[2024-04-22 21:55:02] - 127.0.0.1 - request:LOGIN caller_email:saesae1005@icloud.com result:FAILURE reason:Incorrect OTP
+
+[2024-04-22 21:55:20] - 127.0.0.1 - request:LOGIN caller_email:saesae1005@icloud.com result:SUCCESS reason:
+
+[2024-04-22 21:55:34] - 127.0.0.1 - request:ALLOW_ACCOUNT_CREATION caller_id:3EAJHGKF8KF92Q91 result:SUCCESS reason:Successfully authentiated
+
+[2024-04-22 21:55:39] - 127.0.0.1 - request:LOGOUT caller_id:3EAJHGKF8KF92Q91 result:SUCCESS reason:Successfully authentiated
+
+[2024-04-22 21:55:57] - 127.0.0.1 - request:LOGIN caller_email:sfaa2021@mymail.pomona.edu result:SUCCESS reason:NEW
+
+[2024-04-22 21:57:31] - 127.0.0.1 - request:LOGIN caller_email:sfaa2021@mymail.pomona.edu result:SUCCESS reason:NEW
+
+[2024-04-22 21:58:06] - 127.0.0.1 - request:LOGIN caller_email:sfaa2021@mymail.pomona.edu result:SUCCESS reason:NEW
+
+[2024-04-22 21:59:46] - 127.0.0.1 - request:LOGIN caller_email:sfaa2021@mymail.pomona.edu result:SUCCESS reason:NEW
+

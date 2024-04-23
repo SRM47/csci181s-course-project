@@ -8,6 +8,7 @@ import java.time.format.DateTimeParseException;
 import org.healthhaven.gui.Main;
 import org.healthhaven.model.AccountCreationService;
 import org.healthhaven.model.PasswordGenerator;
+import org.healthhaven.model.Patient;
 import org.json.JSONObject;
 
 import javafx.event.ActionEvent;
@@ -23,12 +24,12 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import me.gosimple.nbvcxz.Nbvcxz;
 import me.gosimple.nbvcxz.scoring.Result;
 
 public class AccountCreationController {
-	
 	@FXML
 	private Button submitButton;
 	@FXML

@@ -85,7 +85,7 @@ public class LoginController{
 		        } else if (jsonObj.getString("type").equals("NEW")) {
 		        	errorMessage.setText("");
 		        	// loadAccountCreationPage(email,jsonObj.getString("accountType"));
-		        	loadAccountCreationPage(email, jsonObj.getString("userType"));
+		        	loadConsentPage(email, jsonObj.getString("userType"));
 		        }
 	        }
 	        
@@ -131,13 +131,13 @@ public class LoginController{
 	}
 	
 
-	private void loadAccountCreationPage(String email, String userType) throws IOException {
-		 FXMLLoader loader = new FXMLLoader(getClass().getResource("../gui/accountcreation.fxml"));
+	private void loadConsentPage(String email, String userType) throws IOException {
+		 FXMLLoader loader = new FXMLLoader(getClass().getResource("../gui/DataSharingPolicy.fxml"));
 	        Parent root = loader.load();
 	        Stage stage = (Stage) Main.getFirstStage().getScene().getWindow();
 	        
-	        AccountCreationController accountController = loader.getController();
-	        accountController.setAccountCreation(email, userType);
+	        DataSharingPolicyController dataSharingPolicyController = loader.getController();
+	        dataSharingPolicyController.intialize(email, userType);
 	        
 	        stage.setScene(new Scene(root));
 	        stage.show();

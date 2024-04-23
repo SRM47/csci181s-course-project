@@ -35,6 +35,9 @@ public class APIHandler{
 		
 		
 		switch(json.getString("request")) {
+			case "UPDATE_DATA_SHARING":
+				System.out.println("UPDATE_DATA_SHARING");
+				return handleDataSharing(json, cnn);
 			case "LOGIN":
 				System.out.println("LOGIN"); //any user
 				return handleLoginRequest(json, cnn, clientSocket);
@@ -78,12 +81,13 @@ public class APIHandler{
 		return AccountDAO.logoutUser(cnn, json.getString("userId"));
 	}
 	
+	private static JSONObject handleDataSharing(JSONObject json, Connection cnn) {
+		return returnFailureResponse("this functionality not yet implemented");
+		//return AccountDAO.updateDataSharingSetting(cnn, json.getString("callerId"), json.getString("data_sharing"));
+	}
+	
 	private static JSONObject createRecord(JSONObject json, Connection cnn) {
-		
-		//Role based authorization
-		if(!checkAuthorization(json.getString("accountType"), json.getString("callerId"), json)) {
-			return returnFailureResponse("Invalid Request");
-		};
+
 
 		return AccountDAO.newMedicalInformation(cnn, json.getString("patientID"),
         json.getString("doctorID"), 
@@ -94,11 +98,6 @@ public class APIHandler{
 	}
 
 	private static JSONObject handleViewRecord(JSONObject json, Connection cnn) {
-		
-		//Role based authorization
-		if(!checkAuthorization(json.getString("accountType"), json.getString("callerId"), json)) {
-			return returnFailureResponse("Invalid Request");
-		};
 
 		return AccountDAO.viewUserInformation(cnn,
 		        json.optString("doctorID"), 
@@ -106,11 +105,6 @@ public class APIHandler{
 	}
 
 	private static JSONObject handleGetMedicalInformation(JSONObject json, Connection cnn) {
-		
-		//Role based authorization
-		if(!checkAuthorization(json.getString("accountType"), json.getString("callerId"), json)) {
-			return returnFailureResponse("Invalid Request");
-		};
 
 		// return AccountDAO.getDataAverage(cnn);
 		return AccountDAO.getMedicalInformationDataByQuery(cnn, json.getString("when"), json.getString("date"));
@@ -139,11 +133,6 @@ public class APIHandler{
 	}
 
 	private static JSONObject handleAccountCreation(JSONObject json, Connection cnn) {
-		
-		//Role based authorization
-		if(!checkAuthorization(json.getString("accountType"), json.getString("callerId"), json)) {
-			return returnFailureResponse("Invalid Request");
-		};
 				
 		JSONObject serverResponse = new JSONObject();
 		String email = json.getString("email");
@@ -221,11 +210,6 @@ public class APIHandler{
 	}
 	
 	private static JSONObject handleSearchAccount(JSONObject json, Connection cnn) {
-		
-		//Role based authorization
-		if(!checkAuthorization(json.getString("accountType"), json.getString("callerId"), json)) {
-			return returnFailureResponse("Invalid Request");
-		};
 		return AccountDAO.viewAccountInformation(cnn, json.getString("userId"));
 	}
 	
@@ -233,18 +217,9 @@ public class APIHandler{
 		JSONObject verifiedCookieObject;
 		switch (json.getString("type")) {
 		case "VALIDATE_ACCOUNT":
-			//Role based authorization
-			if(!checkAuthorization(json.getString("accountType"), json.getString("callerId"), json)) {
-				return returnFailureResponse("Invalid Request");
-			};
 			return AccountDAO.authenticateUser(cnn, json.getString("email"),
 					json.getString("password"), "ACCOUNT_DEACTIVATION");
 		case "DEACTIVATE_ACCOUNT":
-			
-			//Role based authorization
-			if(!checkAuthorization(json.getString("accountType"), json.getString("callerId"), json)) {
-				return returnFailureResponse("Invalid Request");
-			};
 			
 			return AccountDAO.deactivateAccount(cnn, json.getString("userId"));
 		default:
@@ -252,50 +227,7 @@ public class APIHandler{
 		}
 		
 	}
-	
-	private static boolean checkAuthorization(String accountType, String callerId, JSONObject json) {
-		switch (json.getString("request")) {
-		case "ALLOW_ACCOUNT_CREATION": 
-			if (accountType.equals("Superadmin")) {
-				return true;
-			} else if (accountType.equals("Doctor")) {
-				return json.getString("userType").equals("Patient");
-			} else {
-				return false;
-				
-			}
-			
-		case "REQUEST_PATIENT_DATA": //data analyst	
-			return accountType.equals("Data Analyst");
-			
-		case "VIEW_RECORD": //doctor or patient
-			if (accountType.equals("Patient")) {
-				return json.getString("patientID").equals(callerId);
-			} else if (accountType.equals("Doctor")) {
-				return true;
-			} else {
-				return false;		
-			}
-			
-		case "CREATE_RECORD": //doctor
-			return accountType.equals("Doctor");
-			
-		case "DEACTIVATE_ACCOUNT": //any user for themselves or admin for everyone
-			if (json.getString("type").equals("VALIDATE_ACCOUNT")) {
-				return true;
-			}
-			if (accountType.equals("Superadmin")) {
-				return true;
-			} else {
-				return json.getString("userId").equals(callerId);
-			}
-			
-		case "SEARCH_ACCOUNT": //super admin
-			return accountType.equals("Superadmin");
-		default:
-			return false;	
-		}
-	}
+
 	
 	private static JSONObject returnFailureResponse(String reason) {
 		JSONObject serverResponse = new JSONObject();

@@ -18,6 +18,13 @@ public class ReferenceMonitor {
 	protected static boolean authorizeRequest(SSLSocket clientSocket, String accountType, String callerId, JSONObject json) {
 		boolean res = false;
 		switch (json.getString("request")) {
+		case "UPDATE_DATA_SHARING":
+			if (accountType.equals("Patient")) {
+				res = true;
+			} else {
+				res = false;
+			}
+			break;
 		case "ALLOW_ACCOUNT_CREATION": 
 			if (accountType.equals("Superadmin")) {
 				res = true;
@@ -61,11 +68,7 @@ public class ReferenceMonitor {
 			res = accountType.equals("Superadmin");
 			break;
 			
-		case "LOGIN":
-		case "PASSWORD_RESET":
-		case "CREATE_ACCOUNT":
-		case "UPDATE_ACCOUNT":
-		case "LOGOUT":
+		case "LOGIN","PASSWORD_RESET","CREATE_ACCOUNT","UPDATE_ACCOUNT","LOGOUT":
 			res = true;
 			break;
 		default:
