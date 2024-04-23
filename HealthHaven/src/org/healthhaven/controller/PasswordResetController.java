@@ -166,11 +166,19 @@ public class PasswordResetController{
 	
 	private String passwordChecker(JSONObject json, String rpw1) {
 		Result result = nbvcxz.estimate(rpw1);
-		String remail = json.getString("email");
-		String rfn = json.getString("first_name");
-		String rln = json.getString("last_name");
-		String rdob = json.getString("dob");
-		LocalDate dob = LocalDate.parse(rdob);
+		String rfn;
+		String rln;
+		LocalDate dob;
+		if(json.getString("email") != null & json.getString("first_name") != null & json.getString("last_name") != null & json.getString("dob") != null) {
+			String remail = json.getString("email");
+			rfn = json.getString("first_name");
+			rln = json.getString("last_name");
+			String rdob = json.getString("dob");
+			dob = LocalDate.parse(rdob);
+		}
+		else {
+			return "failure";
+		}
 		
 		Integer passCheck = PasswordGenerator.passwordStrength(rpw1, rfn, rln, dob);
 		
