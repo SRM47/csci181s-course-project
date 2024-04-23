@@ -19,6 +19,17 @@ public class AuthenticationService {
 	private static final String AUTHENTICATION_LOG_FILE_PATH = "authentication.log";
 
 	public static JSONObject verifyAuthenticationCookie(Connection conn, JSONObject request, SSLSocket clientSocket) {
+	    String userId = request.optString("callerId");
+	    String cookie = request.optString("cookie");
+	    
+	    if (!AccountDAO.isCookieValid(conn, userId, cookie)) {
+	        return returnFailureResponse("Session expired. Please log in again.");
+	    }
+	    
+	    if (!AccountDAO.updateCookieTimestamp(conn, userId)) {
+	        return returnFailureResponse("Failed to update session timestamp.");
+	    }
+		
 		JSONObject isAuthenticated = AccountDAO.verifyAuthenticationCookieById(conn, request.optString("callerId"),
 				request.optString("cookie"));
 
