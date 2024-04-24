@@ -60,7 +60,7 @@ public class ReferenceMonitor {
 			if (accountType.equals("Superadmin")) {
 				res = true;
 			} else {
-				res = json.getString("userId").equals(callerId);
+				res = json.getString("callerId").equals(callerId);
 			}
 			break;
 			

@@ -12,7 +12,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 
 public class DataSharingPolicyController{
-
 	@FXML
     private TextArea policyText;
 	

@@ -64,7 +64,7 @@ public class Patient extends User {
 	    // Populate the JSON object with key-value pairs
 	    json.put("request", "UPDATE_DATA_SHARING");
 	    json.put("callerId", getUserID());
-	    json.put("data_sharing", String.valueOf(setting));
+	    json.put("data_sharing", setting);
 	    json.put("cookie", getCookie());
 	    
 	    // Send the JSON string to the server

@@ -135,7 +135,7 @@ public class AccountDAO {
 		} else {
 			// Step 3: Update users table
 			// Step 5: Update authentication table (with password update)
-			String usersUpdateSql = "UPDATE healthhaven.users SET legalfirstname = ?, legallastname = ?, address = ? WHERE userid = ?";
+			String usersUpdateSql = "UPDATE healthhaven.users SET legalfirstname = ?, legallastname = ?, address = ?, data_sharing = TRUE WHERE userid = ?";
 			String authenticationUpdateSql = "UPDATE healthhaven.authentication SET password = ?, totp_key = ?, reset = ?, salt = ?, hashpass=? WHERE userid = ?";
 			if (!updateUserTable(conn, usersUpdateSql, legalfirstname, legallastname, address, userId)
 					|| !updateAuthenticationTable(conn, authenticationUpdateSql, password, true, TOTP.genSecretKey(),
@@ -302,9 +302,10 @@ public class AccountDAO {
 			response.put("reason", "User doe not exist!");
 			return response;
 		}
-
+		
+		boolean data_sharing = UserDAO.getDataSharingSetting(conn, patientId);
 //	    TODO: check that PatientUserID is the right way
-		String insertSQL = "INSERT INTO healthhaven.medical_information (entryid, patientid, doctorid, timestamp, height, weight) VALUES (?, ?, ?, ?, ?, ?)";
+		String insertSQL = "INSERT INTO healthhaven.medical_information (entryid, patientid, doctorid, timestamp, height, weight, data_sharing) VALUES (?, ?, ?, ?, ?, ?,?)";
 
 		try (PreparedStatement stmt = conn.prepareStatement(insertSQL)) {
 			UserIdGenerator g = new UserIdGenerator(32);
@@ -317,6 +318,7 @@ public class AccountDAO {
 			stmt.setTimestamp(4, Timestamp.from(instant));
 			stmt.setFloat(5, height);
 			stmt.setFloat(6, weight);
+			stmt.setBoolean(7, data_sharing);
 
 			// Execute the insert operation
 			int rowsAffected = stmt.executeUpdate();
@@ -353,6 +355,43 @@ public class AccountDAO {
 
 		return response;
 	}
+	
+	
+	public static JSONObject updateDataSharingSetting(Connection conn, String callerId, boolean data_sharing) {
+		JSONObject serverResponse = new JSONObject();
+		String result = "SUCCESS";
+		String reason = "";
+
+		if (!accountExistsById(conn, callerId)) {
+			result = "FAILURE";
+			reason = "Account does not exist";
+		} else {
+			String usersUpdateSql = "UPDATE healthhaven.users SET data_sharing = ? WHERE userid = ?";
+			String medicalInfoUpdateSql = "UPDATE healthhaven.medical_information SET data_sharing = ? WHERE patientid = ?";
+			if (!updateDataSharingOnUserTable(conn, usersUpdateSql, callerId, data_sharing)
+					|| !udpateDataSharingOnMedicalTable(conn, medicalInfoUpdateSql, callerId, data_sharing)) {
+				result = "FAILURE";
+				reason = "Database Entry Error";
+			} else {
+				try {
+					conn.commit();
+				} catch (SQLException e) {
+					try {
+						conn.rollback();
+					} catch (SQLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					e.printStackTrace();
+				}
+			}
+		}
+
+		serverResponse.put("result", result);
+		serverResponse.put("reason", reason);
+		return serverResponse;
+
+	}
 
 	private static boolean updateUserTable(Connection conn, String sql, String legalfirstname, String legallastname,
 			String address, String userId) {
@@ -367,6 +406,42 @@ public class AccountDAO {
 				conn.rollback();
 			}
 			return rowsAffected > 0;
+		} catch (SQLException e) {
+			System.err.println("Error during table update: " + e.getMessage());
+			return false;
+		}
+	}
+	
+	private static boolean updateDataSharingOnUserTable(Connection conn, String sql, String userId, boolean data_sharing) {
+		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+			stmt.setBoolean(1, data_sharing);
+			stmt.setString(2, userId);
+			
+
+			int rowsAffected = stmt.executeUpdate();
+			System.out.println("Update made to the number of user row: " + rowsAffected);
+			if (rowsAffected <= 0) {
+				conn.rollback();
+			}
+			return rowsAffected > 0;
+		} catch (SQLException e) {
+			System.err.println("Error during table update: " + e.getMessage());
+			return false;
+		}
+	}
+	
+	private static boolean udpateDataSharingOnMedicalTable(Connection conn, String sql, String userId, boolean data_sharing) {
+		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+			stmt.setBoolean(1, data_sharing);
+			stmt.setString(2, userId);
+			
+
+			int rowsAffected = stmt.executeUpdate();
+			System.out.println("Update made to the number of medical table row: " + rowsAffected);
+			if (rowsAffected < 0) {
+				conn.rollback();
+			}
+			return rowsAffected >= 0;
 		} catch (SQLException e) {
 			System.err.println("Error during table update: " + e.getMessage());
 			return false;
@@ -849,7 +924,7 @@ public class AccountDAO {
 	    String result = "SUCCESS";
 	    String reason = "";
 	    
-	    String sql = "SELECT * FROM healthhaven.medical_information WHERE CAST(timestamp AS DATE) " + when + " DATE '" + date + "'";
+	    String sql = "SELECT * FROM healthhaven.medical_information WHERE CAST(timestamp AS DATE) " + when + " DATE '" + date + "' AND data_sharing = TRUE";
 
 	    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 	        System.out.println(pstmt.toString());

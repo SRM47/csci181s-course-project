@@ -76,13 +76,8 @@ public class Login {
 			LocalDate dob = LocalDate.parse(jsonOb.getString("dob"), DateTimeFormatter.ISO_LOCAL_DATE);
 			String accountType = jsonOb.getString("accountType");
 			String cookie = jsonOb.getString("cookie");
-			boolean dataSharing = false;
-			
-			
-			if (accountType.equals("PATIENT")||accountType.equals("Patient")) {
-				dataSharing = Boolean.parseBoolean("true");
+			boolean dataSharing = jsonOb.getBoolean("data_sharing");
 				//dataSharing = Boolean.parseBoolean(jsonOb.getString("data_sharing"));
-			}
 
             return createUserInstance(accountType, userID, email, legalFirstName, legalLastName, address, dob, cookie, dataSharing);
 

@@ -71,8 +71,6 @@ public class AccountCreationController {
 
 		Result result = nbvcxz.estimate(passwordTextfield.getText());
 		
-		System.out.println(passwordTextfield.getText());
-		
 		Float prog = ((float) result.getBasicScore())/4;
 		
 		passwordStrengthBar.setProgress(prog);
