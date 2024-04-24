@@ -924,7 +924,7 @@ public class AccountDAO {
 	    String result = "SUCCESS";
 	    String reason = "";
 	    
-	    String sql = "SELECT * FROM healthhaven.medical_information WHERE CAST(timestamp AS DATE) " + when + " DATE '" + date + "'";
+	    String sql = "SELECT * FROM healthhaven.medical_information WHERE CAST(timestamp AS DATE) " + when + " DATE '" + date + "' AND data_sharing = TRUE";
 
 	    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 	        System.out.println(pstmt.toString());
