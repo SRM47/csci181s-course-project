@@ -66,7 +66,7 @@
                   <Insets top="5.0" />
                </padding>
             </HBox>
-            <TextArea fx:id="patientRecordArea" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="199.0" />
+            <TextArea fx:id="patientRecordArea" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="60.0" prefWidth="300.0" />
             <Label fx:id="updateRecordResponse" textFill="#ee0707">
                <font>
                   <Font size="9.0" />
@@ -76,7 +76,7 @@
                <children>
                   <TextField fx:id="patientHeightField" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="200.0" promptText="Update Height">
                      <VBox.margin>
-                        <Insets top="10.0" />
+                        <Insets top="5.0" />
                      </VBox.margin>
                   </TextField>
                   <TextField fx:id="patientWeightField" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="200.0" promptText="Update Weight">

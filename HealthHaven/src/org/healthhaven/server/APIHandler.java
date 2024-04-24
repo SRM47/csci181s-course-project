@@ -125,7 +125,7 @@ public class APIHandler{
 	    String doctorID = json.optString("doctorID", null);
 	    String patientID = json.optString("patientID", null);
 	    
-	    if (doctorID == null || patientID == null) {
+	    if (patientID == null) {
 	        JSONObject response = new JSONObject();
 	        response.put("error", "Missing doctorID or patientID");
 	        return response;

@@ -61,10 +61,10 @@ public class SuperadminController {
 		// Load doctor-specific information into the dashboard
 	}
 
-	@FXML
-	public void clickViewAccountList() {
-		listAccounts();
-	}
+//	@FXML
+//	public void clickViewAccountList() {
+//		listAccounts();
+//	}
 
 	@FXML
 	public void updateAccountTypeDoctor() {
@@ -107,16 +107,25 @@ public class SuperadminController {
 			response.setText("Please fill in all fields.");
 		}
 		String serverResponse = superadmin.authorizeAccountCreation(email, userAccountType, dob);
-		response.setText(serverResponse);
+		if (serverResponse==null) {
+			response.setText("Error");
+			return;
+		} 
+		JSONObject json = new JSONObject(serverResponse);
+		if (json.getString("result").equals("SUCCESS")) {
+			response.setText("Account created");
+		} else if (json.getString("result").equals("FAILTURE")){
+			response.setText(json.getString("reason"));
+		}
 
 	}
 	
-	//TODO: Incomplete
-	private void listAccounts() {
-		String accountRecords = superadmin.viewAccountList();
-		;
-		recordTextArea.setText(accountRecords);
-	}
+//	//TODO: Incomplete
+//	private void listAccounts() {
+//		String accountRecords = superadmin.viewAccountList();
+//		;
+//		recordTextArea.setText(accountRecords);
+//	}
 	
 	@FXML
 	public void handleUserIdSearch() {
@@ -136,11 +145,19 @@ public class SuperadminController {
 				deactivationResponse.setText(json.getString("reason"));
 			} else if (json.getString("result").equals("SUCCESS")){
 				this.userID = userID;
-				recordTextArea.setText(json.toString());
+				recordTextArea.setText(parseUserData(json));
 				//deactivationResponse.setText("Successfully deactivated");
 			}
 		}
 		
+	}
+	
+	private String parseUserData(JSONObject json) {
+		return "User ID: " + json.getString("userID") + "\n" +
+	               "First name: " + json.getString("first_name") + "\n" +
+	               "Last name: " + json.getString("last_name") + "\n" +
+	               "Email: " + json.getString("email") + "\n" +
+ 	               "Account Type: " + json.getString("accountType");
 	}
 	
 	@FXML

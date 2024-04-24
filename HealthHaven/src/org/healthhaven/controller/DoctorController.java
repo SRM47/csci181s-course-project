@@ -3,6 +3,8 @@ package org.healthhaven.controller;
 import java.time.LocalDate;
 
 import org.healthhaven.model.*;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -69,17 +71,25 @@ public class DoctorController {
 	@FXML
 	public void handleViewPatientRecord() {
 		updateFormContainer.setVisible(false);
+		patientRecordArea.setText(null);
+		
 		String patientID = patientIdField.getText();
 
 		// Server response
 		String patientRecord = doctor.viewPatientRecord(patientID);
-
-		if (patientRecord.equals("FAILURE")) {
+		
+		if(patientRecord.equals(null)) {
 			patientRecordArea.setText("Could not retrive data");
+		}
+		JSONObject json = new JSONObject(patientRecord);
+		
+		if (json.getString("result").equals("FAILURE")) {
+			patientRecordArea.setText(json.getString("reason"));
 			updateFormContainer.setVisible(false);
+			patientIdField.setText(null);
 
 		} else {
-			patientRecordArea.setText(patientRecord);
+			patientRecordArea.setText(parseMedicalRecord(json.getJSONArray("records")));
 
 			// Show the update form only if a patient record is successfully retrieved
 			updateFormContainer.setVisible(!patientRecord.isEmpty());
@@ -121,6 +131,31 @@ public class DoctorController {
 		patientRecordArea.setText(response);
 
 	}
+	
+	private String parseMedicalRecord(JSONArray records) {
+    	// Parse the records JSON string into a JSON array
+        JSONArray jsonArray = new JSONArray(records);
+
+        // StringBuilder to build the resulting string
+        StringBuilder result = new StringBuilder();
+
+        // Iterate through each element in the JSON array
+        for (int i = 0; i < jsonArray.length(); i++) {
+            JSONObject record = jsonArray.getJSONObject(i);
+
+            // Extract values from the JSON object
+            int height = record.getInt("Height");
+            int weight = record.getInt("Weight");
+            String timestamp = record.getString("Timestamp");
+
+            // Append formatted string to result
+            result.append("Height: ").append(height)
+                  .append(", Weight: ").append(weight)
+                  .append(", Timestamp: ").append(timestamp)
+                  .append("\n");  // Each record in one line
+        }
+        return result.toString();
+    }
 
 	@FXML
 	public void handleCancel() {
