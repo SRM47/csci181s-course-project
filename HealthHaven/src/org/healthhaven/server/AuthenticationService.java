@@ -4,6 +4,7 @@
 package org.healthhaven.server;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 
 import javax.net.ssl.SSLSocket;
 
@@ -26,16 +27,20 @@ public class AuthenticationService {
 			return returnFailureResponse("Missing user ID or cookie.");
 		}
 	    
-	    if (!AccountDAO.isCookieValid(conn, userId, cookie)) {
-	        return returnFailureResponse("Session expired. Please log in again.");
-	    }
-	    
-	    if (!AccountDAO.updateCookieTimestamp(conn, userId)) {
-	        return returnFailureResponse("Failed to update session timestamp.");
-	    }
-		
 		JSONObject isAuthenticated = AccountDAO.verifyAuthenticationCookieById(conn, request.optString("callerId"),
 				request.optString("cookie"));
+		
+		if (isAuthenticated.getString("result").equals("SUCCESS")) {
+			if (!AccountDAO.updateCookieTimestamp(conn, userId)) {
+				try {
+					conn.rollback();
+				} catch (SQLException e) {
+					e.printStackTrace();
+					return returnFailureResponse("Failed to update session timestamp.");
+				}
+		        return returnFailureResponse("Failed to update session timestamp.");
+		    }
+		}
 
 		String logMessage = String.format("request:%s caller_id:%s result:%s reason:%s\n", request.getString("request"),
 				request.optString("callerId"), isAuthenticated.getString("result"),
