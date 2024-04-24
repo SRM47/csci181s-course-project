@@ -96,6 +96,7 @@ public class UserDAO {
 				response.put("first_name", data_rs.getString("legalfirstname"));
 				response.put("last_name", data_rs.getString("legallastname"));
 				response.put("address", data_rs.getString("address"));
+				response.put("data_sharing", data_rs.getBoolean("data_sharing"));
 				response.put("dob", data_rs.getDate("dob").toString());
 				response.put("accountType", getUserAccountType(conn, userId));
 				response.put("result", "SUCCESS");
@@ -110,6 +111,25 @@ public class UserDAO {
 		response.put("reason", reason);
 		return response;
 
+	}
+	
+	public static boolean getDataSharingSetting(Connection conn, String patientId) {
+		String sql =  "SELECT data_sharing FROM healthhaven.users WHERE userid = ?";
+		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+			stmt.setString(1, patientId);	
+			ResultSet result = stmt.executeQuery();
+			
+			if (result.next()) { // Check if the result set is not empty
+	            return result.getBoolean("data_sharing"); // Return the data_sharing value
+	        } else {
+	            System.err.println("No data found for userID: " + patientId);
+	            return false; // Return false or throw an exception as per your logic
+	        }
+			
+		} catch (SQLException e) {
+			System.err.println("SQL error during data retrieval: " + e.getMessage());
+			return false;
+		}
 	}
 
 	public static String getUserAccountType(Connection conn, String userId) {

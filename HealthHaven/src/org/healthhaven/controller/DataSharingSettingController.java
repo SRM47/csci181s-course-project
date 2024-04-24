@@ -87,7 +87,7 @@ public class DataSharingSettingController{
             
         } else {
             toggleOpt.setText("Opt-In");
-            String serverResponse = currentUser.updateDataSharingSetting(true);
+            String serverResponse = currentUser.updateDataSharingSetting(false);
             
             if (serverResponse == null) {
     			errorMessage.setText("Error");

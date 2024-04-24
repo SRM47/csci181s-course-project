@@ -82,8 +82,7 @@ public class APIHandler{
 	}
 	
 	private static JSONObject handleDataSharing(JSONObject json, Connection cnn) {
-		return returnFailureResponse("this functionality not yet implemented");
-		//return AccountDAO.updateDataSharingSetting(cnn, json.getString("callerId"), json.getString("data_sharing"));
+		return AccountDAO.updateDataSharingSetting(cnn, json.getString("callerId"), json.getBoolean("data_sharing"));
 	}
 	
 	private static JSONObject createRecord(JSONObject json, Connection cnn) {
