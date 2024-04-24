@@ -77,38 +77,77 @@ public class APIHandler{
 	}
 	
 	private static JSONObject handleLogout(JSONObject json, Connection cnn) {
-		
-		return AccountDAO.logoutUser(cnn, json.getString("userId"));
+	    // Use optString to safely handle the absence of "userId"
+	    String userId = json.optString("userId", null);
+	    if (userId != null && !userId.isEmpty()) {
+	        // If userId is not null and not empty, proceed to logout
+	        return AccountDAO.logoutUser(cnn, userId);
+	    } else {
+	        // Return an appropriate JSON response if userId is missing or empty
+	        JSONObject response = new JSONObject();
+	        response.put("error", "No user ID provided");
+	        return response;
+	    }
 	}
+
 	
 	private static JSONObject handleDataSharing(JSONObject json, Connection cnn) {
-		return returnFailureResponse("this functionality not yet implemented");
-		//return AccountDAO.updateDataSharingSetting(cnn, json.getString("callerId"), json.getString("data_sharing"));
+		return AccountDAO.updateDataSharingSetting(cnn, json.getString("callerId"), json.getBoolean("data_sharing"));
 	}
 	
 	private static JSONObject createRecord(JSONObject json, Connection cnn) {
+	    // Use optString to safely handle the absence of "patientID" and "doctorID", and optString for optional strings
+	    String patientID = json.optString("patientID", null);
+	    String doctorID = json.optString("doctorID", null);
+	    String timestamp = json.optString("timestamp", null);
 
+	    // Use optDouble for "height" and "weight", and handle default or incorrect values
+	    float height = json.optFloat("height", Float.NaN);
+	    float weight = json.optFloat("weight", Float.NaN);
 
-		return AccountDAO.newMedicalInformation(cnn, json.getString("patientID"),
-        json.getString("doctorID"), 
-        json.getFloat("height"),
-        json.getFloat("weight"),
-        json.getString("timestamp"));
-		
+	    // Validate the required fields
+	    if (patientID == null || patientID.isEmpty() ||
+	        doctorID == null || doctorID.isEmpty() ||
+	        Double.isNaN(height) || Double.isNaN(weight) ||
+	        timestamp == null || timestamp.isEmpty()) {
+	        JSONObject response = new JSONObject();
+	        response.put("error", "Missing or incorrect input for one or more fields.");
+	        return response;
+	    }
+
+	    // Proceed with creating the record if all inputs are valid
+	    return AccountDAO.newMedicalInformation(cnn, patientID, doctorID, height, weight, timestamp);
 	}
+
 
 	private static JSONObject handleViewRecord(JSONObject json, Connection cnn) {
-
-		return AccountDAO.viewUserInformation(cnn,
-		        json.optString("doctorID"), 
-		        json.getString("patientID"));
+	    // Using optString to avoid NullPointerException if keys do not exist
+	    String doctorID = json.optString("doctorID", null);
+	    String patientID = json.optString("patientID", null);
+	    
+	    if (doctorID == null || patientID == null) {
+	        JSONObject response = new JSONObject();
+	        response.put("error", "Missing doctorID or patientID");
+	        return response;
+	    }
+	    return AccountDAO.viewUserInformation(cnn, doctorID, patientID);
 	}
+
 
 	private static JSONObject handleGetMedicalInformation(JSONObject json, Connection cnn) {
+	    // Using optString to handle potential missing values
+	    String when = json.optString("when", null);
+	    String date = json.optString("date", null);
 
-		// return AccountDAO.getDataAverage(cnn);
-		return AccountDAO.getMedicalInformationDataByQuery(cnn, json.getString("when"), json.getString("date"));
+	    if (when == null || date == null) {
+	        JSONObject response = new JSONObject();
+	        response.put("error", "Missing 'when' or 'date' parameter");
+	        return response;
+	    }
+
+	    return AccountDAO.getMedicalInformationDataByQuery(cnn, when, date);
 	}
+
 
 	private static JSONObject handleUpdateAccount(JSONObject json, Connection cnn) {
 
@@ -125,33 +164,51 @@ public class APIHandler{
 	}
 
 	private static JSONObject handleCreateAccount(JSONObject json, Connection cnn) {
-		return AccountDAO.updateTemporaryUserAfterFirstLogin(cnn,
-		json.getString("first_name"), json.getString("last_name"),
-		json.getString("dob"), json.getString("address"), json.getString("email"),
-		json.getString("password"), json.getString("accountType"));
+	    // Safely retrieving each parameter
+	    String firstName = json.optString("first_name", null);
+	    String lastName = json.optString("last_name", null);
+	    String dob = json.optString("dob", null);
+	    String address = json.optString("address", null);
+	    String email = json.optString("email", null);
+	    String password = json.optString("password", null);
+	    String accountType = json.optString("accountType", null);
 
+	    if (firstName == null || lastName == null || dob == null || address == null || email == null || password == null || accountType == null) {
+	        JSONObject response = new JSONObject();
+	        response.put("error", "One or more required fields are missing");
+	        return response;
+	    }
+
+	    return AccountDAO.updateTemporaryUserAfterFirstLogin(cnn, firstName, lastName, dob, address, email, password, accountType);
 	}
+
 
 	private static JSONObject handleAccountCreation(JSONObject json, Connection cnn) {
-				
-		JSONObject serverResponse = new JSONObject();
-		String email = json.getString("email");
-		String dob = json.getString("dob");
-		String userType = json.getString("userType"); //TODO this is same as accountType but accounttype is better
-		if (AccountDAO.accountExistsByEmail(cnn, email)) {
-			return returnFailureResponse("Email already exists");
-		}
-		String generatedPassword = PasswordGenerator.generate(16);
-		UserIdGenerator generator = new UserIdGenerator(16);
-		String generatedUserId = generator.generate();
-		serverResponse = AccountDAO.createTemporaryUser(cnn, generatedUserId, email, generatedPassword, dob, userType);
-		if (serverResponse.get("result").equals("FAILURE")) {
-			// If there was an error in updating the database, do not send email and return failure right away.
-			return serverResponse;
-		}
-		EmailSender.sendDefaultPasswordEmail(email, generatedPassword, userType);
-		return serverResponse;
+	    String email = json.optString("email", null);
+	    String dob = json.optString("dob", null);
+	    String userType = json.optString("userType", null); // Notice using optString now
+
+	    if (email == null || dob == null || userType == null) {
+	        return returnFailureResponse("Required field(s) missing: email, dob, or userType");
+	    }
+
+	    if (AccountDAO.accountExistsByEmail(cnn, email)) {
+	        return returnFailureResponse("Email already exists");
+	    }
+	    
+	    String generatedPassword = PasswordGenerator.generate(16);
+	    UserIdGenerator generator = new UserIdGenerator(16);
+	    String generatedUserId = generator.generate();
+	    JSONObject serverResponse = AccountDAO.createTemporaryUser(cnn, generatedUserId, email, generatedPassword, dob, userType);
+
+	    if ("FAILURE".equals(serverResponse.optString("result"))) {
+	        return serverResponse;
+	    }
+	    
+	    EmailSender.sendDefaultPasswordEmail(email, generatedPassword, userType);
+	    return serverResponse;
 	}
+
 
 	private static JSONObject handlePasswordReset(JSONObject json, Connection cnn) {
 		
@@ -174,11 +231,20 @@ public class APIHandler{
 		}
 		
 	}
+	
 	private static JSONObject handleUpdatePassword(JSONObject json, Connection cnn){
-				
-		return AccountDAO.updatePassword(cnn, json.getString("password"), json.getString("email"));
-		
+	    String password = json.optString("password", null);
+	    String email = json.optString("email", null);
+	    
+	    if (password == null || email == null) {
+	        JSONObject response = new JSONObject();
+	        response.put("error", "Missing password or email");
+	        return response;
+	    }
+	    
+	    return AccountDAO.updatePassword(cnn, password, email);
 	}
+
 	
 
 	private static JSONObject handleLoginRequest(JSONObject json, Connection cnn, SSLSocket clientSocket) {
@@ -210,8 +276,17 @@ public class APIHandler{
 	}
 	
 	private static JSONObject handleSearchAccount(JSONObject json, Connection cnn) {
-		return AccountDAO.viewAccountInformation(cnn, json.getString("userId"));
+	    String userId = json.optString("userId", null);
+
+	    if (userId == null) {
+	        JSONObject response = new JSONObject();
+	        response.put("error", "User ID is missing");
+	        return response;
+	    }
+
+	    return AccountDAO.viewAccountInformation(cnn, userId);
 	}
+
 	
 	private static JSONObject handleAccountDeactivation(JSONObject json, Connection cnn) {
 		JSONObject verifiedCookieObject;
