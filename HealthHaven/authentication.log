@@ -124,3 +124,17 @@
 
 [2024-04-22 21:59:46] - 127.0.0.1 - request:LOGIN caller_email:sfaa2021@mymail.pomona.edu result:SUCCESS reason:NEW
 
+[2024-04-22 22:19:23] - 127.0.0.1 - request:LOGIN caller_email:sameerrajmalik+1@gmail.com result:SUCCESS reason:EXISTING
+
+[2024-04-22 22:19:54] - 127.0.0.1 - request:LOGIN caller_email:sameerrajmalik+1@gmail.com result:SUCCESS reason:
+
+[2024-04-22 22:20:31] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:DD6HP7OI7UXBANEB result:SUCCESS reason:Successfully authentiated
+
+[2024-04-22 22:20:50] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:DD6HP7OI7UXBANEB result:SUCCESS reason:Successfully authentiated
+
+[2024-04-22 22:21:15] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:DD6HP7OI7UXBANEB result:SUCCESS reason:Successfully authentiated
+
+[2024-04-22 22:21:26] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:DD6HP7OI7UXBANEB result:SUCCESS reason:Successfully authentiated
+
+[2024-04-22 22:21:32] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:DD6HP7OI7UXBANEB result:SUCCESS reason:Successfully authentiated
+

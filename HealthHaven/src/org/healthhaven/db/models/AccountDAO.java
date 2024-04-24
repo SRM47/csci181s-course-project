@@ -849,7 +849,7 @@ public class AccountDAO {
 	    String result = "SUCCESS";
 	    String reason = "";
 	    
-	    String sql = "SELECT * FROM healthhaven.medical_information WHERE CAST(timestamp AS DATE) " + when + " DATE '" + date + "'";
+	    String sql = "SELECT * FROM healthhaven.medical_information WHERE AND CAST(timestamp AS DATE) " + when + " DATE '" + date + "'";
 
 	    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 	        System.out.println(pstmt.toString());
