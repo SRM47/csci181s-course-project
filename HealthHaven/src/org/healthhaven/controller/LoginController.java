@@ -40,8 +40,6 @@ public class LoginController{
 	@FXML
 	private Button OTPVerifyLoginButton;
 	@FXML
-	private Label OTPLoginMessage;
-	@FXML
 	private Button submitButton;
 	@FXML
 	private Hyperlink passwordReset;
@@ -79,7 +77,7 @@ public class LoginController{
 		        	errorMessage.setText("");
 		        	//Do OTP verification
 		        	OTPSectionLogin.setVisible(true);
-		        	OTPLoginMessage.setText("OTP sent to your email");
+		        	errorMessage.setText("OTP sent to your email");
 		        	
 		        //new user, direct them to account creation
 		        } else if (jsonObj.getString("type").equals("NEW")) {
@@ -96,22 +94,22 @@ public class LoginController{
 	
 	@FXML
 	public void handleVerifyOTPLogin() throws IOException{
-		OTPLoginMessage.setText("");
+		errorMessage.setText("");
 		String otpInput = OTPLoginTextField.getText();
 		
 		String serverResponse = Login.authenticateOTPLogin(emailAddress, otpInput);
 		if (serverResponse.equals(null)) {
-			OTPLoginMessage.setText("Login Error");
+			errorMessage.setText("Login Error");
 		} else {
 			//Read server response
 			JSONObject jsonObj = new JSONObject(serverResponse);
 			if (jsonObj.getString("result").equals("FAILURE")) {
-				OTPLoginMessage.setText(jsonObj.getString("reason"));
+				errorMessage.setText(jsonObj.getString("reason"));
 			} else if (jsonObj.getString("result").equals("SUCCESS")){
 				System.out.println(jsonObj.toString());
 				User user = Login.existingUserSession(jsonObj);
 		    	loadUserPage(user);
-		    	OTPLoginMessage.setText("");
+		    	errorMessage.setText("");
 			}
 			
 		}

@@ -83,8 +83,18 @@ public class UserProfileController {
     
     private void displayUserInfo() {
         // Assuming User has a toString() or a similar method to get a formatted string of user info
-    	userInfoArea.setText(currentUser.toString());
+    	userInfoArea.setText(parseUserData(currentUser));
     }
+    
+    private String parseUserData(User currentUser) {
+		return "User ID: " + currentUser.getUserID() + "\n" +
+	               "First name: " + currentUser.getLegal_first_name() + "\n" +
+	               "Last name: " + currentUser.getLegal_last_name() + "\n" +
+	               "Email: " + currentUser.getEmail()+ "\n" +
+	               "Address: " + currentUser.getAddress() + "\n" +
+ 	               "Account Type: " + currentUser.getAccountType().toString();
+	}
+    
     @FXML
     public void updateAddressOptionMenu() {
     	updateSelectionMenu.setText(upddateAddressMenu.getText());

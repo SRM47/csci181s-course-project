@@ -20,13 +20,14 @@
         </Label>
             <PasswordField fx:id="passwordTextfield" layoutX="240.0" layoutY="211.0" promptText="Password" />
             <TextField fx:id="emailTextfield" layoutX="240.0" layoutY="176.0" promptText="Email" />
+            <HBox fx:id="OTPSectionLogin" alignment="CENTER" layoutX="244.0" layoutY="249.0">
+               <children>
+                  <TextField fx:id="OTPLoginTextField" maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="100.0" promptText="Enter OTP" />
+                  <Button fx:id="OTPVerifyLoginButton" alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" mnemonicParsing="false" onAction="#handleVerifyOTPLogin" prefHeight="25.0" text="Verify" />
+               </children>
+            </HBox>
             <HBox layoutX="292.0" layoutY="286.0">
                <children>
-                  <Label fx:id="errorMessage" textFill="#e40c16">
-                     <font>
-                        <Font size="9.0" />
-                     </font>
-                  </Label>
                   <Button fx:id="submitButton" mnemonicParsing="false" onAction="#handleSubmit" text="Submit" />
                </children>
             </HBox>
@@ -35,17 +36,11 @@
                   <Font name="Inter Light" size="23.0" />
                </font>
             </Label>
-            <HBox fx:id="OTPSectionLogin" alignment="CENTER" layoutX="244.0" layoutY="249.0" prefHeight="20.0" prefWidth="200.0">
-               <children>
-                  <TextField fx:id="OTPLoginTextField" maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="100.0" promptText="Enter OTP" />
-                  <Button fx:id="OTPVerifyLoginButton" alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" mnemonicParsing="false" onAction="#handleVerifyOTPLogin" prefHeight="25.0" text="Verify" />
-                  <Label fx:id="OTPLoginMessage" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="50.0">
-                     <font>
-                        <Font size="9.0" />
-                     </font>
-                  </Label>
-               </children>
-            </HBox>
+            <Label fx:id="errorMessage" layoutX="170.0" layoutY="294.0" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="100.0" textFill="#e41010">
+               <font>
+                  <Font size="9.0" />
+               </font>
+            </Label>
             <Label layoutX="211.0" layoutY="102.0" prefHeight="17.0" prefWidth="222.0" text="version 1.0 | Secure and Encrypted" />
             <Hyperlink fx:id="passwordReset" layoutX="281.0" layoutY="320.0" onAction="#handlePasswordReset" text="Forgot password?">
                <font>

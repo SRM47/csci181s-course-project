@@ -77,19 +77,19 @@
                   </Button>
                </children>
             </HBox>
-            <TextArea fx:id="recordTextArea">
+            <TextArea fx:id="recordTextArea" editable="false">
                <VBox.margin>
                   <Insets top="5.0" />
                </VBox.margin></TextArea>
+
             <Label fx:id="deactivationResponse">
                <font>
                   <Font size="9.0" />
                </font>
             </Label>
-            <Button fx:id="deactivateButton" mnemonicParsing="false" onAction="#handleDeactivate" text="Deactivate" />
-            <Button fx:id="viewAccountButton" layoutX="51.0" layoutY="110.0" mnemonicParsing="false" onAction="#clickViewAccountList" prefWidth="125.0" text="View Account List">
+            <Button fx:id="deactivateButton" mnemonicParsing="false" onAction="#handleDeactivate" text="Deactivate">
                <VBox.margin>
-                  <Insets bottom="10.0" top="5.0" />
+                  <Insets bottom="10.0" />
                </VBox.margin></Button>
          </children>
       </VBox>

@@ -943,16 +943,24 @@ public class AccountDAO {
 			return returnFailureResponse("Must provide both identification and cookie");
 		}
 		
-		String sql = "SELECT user_cookie FROM healthhaven.cookie WHERE userid = ?";
+		String sql = "SELECT user_cookie, timestamp FROM healthhaven.cookie WHERE userid = ?";
 	    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 	        pstmt.setString(1, userId);
 	        
 	        ResultSet data_rs = pstmt.executeQuery();
 	        if (data_rs.next()) {
 				String cookie = data_rs.getString("user_cookie");
+				
 				if (cookie == null || !candidateCookie.equals(cookie)) {
 					return returnFailureResponse("Incorrect Authentication Cookie");
 				}
+				Timestamp timestamp = data_rs.getTimestamp("timestamp");
+				
+				if ((System.currentTimeMillis() - timestamp.getTime()) >= 600000) {
+					return returnFailureResponse("Cookie expired, must log in again.");
+                }
+				
+				
 			} else {
 				return returnFailureResponse("Account does not exist");
 			}
@@ -964,45 +972,46 @@ public class AccountDAO {
 		return returnSuccessResponse("Successfully authentiated");	
 	}
 	
-	public static boolean isCookieValid(Connection conn, String userId, String cookie) {
-	    String sql = "SELECT user_cookie, timestamp FROM healthhaven.cookie WHERE userid = ?";
-	    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-	        pstmt.setString(1, userId);
-	        ResultSet rs = pstmt.executeQuery();
-	        if (rs.next()) {
-	            String storedCookie = rs.getString("user_cookie");
-	            Timestamp timestamp = rs.getTimestamp("timestamp");
-	            
-	            // Check if the cookie matches and verify its expiry
-	            if (storedCookie != null && storedCookie.equals(cookie) && timestamp != null) {
-	                long currentTimeMillis = System.currentTimeMillis();
-	                long cookieTimeMillis = timestamp.getTime();
-	                long expiryTimeMillis = 10 * 60 * 1000; // 10 min in milliseconds
-	                
-	                if ((currentTimeMillis - cookieTimeMillis) < expiryTimeMillis) {
-	                    return true;
-	                }
-	            }
-	        }
-	    } catch (SQLException e) {
-	        System.err.println("Error checking cookie validity: " + e.getMessage());
-	    }
-	    return false;
-	}
+//	public static boolean isCookieValid(Connection conn, String userId, String cookie) {
+//	    String sql = "SELECT user_cookie, timestamp FROM healthhaven.cookie WHERE userid = ?";
+//	    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+//	        pstmt.setString(1, userId);
+//	        ResultSet rs = pstmt.executeQuery();
+//	        if (rs.next()) {
+//	            String storedCookie = rs.getString("user_cookie");
+//	            Timestamp timestamp = rs.getTimestamp("timestamp");
+//	            
+//	            // Check if the cookie matches and verify its expiry
+//	            if (storedCookie != null && storedCookie.equals(cookie) && timestamp != null) {
+//	                long currentTimeMillis = System.currentTimeMillis();
+//	                long cookieTimeMillis = timestamp.getTime(); 
+//	                
+//	                if ((currentTimeMillis - cookieTimeMillis) < 600000) {
+//	                    return true;
+//	                }
+//	            }
+//	        }
+//	    } catch (SQLException e) {
+//	        System.err.println("Error checking cookie validity: " + e.getMessage());
+//	    }
+//	    return false;
+//	}
 	
 	public static boolean updateCookieTimestamp(Connection conn, String userId) {
 	    String sql = "UPDATE healthhaven.cookie SET timestamp = NOW() WHERE userid = ?";
+	    System.out.println(sql);
 	    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 	        pstmt.setString(1, userId);
 	        int affectedRows = pstmt.executeUpdate();
-	        if (affectedRows > 0) {
-	            return true;
+	        if (affectedRows <= 0) {
+	        	return false;
 	        }
+	        conn.commit();
 	    } catch (SQLException e) {
 	        System.err.println("Error updating cookie timestamp: " + e.getMessage());
 	        return false;
 	    }
-	    return false;
+	    return true;
 	}
 
 
