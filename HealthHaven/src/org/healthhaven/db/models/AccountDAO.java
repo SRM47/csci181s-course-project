@@ -742,6 +742,12 @@ public class AccountDAO {
 					}
 					
 					String timeString = rs.getString("attempt_track");
+//					System.out.println(timeString);
+					
+					if(timeString==null) {
+						timeString = "";
+					}
+					
 					List<Long> timeList = AttemptLimit.StringtotList(timeString);
 					
 					List<List<Long>> rList = AttemptLimit.withinAttemptLimit(timeList);
@@ -758,7 +764,7 @@ public class AccountDAO {
 					
 					System.out.print(uploadString);
 					Long allowAttempt = rList.get(0).get(0);
-					System.out.println(allowAttempt);
+//					System.out.println(allowAttempt);
 					
 					if(loginFail == 0 && allowAttempt==1) {
 						uploadString = "";
