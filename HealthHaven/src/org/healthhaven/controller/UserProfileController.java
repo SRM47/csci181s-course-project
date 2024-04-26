@@ -154,6 +154,8 @@ public class UserProfileController {
 	            	currentUser.setAddress(address);
 	            	displayUserInfo();
 	                updatePasswordSection.setVisible(false);
+	            } else if (jsonObj.get("result").equals("FAILURE")) {
+	            	response.setText(jsonObj.getString("reason"));
 	            }
             	
             }
