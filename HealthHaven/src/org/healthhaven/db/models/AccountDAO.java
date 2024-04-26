@@ -867,6 +867,7 @@ public class AccountDAO {
 	
 	public static boolean updateCookieTimestamp(Connection conn, String userId) {
 	    String sql = "UPDATE healthhaven.cookie SET timestamp = NOW() WHERE userid = ?";
+	    System.out.println(sql);
 	    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 	        pstmt.setString(1, userId);
 	        int affectedRows = pstmt.executeUpdate();
@@ -878,7 +879,7 @@ public class AccountDAO {
 	        System.err.println("Error updating cookie timestamp: " + e.getMessage());
 	        return false;
 	    }
-	    return false;
+	    return true;
 	}
 
 
