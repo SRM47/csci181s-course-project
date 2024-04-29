@@ -50,6 +50,9 @@ public class DataAnalystController{
     @FXML
     private TableColumn<MedicalDataInstance, Date> timestampColumn;
     
+    @FXML
+    private TableColumn<MedicalDataInstance, String> identifierColumn;
+    
 
     public void setDataAnalyst(DataAnalyst dataAnalyst) {
         this.dataAnalyst = dataAnalyst;
@@ -70,6 +73,7 @@ public class DataAnalystController{
         heightColumn.setCellValueFactory(new PropertyValueFactory<MedicalDataInstance, Float>("height"));
     	weightColumn.setCellValueFactory(new PropertyValueFactory<MedicalDataInstance, Float>("weight"));
     	timestampColumn.setCellValueFactory(new PropertyValueFactory<MedicalDataInstance, Date>("timestamp"));
+    	identifierColumn.setCellValueFactory(new PropertyValueFactory<MedicalDataInstance, String>("patientID"));
         
         dataTable.getItems().setAll(parseMedicalInformationResultJSON(result_data));
     }
@@ -90,6 +94,7 @@ public class DataAnalystController{
             float height = (float) entry.getDouble("height");
             float weight = (float) entry.getDouble("weight");
             String dateString = entry.getString("entryDate");
+            String patientID = entry.getString("patientID");
 
             // Convert dateString to a Date object (assuming you have a suitable method)
             Date date = null;
@@ -101,7 +106,7 @@ public class DataAnalystController{
 			} 
 
             // Create MedicalDataInstance
-            MedicalDataInstance dataInstance = new MedicalDataInstance(height, weight, date);
+            MedicalDataInstance dataInstance = new MedicalDataInstance(height, weight, date, patientID);
             System.out.println(dataInstance);
 
             // Add to the list

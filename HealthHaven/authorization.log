@@ -218,13 +218,6 @@
 
 [2024-04-26 00:15:29] - 127.0.0.1 - request:VIEW_RECORD caller_id:DQV81GEWI3Q2D6C1 result:SUCCESS reason:
 
-<<<<<<< HEAD
-[2024-04-28 23:05:42] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:XNEBXKX5EVEEA6H3 result:SUCCESS reason:
-
-[2024-04-28 23:35:39] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:XNEBXKX5EVEEA6H3 result:SUCCESS reason:
-
-[2024-04-28 23:40:44] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:XNEBXKX5EVEEA6H3 result:SUCCESS reason:
-=======
 [2024-04-25 21:25:41] - 127.0.0.1 - request:SEARCH_ACCOUNT caller_id:3EAJHGKF8KF92Q91 result:SUCCESS reason:
 
 [2024-04-25 21:26:44] - 127.0.0.1 - request:UPDATE_ACCOUNT caller_id:3EAJHGKF8KF92Q91 result:SUCCESS reason:
@@ -324,13 +317,16 @@
 [2024-04-25 22:27:38] - 127.0.0.1 - request:VIEW_RECORD caller_id:FTBE7WJG3PI0WSUE result:SUCCESS reason:
 
 [2024-04-25 22:27:44] - 127.0.0.1 - request:LOGOUT caller_id:FTBE7WJG3PI0WSUE result:SUCCESS reason:
->>>>>>> branch 'main' of https://github.com/SRM47/csci181s-course-project.git
 
-[2024-04-29 01:35:52] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:DD6HP7OI7UXBANEB result:SUCCESS reason:
+[2024-04-29 15:13:33] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:XNEBXKX5EVEEA6H3 result:SUCCESS reason:
 
-[2024-04-29 01:36:17] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:DD6HP7OI7UXBANEB result:SUCCESS reason:
+[2024-04-29 15:28:13] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:XNEBXKX5EVEEA6H3 result:SUCCESS reason:
 
-[2024-04-29 01:36:37] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:DD6HP7OI7UXBANEB result:SUCCESS reason:
+[2024-04-29 15:38:33] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:XNEBXKX5EVEEA6H3 result:SUCCESS reason:
 
-[2024-04-29 01:37:01] - 127.0.0.1 - request:LOGOUT caller_id:DD6HP7OI7UXBANEB result:SUCCESS reason:
+[2024-04-29 15:50:02] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:XNEBXKX5EVEEA6H3 result:SUCCESS reason:
+
+[2024-04-29 16:11:54] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:XNEBXKX5EVEEA6H3 result:SUCCESS reason:
+
+[2024-04-29 16:15:35] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:XNEBXKX5EVEEA6H3 result:SUCCESS reason:
 

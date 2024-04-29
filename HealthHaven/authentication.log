@@ -513,49 +513,6 @@
 
 [2024-04-26 00:15:29] - 127.0.0.1 - request:VIEW_RECORD caller_id:DQV81GEWI3Q2D6C1 result:SUCCESS reason:Successfully authentiated
 
-<<<<<<< HEAD
-[2024-04-26 00:31:48] - 127.0.0.1 - request:LOGIN caller_email:ethethanlee@gmail.com result:FAILURE reason:Account does not exist
-
-[2024-04-28 23:05:16] - 127.0.0.1 - request:LOGIN caller_email:sae20021005+@gmail.com result:SUCCESS reason:EXISTING
-
-[2024-04-28 23:05:31] - 127.0.0.1 - request:LOGIN caller_email:sae20021005+@gmail.com result:SUCCESS reason:No reason provided
-
-[2024-04-28 23:05:42] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:XNEBXKX5EVEEA6H3 result:SUCCESS reason:Successfully authentiated
-
-[2024-04-28 23:15:37] - 127.0.0.1 - request:LOGIN caller_email:sae20021005+@gmail.com result:SUCCESS reason:EXISTING
-
-[2024-04-28 23:16:06] - 127.0.0.1 - request:LOGIN caller_email:sae20021005+@gmail.com result:FAILURE reason:Incorrect OTP
-
-[2024-04-28 23:16:14] - 127.0.0.1 - request:LOGIN caller_email:sae20021005+@gmail.com result:SUCCESS reason:No reason provided
-
-[2024-04-28 23:16:22] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:XNEBXKX5EVEEA6H3 result:FAILURE reason:Cookie expired, must log in again.
-
-[2024-04-28 23:28:04] - 127.0.0.1 - request:LOGIN caller_email:sae20021005+@gmail.com result:SUCCESS reason:EXISTING
-
-[2024-04-28 23:28:36] - 127.0.0.1 - request:LOGIN caller_email:sae20021005+@gmail.com result:SUCCESS reason:No reason provided
-
-[2024-04-28 23:28:48] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:XNEBXKX5EVEEA6H3 result:FAILURE reason:Cookie expired, must log in again.
-
-[2024-04-28 23:29:56] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:XNEBXKX5EVEEA6H3 result:FAILURE reason:Incorrect Authentication Cookie
-
-[2024-04-28 23:30:00] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:XNEBXKX5EVEEA6H3 result:FAILURE reason:Incorrect Authentication Cookie
-
-[2024-04-28 23:30:17] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:XNEBXKX5EVEEA6H3 result:FAILURE reason:Incorrect Authentication Cookie
-
-[2024-04-28 23:30:46] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:XNEBXKX5EVEEA6H3 result:FAILURE reason:Incorrect Authentication Cookie
-
-[2024-04-28 23:35:13] - 127.0.0.1 - request:LOGIN caller_email:sae20021005+@gmail.com result:SUCCESS reason:EXISTING
-
-[2024-04-28 23:35:34] - 127.0.0.1 - request:LOGIN caller_email:sae20021005+@gmail.com result:SUCCESS reason:No reason provided
-
-[2024-04-28 23:35:39] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:XNEBXKX5EVEEA6H3 result:SUCCESS reason:Successfully authentiated
-
-[2024-04-28 23:40:19] - 127.0.0.1 - request:LOGIN caller_email:sae20021005+@gmail.com result:SUCCESS reason:EXISTING
-
-[2024-04-28 23:40:38] - 127.0.0.1 - request:LOGIN caller_email:sae20021005+@gmail.com result:SUCCESS reason:No reason provided
-
-[2024-04-28 23:40:44] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:XNEBXKX5EVEEA6H3 result:SUCCESS reason:Successfully authentiated
-=======
 [2024-04-25 21:25:14] - 127.0.0.1 - request:LOGIN caller_email:saesae1005@icloud.com result:SUCCESS reason:EXISTING
 
 [2024-04-25 21:25:32] - 127.0.0.1 - request:LOGIN caller_email:saesae1005@icloud.com result:SUCCESS reason:No reason provided
@@ -753,17 +710,44 @@
 [2024-04-25 22:28:00] - 127.0.0.1 - request:LOGIN caller_email:sae20021005+12@gmail.com result:FAILURE reason:Incorrect Password
 
 [2024-04-25 22:28:15] - 127.0.0.1 - request:LOGIN caller_email:sae20021005+12@gmail.com result:SUCCESS reason:EXISTING
->>>>>>> branch 'main' of https://github.com/SRM47/csci181s-course-project.git
 
-[2024-04-29 01:35:06] - 127.0.0.1 - request:LOGIN caller_email:sameerrajmalik+1@gmail.com result:SUCCESS reason:EXISTING
+[2024-04-29 15:12:58] - 127.0.0.1 - request:LOGIN caller_email:sae20021005+@gmail.com result:SUCCESS reason:EXISTING
 
-[2024-04-29 01:35:32] - 127.0.0.1 - request:LOGIN caller_email:sameerrajmalik+1@gmail.com result:SUCCESS reason:No reason provided
+[2024-04-29 15:13:27] - 127.0.0.1 - request:LOGIN caller_email:sae20021005+@gmail.com result:SUCCESS reason:No reason provided
 
-[2024-04-29 01:35:52] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:DD6HP7OI7UXBANEB result:SUCCESS reason:Successfully authentiated
+[2024-04-29 15:13:33] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:XNEBXKX5EVEEA6H3 result:SUCCESS reason:Successfully authentiated
 
-[2024-04-29 01:36:17] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:DD6HP7OI7UXBANEB result:SUCCESS reason:Successfully authentiated
+[2024-04-29 15:17:41] - 127.0.0.1 - request:LOGIN caller_email:sae20021005+@gmail.com result:SUCCESS reason:EXISTING
 
-[2024-04-29 01:36:37] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:DD6HP7OI7UXBANEB result:SUCCESS reason:Successfully authentiated
+[2024-04-29 15:17:49] - 127.0.0.1 - request:LOGIN caller_email:sae20021005+@gmail.com result:FAILURE reason:Incorrect OTP
 
-[2024-04-29 01:37:01] - 127.0.0.1 - request:LOGOUT caller_id:DD6HP7OI7UXBANEB result:SUCCESS reason:Successfully authentiated
+[2024-04-29 15:27:25] - 127.0.0.1 - request:LOGIN caller_email:sae20021005+@gmail.com result:SUCCESS reason:EXISTING
+
+[2024-04-29 15:27:53] - 127.0.0.1 - request:LOGIN caller_email:sae20021005+@gmail.com result:SUCCESS reason:No reason provided
+
+[2024-04-29 15:28:13] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:XNEBXKX5EVEEA6H3 result:SUCCESS reason:Successfully authentiated
+
+[2024-04-29 15:37:43] - 127.0.0.1 - request:LOGIN caller_email:sae20021005+@gmail.com result:SUCCESS reason:EXISTING
+
+[2024-04-29 15:38:17] - 127.0.0.1 - request:LOGIN caller_email:sae20021005+@gmail.com result:SUCCESS reason:No reason provided
+
+[2024-04-29 15:38:32] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:XNEBXKX5EVEEA6H3 result:SUCCESS reason:Successfully authentiated
+
+[2024-04-29 15:48:44] - 127.0.0.1 - request:LOGIN caller_email:sae20021005+@gmail.com result:SUCCESS reason:EXISTING
+
+[2024-04-29 15:49:40] - 127.0.0.1 - request:LOGIN caller_email:sae20021005+@gmail.com result:SUCCESS reason:No reason provided
+
+[2024-04-29 15:50:02] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:XNEBXKX5EVEEA6H3 result:SUCCESS reason:Successfully authentiated
+
+[2024-04-29 16:11:15] - 127.0.0.1 - request:LOGIN caller_email:sae20021005+@gmail.com result:SUCCESS reason:EXISTING
+
+[2024-04-29 16:11:39] - 127.0.0.1 - request:LOGIN caller_email:sae20021005+@gmail.com result:SUCCESS reason:No reason provided
+
+[2024-04-29 16:11:54] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:XNEBXKX5EVEEA6H3 result:SUCCESS reason:Successfully authentiated
+
+[2024-04-29 16:14:54] - 127.0.0.1 - request:LOGIN caller_email:sae20021005+@gmail.com result:SUCCESS reason:EXISTING
+
+[2024-04-29 16:15:16] - 127.0.0.1 - request:LOGIN caller_email:sae20021005+@gmail.com result:SUCCESS reason:No reason provided
+
+[2024-04-29 16:15:35] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:XNEBXKX5EVEEA6H3 result:SUCCESS reason:Successfully authentiated
 

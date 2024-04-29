@@ -1090,13 +1090,14 @@ public class AccountDAO {
 	            float height = data_rs.getFloat("height");
 	            float weight = data_rs.getFloat("weight");
 	            java.util.Date entryDate = data_rs.getDate("timestamp");
+				String patientid = data_rs.getString("patientid");
 
 	            // Create a JSON object for each entry
 	            JSONObject entry = new JSONObject();
 	            entry.put("height", height);
 	            entry.put("weight", weight);
 	            entry.put("entryDate", entryDate.toString()); // Or format the date as needed
-
+				entry.put("patientid", patientid);
 	            // Add the entry to the array
 	            entriesArray.put(entry);
 	        }
