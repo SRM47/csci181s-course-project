@@ -755,3 +755,43 @@
 [2024-04-25 22:28:15] - 127.0.0.1 - request:LOGIN caller_email:sae20021005+12@gmail.com result:SUCCESS reason:EXISTING
 >>>>>>> branch 'main' of https://github.com/SRM47/csci181s-course-project.git
 
+[2024-04-29 15:12:58] - 127.0.0.1 - request:LOGIN caller_email:sae20021005+@gmail.com result:SUCCESS reason:EXISTING
+
+[2024-04-29 15:13:27] - 127.0.0.1 - request:LOGIN caller_email:sae20021005+@gmail.com result:SUCCESS reason:No reason provided
+
+[2024-04-29 15:13:33] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:XNEBXKX5EVEEA6H3 result:SUCCESS reason:Successfully authentiated
+
+[2024-04-29 15:17:41] - 127.0.0.1 - request:LOGIN caller_email:sae20021005+@gmail.com result:SUCCESS reason:EXISTING
+
+[2024-04-29 15:17:49] - 127.0.0.1 - request:LOGIN caller_email:sae20021005+@gmail.com result:FAILURE reason:Incorrect OTP
+
+[2024-04-29 15:27:25] - 127.0.0.1 - request:LOGIN caller_email:sae20021005+@gmail.com result:SUCCESS reason:EXISTING
+
+[2024-04-29 15:27:53] - 127.0.0.1 - request:LOGIN caller_email:sae20021005+@gmail.com result:SUCCESS reason:No reason provided
+
+[2024-04-29 15:28:13] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:XNEBXKX5EVEEA6H3 result:SUCCESS reason:Successfully authentiated
+
+[2024-04-29 15:37:43] - 127.0.0.1 - request:LOGIN caller_email:sae20021005+@gmail.com result:SUCCESS reason:EXISTING
+
+[2024-04-29 15:38:17] - 127.0.0.1 - request:LOGIN caller_email:sae20021005+@gmail.com result:SUCCESS reason:No reason provided
+
+[2024-04-29 15:38:32] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:XNEBXKX5EVEEA6H3 result:SUCCESS reason:Successfully authentiated
+
+[2024-04-29 15:48:44] - 127.0.0.1 - request:LOGIN caller_email:sae20021005+@gmail.com result:SUCCESS reason:EXISTING
+
+[2024-04-29 15:49:40] - 127.0.0.1 - request:LOGIN caller_email:sae20021005+@gmail.com result:SUCCESS reason:No reason provided
+
+[2024-04-29 15:50:02] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:XNEBXKX5EVEEA6H3 result:SUCCESS reason:Successfully authentiated
+
+[2024-04-29 16:11:15] - 127.0.0.1 - request:LOGIN caller_email:sae20021005+@gmail.com result:SUCCESS reason:EXISTING
+
+[2024-04-29 16:11:39] - 127.0.0.1 - request:LOGIN caller_email:sae20021005+@gmail.com result:SUCCESS reason:No reason provided
+
+[2024-04-29 16:11:54] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:XNEBXKX5EVEEA6H3 result:SUCCESS reason:Successfully authentiated
+
+[2024-04-29 16:14:54] - 127.0.0.1 - request:LOGIN caller_email:sae20021005+@gmail.com result:SUCCESS reason:EXISTING
+
+[2024-04-29 16:15:16] - 127.0.0.1 - request:LOGIN caller_email:sae20021005+@gmail.com result:SUCCESS reason:No reason provided
+
+[2024-04-29 16:15:35] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:XNEBXKX5EVEEA6H3 result:SUCCESS reason:Successfully authentiated
+
