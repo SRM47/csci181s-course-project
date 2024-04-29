@@ -6,6 +6,7 @@ import java.util.Scanner;
 
 import org.healthhaven.model.User.Account;
 import org.healthhaven.server.ServerCommunicator;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 
@@ -71,7 +72,23 @@ public class DataAnalyst extends User {
 	    	json.put("when", "<=");
 	    }
 	    json.put("date", date.toString());
-		return ServerCommunicator.communicateWithServer(json.toString());
+//	    
+//		return ServerCommunicator.communicateWithServer(json.toString());
+	    
+	    String serverResponse = ServerCommunicator.communicateWithServer(json.toString());
+        JSONObject jsonResponse = new JSONObject(serverResponse);
+//        System.out.println(jsonResponse.toString());
+
+        // Check if the request was successful
+        if (!jsonResponse.getString("result").equals("SUCCESS")) {
+            return "Error: " + jsonResponse.getString("reason");
+        }
+        
+
+        // Extract entries array from the response
+        JSONArray dataArray = jsonResponse.getJSONArray("entries");
+
+        return DifferentialPrivacyUtil.applyDP(dataArray);
 	}
 
 

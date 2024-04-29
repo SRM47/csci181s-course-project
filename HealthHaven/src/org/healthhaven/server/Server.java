@@ -152,9 +152,27 @@ public class Server {
 			// Occurs when client disconnects.
 			e.printStackTrace();
 		} catch (JSONException | IllegalArgumentException e) {
+			JSONObject jsonError = returnFailureResponse("Error parsing request json");
+			try {
+				BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
+				writer.write(jsonError.toString());
+				writer.newLine();
+				writer.flush();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
 			e.printStackTrace();
 		}
 
+	}
+	
+	private static JSONObject returnFailureResponse(String reason) {
+		JSONObject serverResponse = new JSONObject();
+		serverResponse.put("result", "FAILURE");
+		serverResponse.put("reason", reason);
+		return serverResponse;	
 	}
 
 }

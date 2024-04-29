@@ -32,12 +32,6 @@ public class AuthenticationService {
 		
 		if (isAuthenticated.getString("result").equals("SUCCESS")) {
 			if (!AccountDAO.updateCookieTimestamp(conn, userId)) {
-				try {
-					conn.rollback();
-				} catch (SQLException e) {
-					e.printStackTrace();
-					return returnFailureResponse("Failed to update session timestamp.");
-				}
 		        return returnFailureResponse("Failed to update session timestamp.");
 		    }
 		}

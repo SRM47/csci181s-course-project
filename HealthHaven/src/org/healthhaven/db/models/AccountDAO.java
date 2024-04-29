@@ -23,7 +23,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class AccountDAO {
-	public static JSONObject createTemporaryUser(Connection conn, String userId, String email, String password,
+	public static synchronized JSONObject createTemporaryUser(Connection conn, String userId, String email, String password,
 			String dob, String accountType) {
 		int rowsInserted = 0;
 		// Set the 'dob' column to the dob to verify later
@@ -119,7 +119,7 @@ public class AccountDAO {
 		return returnSuccessResponse("");
 	}
 
-	public static JSONObject updateTemporaryUserAfterFirstLogin(Connection conn, String legalfirstname,
+	public static synchronized JSONObject updateTemporaryUserAfterFirstLogin(Connection conn, String legalfirstname,
 			String legallastname, String dob, String address, String email, String password, String accountType){
 		JSONObject serverResponse = new JSONObject();
 		String result = "SUCCESS";
@@ -164,7 +164,7 @@ public class AccountDAO {
 		return serverResponse;
 	}
 
-	public static JSONObject updateUserAddress(Connection conn, String address, String userId) {
+	public static synchronized JSONObject updateUserAddress(Connection conn, String address, String userId) {
 		JSONObject serverResponse = new JSONObject();
 		String result = "SUCCESS";
 		String reason = "";
@@ -296,7 +296,7 @@ public class AccountDAO {
 		return serverResponse;
 	}
 
-	public static JSONObject newMedicalInformation(Connection conn, String patientId, String doctorId, float height,
+	public static synchronized JSONObject newMedicalInformation(Connection conn, String patientId, String doctorId, float height,
 			float weight, String timestamp) {
 		JSONObject response = new JSONObject();
 		if (!accountExistsById(conn, patientId) || !accountExistsById(conn, doctorId)) {
@@ -359,7 +359,7 @@ public class AccountDAO {
 	}
 	
 	
-	public static JSONObject updateDataSharingSetting(Connection conn, String callerId, boolean data_sharing) {
+	public static synchronized JSONObject updateDataSharingSetting(Connection conn, String callerId, boolean data_sharing) {
 		JSONObject serverResponse = new JSONObject();
 		String result = "SUCCESS";
 		String reason = "";
@@ -450,7 +450,7 @@ public class AccountDAO {
 		}
 	}
 
-	public static JSONObject updatePassword(Connection conn, String newPassword, String email) {
+	public static synchronized JSONObject updatePassword(Connection conn, String newPassword, String email) {
 		JSONObject serverResponse = new JSONObject(); 
 		String result = "SUCCESS";
 		String reason = "";
@@ -884,7 +884,7 @@ public class AccountDAO {
 		
 	}
 	
-	public static String generateAndUpdateNewUserCookie(Connection conn, String userId) {
+	public static synchronized String generateAndUpdateNewUserCookie(Connection conn, String userId) {
 		// Cookie Generation
 	    SecureRandom random = new SecureRandom();
 	    byte[] cookieBytes = new byte[32]; // Example: 32-byte cookie value
@@ -1003,17 +1003,23 @@ public class AccountDAO {
 //	    return false;
 //	}
 	
-	public static boolean updateCookieTimestamp(Connection conn, String userId) {
+	public static synchronized boolean updateCookieTimestamp(Connection conn, String userId) {
 	    String sql = "UPDATE healthhaven.cookie SET timestamp = NOW() WHERE userid = ?";
 	    System.out.println(sql);
 	    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 	        pstmt.setString(1, userId);
 	        int affectedRows = pstmt.executeUpdate();
 	        if (affectedRows <= 0) {
-	        	return false;
+	        	conn.rollback();
 	        }
 	        conn.commit();
 	    } catch (SQLException e) {
+	    	try {
+				conn.rollback();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 	        System.err.println("Error updating cookie timestamp: " + e.getMessage());
 	        return false;
 	    }
@@ -1022,7 +1028,7 @@ public class AccountDAO {
 
 
 	//TODO: Write SQL query that wipes out data associated with given userId, no need to validate whether userID exists.
-	public static JSONObject deactivateAccount(Connection conn, String userId) {
+	public static synchronized JSONObject deactivateAccount(Connection conn, String userId) {
 		JSONObject serverResponse = new JSONObject();
 		String result = "SUCCESS";
 		String reason = "";
@@ -1110,7 +1116,7 @@ public class AccountDAO {
 	}
 	
 
-	public static JSONObject logoutUser(Connection conn, String userId) {
+	public static synchronized JSONObject logoutUser(Connection conn, String userId) {
 		JSONObject serverResponse = new JSONObject();
 		String result = "SUCCESS";
 		String reason = "";
@@ -1133,7 +1139,7 @@ public class AccountDAO {
         serverResponse.put("reason", reason);
         return serverResponse;
 	}
-	
+	 
 	private static JSONObject returnFailureResponse(String reason) {
 		JSONObject serverResponse = new JSONObject();
 		serverResponse.put("result", "FAILURE");

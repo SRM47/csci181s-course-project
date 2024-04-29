@@ -84,9 +84,7 @@ public class APIHandler{
 	        return AccountDAO.logoutUser(cnn, userId);
 	    } else {
 	        // Return an appropriate JSON response if userId is missing or empty
-	        JSONObject response = new JSONObject();
-	        response.put("error", "No user ID provided");
-	        return response;
+	    	return returnFailureResponse("Missing one or more of the required fields");
 	    }
 	}
 
@@ -110,9 +108,7 @@ public class APIHandler{
 	        doctorID == null || doctorID.isEmpty() ||
 	        Double.isNaN(height) || Double.isNaN(weight) ||
 	        timestamp == null || timestamp.isEmpty()) {
-	        JSONObject response = new JSONObject();
-	        response.put("error", "Missing or incorrect input for one or more fields.");
-	        return response;
+	        return returnFailureResponse("Missing one or more of the required fields");
 	    }
 
 	    // Proceed with creating the record if all inputs are valid
@@ -126,9 +122,7 @@ public class APIHandler{
 	    String patientID = json.optString("patientID", null);
 	    
 	    if (patientID == null) {
-	        JSONObject response = new JSONObject();
-	        response.put("error", "Missing doctorID or patientID");
-	        return response;
+	    	return returnFailureResponse("Missing one or more of the required fields");
 	    }
 	    return AccountDAO.viewUserInformation(cnn, doctorID, patientID);
 	}
@@ -140,9 +134,7 @@ public class APIHandler{
 	    String date = json.optString("date", null);
 
 	    if (when == null || date == null) {
-	        JSONObject response = new JSONObject();
-	        response.put("error", "Missing 'when' or 'date' parameter");
-	        return response;
+	    	return returnFailureResponse("Missing one or more of the required fields");
 	    }
 
 	    return AccountDAO.getMedicalInformationDataByQuery(cnn, when, date);
@@ -174,9 +166,7 @@ public class APIHandler{
 	    String accountType = json.optString("accountType", null);
 
 	    if (firstName == null || lastName == null || dob == null || address == null || email == null || password == null || accountType == null) {
-	        JSONObject response = new JSONObject();
-	        response.put("error", "One or more required fields are missing");
-	        return response;
+	    	return returnFailureResponse("Missing one or more of the required fields");
 	    }
 
 	    return AccountDAO.updateTemporaryUserAfterFirstLogin(cnn, firstName, lastName, dob, address, email, password, accountType);
@@ -189,7 +179,7 @@ public class APIHandler{
 	    String userType = json.optString("userType", null); // Notice using optString now
 
 	    if (email == null || dob == null || userType == null) {
-	        return returnFailureResponse("Required field(s) missing: email, dob, or userType");
+	    	return returnFailureResponse("Missing one or more of the required fields");
 	    }
 
 	    if (AccountDAO.accountExistsByEmail(cnn, email)) {
@@ -242,9 +232,7 @@ public class APIHandler{
 	    String email = json.optString("email", null);
 	    
 	    if (password == null || email == null) {
-	        JSONObject response = new JSONObject();
-	        response.put("error", "Missing password or email");
-	        return response;
+	    	return returnFailureResponse("Missing one or more of the required fields");
 	    }
 	    
 	    return AccountDAO.updatePassword(cnn, password, email);
@@ -284,9 +272,7 @@ public class APIHandler{
 	    String userId = json.optString("userId", null);
 
 	    if (userId == null) {
-	        JSONObject response = new JSONObject();
-	        response.put("error", "User ID is missing");
-	        return response;
+	    	return returnFailureResponse("Missing one or more of the required fields");
 	    }
 
 	    return AccountDAO.viewAccountInformation(cnn, userId);
