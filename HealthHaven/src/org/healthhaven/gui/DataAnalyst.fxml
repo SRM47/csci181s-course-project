@@ -20,11 +20,11 @@
             <CheckBox fx:id="afterCheckBox" mnemonicParsing="false" text="After" />
             <DatePicker fx:id="datePicker" />
             <Button fx:id="requestDataButton" mnemonicParsing="false" onAction="#requestData" text="Request Data" />
-            <TableView fx:id="dataTable" maxWidth="-Infinity" prefHeight="200.0" prefWidth="225.0">
+            <TableView fx:id="dataTable" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="270.0">
               <columns>
                 <TableColumn fx:id="heightColumn" editable="false" prefWidth="75.0" sortable="false" text="Height" />
                 <TableColumn fx:id="weightColumn" editable="false" prefWidth="75.0" sortable="false" text="Weight" />
-                  <TableColumn fx:id="timestampColumn" editable="false" prefWidth="75.0" sortable="false" text="Timestamp" />
+                  <TableColumn fx:id="timestampColumn" editable="false" prefWidth="120.0" sortable="false" text="Timestamp" />
               </columns>
             </TableView>
          </children>
