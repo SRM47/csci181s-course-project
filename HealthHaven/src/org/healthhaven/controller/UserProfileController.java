@@ -91,6 +91,7 @@ public class UserProfileController {
 	               "First name: " + currentUser.getLegal_first_name() + "\n" +
 	               "Last name: " + currentUser.getLegal_last_name() + "\n" +
 	               "Email: " + currentUser.getEmail()+ "\n" +
+	               "Address: " + currentUser.getAddress() + "\n" +
  	               "Account Type: " + currentUser.getAccountType().toString();
 	}
     
@@ -153,6 +154,8 @@ public class UserProfileController {
 	            	currentUser.setAddress(address);
 	            	displayUserInfo();
 	                updatePasswordSection.setVisible(false);
+	            } else if (jsonObj.get("result").equals("FAILURE")) {
+	            	response.setText(jsonObj.getString("reason"));
 	            }
             	
             }

@@ -57,6 +57,7 @@ public class DoctorController {
 
 	@FXML
 	public void createNewPatient() {
+		response.setText("");
 		String email = newPatientEmailField.getText();
 		LocalDate dob = dobDatePicker.getValue();
 		if (email.isEmpty() || dob == null) {
@@ -64,14 +65,23 @@ public class DoctorController {
 		}
 
 		String serverResponse = doctor.authorizeAccountCreation(email, dob);
-
-		response.setText(serverResponse);
+		if (serverResponse.equals(null)) {
+			response.setText("Error");
+			return;
+		}
+		
+		JSONObject json = new JSONObject(serverResponse);
+		if (json.getString("result").equals("SUCCESS")) {
+			response.setText("Account created!");
+		} else {
+			response.setText(json.getString("reason"));
+		}
 	}
 
 	@FXML
 	public void handleViewPatientRecord() {
 		updateFormContainer.setVisible(false);
-		patientRecordArea.setText(null);
+		patientRecordArea.setText("");
 		
 		String patientID = patientIdField.getText();
 
@@ -127,10 +137,20 @@ public class DoctorController {
 		
 
 		String response = doctor.updatePatientRecordOnDB(patientID, height, weight);
-
-		patientRecordArea.setText(response);
+		if (response.equals(null)) {
+			updateRecordResponse.setText("Error");
+			return;
+		} 
+		JSONObject json = new JSONObject(response);
+		if (json.getString("result").equals("FAILURE")) {
+			patientRecordArea.setText(json.getString("reason"));
+		} else if (json.getString("result").equals("SUCCESS")) {
+			patientRecordArea.setText("Updated to " + json.getString("details"));
+		}
+		
 
 	}
+	
 	
 	private String parseMedicalRecord(JSONArray records) {
     	// Parse the records JSON string into a JSON array
@@ -160,6 +180,8 @@ public class DoctorController {
 	@FXML
 	public void handleCancel() {
 		newPatientEmailField.setText("");
+		response.setText("");
+		dobDatePicker.setValue(null);
 	}
 
 	@FXML
