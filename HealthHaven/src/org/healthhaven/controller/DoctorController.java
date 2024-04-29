@@ -130,8 +130,8 @@ public class DoctorController {
 			return;
 		}
 		
-		if(weight < 0 || height < 0) {
-			updateRecordResponse.setText("No negative numbers!");
+		if(weight < 1.5 || height < 30|| height > 250 || weight > 600) {
+			updateRecordResponse.setText("Numbers out of range!");
 			return;
 		}
 		
