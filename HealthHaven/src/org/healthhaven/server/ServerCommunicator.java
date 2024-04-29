@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.security.KeyStore;
 import java.security.cert.X509Certificate;
 import java.time.Instant;
@@ -77,6 +78,9 @@ public class ServerCommunicator {
         	// Initialize readers and writer.
         	BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            
+            // Set socket timeout.
+            socket.setSoTimeout(10000);
         	
             
             // Write the message.
@@ -90,6 +94,10 @@ public class ServerCommunicator {
             } catch (IOException e) {
                 // Handle IO exceptions (e.g., log the error)
             	e.printStackTrace();
+            	JSONObject serverResponse = new JSONObject();
+        		serverResponse.put("result", "FAILURE");
+        		serverResponse.put("reason", e.getMessage());
+        		return serverResponse.toString();	
             } finally {
                 // Close resources to prevent leaks
                 try { writer.close(); } catch (Exception ignored) {} 
@@ -98,9 +106,11 @@ public class ServerCommunicator {
             } 
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+        	JSONObject serverResponse = new JSONObject();
+    		serverResponse.put("result", "FAILURE");
+    		serverResponse.put("reason", e.getMessage());
+    		return serverResponse.toString();	
         }
-        return null;
     }
     
     //This is to test client side code by mimicking the server response.
