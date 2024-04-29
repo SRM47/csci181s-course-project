@@ -326,3 +326,11 @@
 [2024-04-25 22:27:44] - 127.0.0.1 - request:LOGOUT caller_id:FTBE7WJG3PI0WSUE result:SUCCESS reason:
 >>>>>>> branch 'main' of https://github.com/SRM47/csci181s-course-project.git
 
+[2024-04-29 01:35:52] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:DD6HP7OI7UXBANEB result:SUCCESS reason:
+
+[2024-04-29 01:36:17] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:DD6HP7OI7UXBANEB result:SUCCESS reason:
+
+[2024-04-29 01:36:37] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:DD6HP7OI7UXBANEB result:SUCCESS reason:
+
+[2024-04-29 01:37:01] - 127.0.0.1 - request:LOGOUT caller_id:DD6HP7OI7UXBANEB result:SUCCESS reason:
+

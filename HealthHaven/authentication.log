@@ -755,3 +755,15 @@
 [2024-04-25 22:28:15] - 127.0.0.1 - request:LOGIN caller_email:sae20021005+12@gmail.com result:SUCCESS reason:EXISTING
 >>>>>>> branch 'main' of https://github.com/SRM47/csci181s-course-project.git
 
+[2024-04-29 01:35:06] - 127.0.0.1 - request:LOGIN caller_email:sameerrajmalik+1@gmail.com result:SUCCESS reason:EXISTING
+
+[2024-04-29 01:35:32] - 127.0.0.1 - request:LOGIN caller_email:sameerrajmalik+1@gmail.com result:SUCCESS reason:No reason provided
+
+[2024-04-29 01:35:52] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:DD6HP7OI7UXBANEB result:SUCCESS reason:Successfully authentiated
+
+[2024-04-29 01:36:17] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:DD6HP7OI7UXBANEB result:SUCCESS reason:Successfully authentiated
+
+[2024-04-29 01:36:37] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:DD6HP7OI7UXBANEB result:SUCCESS reason:Successfully authentiated
+
+[2024-04-29 01:37:01] - 127.0.0.1 - request:LOGOUT caller_id:DD6HP7OI7UXBANEB result:SUCCESS reason:Successfully authentiated
+
