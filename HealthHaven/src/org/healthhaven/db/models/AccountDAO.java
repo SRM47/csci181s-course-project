@@ -12,7 +12,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Base64;
+import java.util.List;
 
+import org.healthhaven.model.AttemptLimit;
 import org.healthhaven.model.EmailSender;
 import org.healthhaven.model.SaltyHash;
 import org.healthhaven.model.TOTP;
@@ -21,7 +23,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class AccountDAO {
-	public static JSONObject createTemporaryUser(Connection conn, String userId, String email, String password,
+	public static synchronized JSONObject createTemporaryUser(Connection conn, String userId, String email, String password,
 			String dob, String accountType) {
 		int rowsInserted = 0;
 		// Set the 'dob' column to the dob to verify later
@@ -117,7 +119,7 @@ public class AccountDAO {
 		return returnSuccessResponse("");
 	}
 
-	public static JSONObject updateTemporaryUserAfterFirstLogin(Connection conn, String legalfirstname,
+	public static synchronized JSONObject updateTemporaryUserAfterFirstLogin(Connection conn, String legalfirstname,
 			String legallastname, String dob, String address, String email, String password, String accountType){
 		JSONObject serverResponse = new JSONObject();
 		String result = "SUCCESS";
@@ -162,7 +164,7 @@ public class AccountDAO {
 		return serverResponse;
 	}
 
-	public static JSONObject updateUserAddress(Connection conn, String address, String userId) {
+	public static synchronized JSONObject updateUserAddress(Connection conn, String address, String userId) {
 		JSONObject serverResponse = new JSONObject();
 		String result = "SUCCESS";
 		String reason = "";
@@ -294,7 +296,7 @@ public class AccountDAO {
 		return serverResponse;
 	}
 
-	public static JSONObject newMedicalInformation(Connection conn, String patientId, String doctorId, float height,
+	public static synchronized JSONObject newMedicalInformation(Connection conn, String patientId, String doctorId, float height,
 			float weight, String timestamp) {
 		JSONObject response = new JSONObject();
 		if (!accountExistsById(conn, patientId) || !accountExistsById(conn, doctorId)) {
@@ -357,7 +359,7 @@ public class AccountDAO {
 	}
 	
 	
-	public static JSONObject updateDataSharingSetting(Connection conn, String callerId, boolean data_sharing) {
+	public static synchronized JSONObject updateDataSharingSetting(Connection conn, String callerId, boolean data_sharing) {
 		JSONObject serverResponse = new JSONObject();
 		String result = "SUCCESS";
 		String reason = "";
@@ -448,7 +450,7 @@ public class AccountDAO {
 		}
 	}
 
-	public static JSONObject updatePassword(Connection conn, String newPassword, String email) {
+	public static synchronized JSONObject updatePassword(Connection conn, String newPassword, String email) {
 		JSONObject serverResponse = new JSONObject(); 
 		String result = "SUCCESS";
 		String reason = "";
@@ -658,11 +660,22 @@ public class AccountDAO {
 
 					// TODO: Hash this password.
 					String hashedCandidatePassword = candidatePassword;
-					if (!hashCheck) {
+					
+					JSONObject Attempts = limitProcess(conn, email, 2);
+					
+					String allowAttempt = Attempts.getString("result");
+					System.out.println(allowAttempt);
+					
+					if(allowAttempt.equals("FAILURE")) {
+						result = "FAILURE";
+						reason = "Max Attempts";
+					} else if (!hashCheck) {
 						result = "FAILURE";
 						reason = "Incorrect Password";
+						limitProcess(conn, email, 1);
+						
 					} else { //password matches
-						if (type.equals("ACCOUNT_DEACTIVATION")){
+						if  (type.equals("ACCOUNT_DEACTIVATION")){
 							serverResponse.put("result", result);
 							return serverResponse;
 						}
@@ -675,6 +688,7 @@ public class AccountDAO {
 						} else {
 							result = "SUCCESS";
 							reason = "EXISTING";
+							limitProcess(conn, email, 0);
 							sendTOTPEmail(email, TOTP.genTOTP2(data_rs.getString("totp_key")));
 						}
 
@@ -697,7 +711,123 @@ public class AccountDAO {
 		System.out.println(serverResponse);
 		return serverResponse;
 	}
+	
+	private static JSONObject limitProcess(Connection conn, String email, Integer loginFail) {
+		System.out.println("hereagain");
+		
+		JSONObject serverResponse = new JSONObject();
 
+		if(!accountExistsByEmail(conn, email)) {
+			serverResponse.put("result", "FAILURE");
+			serverResponse.put("reason", "Account Does Not Exist");
+			return serverResponse;
+		} else {
+			
+			String selectSQL = "SELECT attempt_track FROM healthhaven.authentication WHERE email = ?";
+			
+			try (PreparedStatement stmt = conn.prepareStatement(selectSQL)) {
+				System.out.println(selectSQL);
+				try {
+					stmt.setString(1, email);
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				try (ResultSet rs = stmt.executeQuery()) {
+					if (!rs.next()) { // If ResultSet is empty, no records are found for the given IDs.
+						serverResponse.put("result", "FAILURE");
+						serverResponse.put("reason", "No records found for the given email.");
+						return serverResponse;
+					}
+					
+					String timeString = rs.getString("attempt_track");
+//					System.out.println(timeString);
+					
+					if(timeString==null) {
+						timeString = "";
+					}
+					
+					List<Long> timeList = AttemptLimit.StringtotList(timeString);
+					
+					List<List<Long>> rList = AttemptLimit.withinAttemptLimit(timeList);
+					List<Long> uploadList = rList.get(1);
+					
+					if(loginFail == 1) {
+						uploadList = AttemptLimit.addTime(uploadList);
+					}
+					
+					
+					
+					System.out.print(uploadList);
+					String uploadString = AttemptLimit.tListtoString(uploadList);
+					
+					System.out.print(uploadString);
+					Long allowAttempt = rList.get(0).get(0);
+//					System.out.println(allowAttempt);
+					
+					if(loginFail == 0 && allowAttempt==1) {
+						uploadString = "";
+					}
+					
+					String usersUpdateSql = "UPDATE healthhaven.authentication SET attempt_track = ? WHERE email = ?";
+					
+					try (PreparedStatement stmt2 = conn.prepareStatement(usersUpdateSql)) {
+						stmt2.setString(1, uploadString);
+						stmt2.setString(2, email);
+					
+						int rowsUpdated = stmt2.executeUpdate();
+						if (rowsUpdated <= 0) {
+							serverResponse.put("result", "FAILURE");
+							serverResponse.put("reason", "Database entry error");
+							return serverResponse;
+						}
+						conn.commit();
+						
+					} catch (SQLException e) {
+						serverResponse.put("result", "FAILURE");
+						serverResponse.put("reason", e.getMessage());					
+						try {
+							conn.rollback();
+						} catch (SQLException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						return serverResponse;
+					}
+						
+					if(allowAttempt == 1) {
+						serverResponse.put("result", "SUCCESS");
+						serverResponse.put("reason", "Within Attempts");
+						return serverResponse;
+					
+					} else if (allowAttempt == 0) {
+						serverResponse.put("result", "FAILURE");
+						serverResponse.put("reason", "Max Attempts");
+						return serverResponse;
+					} else {
+						serverResponse.put("result", "FAILURE");
+						serverResponse.put("reason", "Something Happened");
+						return serverResponse;
+					}
+				} catch (SQLException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+					serverResponse.put("result", "FAILURE");
+					serverResponse.put("reason", "Server Error");
+					return serverResponse;
+
+				}
+			} catch (SQLException e3) {
+				// TODO Auto-generated catch block
+				e3.printStackTrace();
+				serverResponse.put("result", "FAILURE");
+				serverResponse.put("reason", "Server Error");
+				return serverResponse;
+			}
+		}
+	}
+	
 	private static void sendTOTPEmail(String email, String key) {
 		EmailSender.sendTOTPEmail(email, key);
 	}
@@ -709,11 +839,17 @@ public class AccountDAO {
 
 		// Returns the userId if user is authenticated correctly
 		String sql = "SELECT * FROM healthhaven.authentication WHERE email = '" + email + "'";
-
+		
+		JSONObject Attempts = limitProcess(conn, email, 2);
+		String allowAttempt = Attempts.getString("result");
+		
 		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 			ResultSet data_rs = stmt.executeQuery();
 
-			if (data_rs.next()) {
+			if(allowAttempt.equals("FAILURE")) {
+				result = "FAILURE";
+				reason = "Max Attempts"; 
+			} else if (data_rs.next()) {
 				String totp_key = data_rs.getString("totp_key");
 				System.out.println(totp_key);
 				if (TOTP.verTOTP(totp_key, otp)) {
@@ -721,11 +857,13 @@ public class AccountDAO {
 					String userId = data_rs.getString("userid");
 					
 					JSONObject userInformation = UserDAO.getUserInformation(conn, userId);
+					limitProcess(conn, email, 0);
 //					userInformation.put("cookie", userCookie);
 					return userInformation;
 				} else {
 					result = "FAILURE";
 					reason = "Incorrect OTP";
+					limitProcess(conn, email, 1);
 				}
 
 			} else {
@@ -746,7 +884,7 @@ public class AccountDAO {
 		
 	}
 	
-	public static String generateAndUpdateNewUserCookie(Connection conn, String userId) {
+	public static synchronized String generateAndUpdateNewUserCookie(Connection conn, String userId) {
 		// Cookie Generation
 	    SecureRandom random = new SecureRandom();
 	    byte[] cookieBytes = new byte[32]; // Example: 32-byte cookie value
@@ -865,17 +1003,23 @@ public class AccountDAO {
 //	    return false;
 //	}
 	
-	public static boolean updateCookieTimestamp(Connection conn, String userId) {
+	public static synchronized boolean updateCookieTimestamp(Connection conn, String userId) {
 	    String sql = "UPDATE healthhaven.cookie SET timestamp = NOW() WHERE userid = ?";
 	    System.out.println(sql);
 	    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 	        pstmt.setString(1, userId);
 	        int affectedRows = pstmt.executeUpdate();
 	        if (affectedRows <= 0) {
-	        	return false;
+	        	conn.rollback();
 	        }
 	        conn.commit();
 	    } catch (SQLException e) {
+	    	try {
+				conn.rollback();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 	        System.err.println("Error updating cookie timestamp: " + e.getMessage());
 	        return false;
 	    }
@@ -884,7 +1028,7 @@ public class AccountDAO {
 
 
 	//TODO: Write SQL query that wipes out data associated with given userId, no need to validate whether userID exists.
-	public static JSONObject deactivateAccount(Connection conn, String userId) {
+	public static synchronized JSONObject deactivateAccount(Connection conn, String userId) {
 		JSONObject serverResponse = new JSONObject();
 		String result = "SUCCESS";
 		String reason = "";
@@ -972,7 +1116,7 @@ public class AccountDAO {
 	}
 	
 
-	public static JSONObject logoutUser(Connection conn, String userId) {
+	public static synchronized JSONObject logoutUser(Connection conn, String userId) {
 		JSONObject serverResponse = new JSONObject();
 		String result = "SUCCESS";
 		String reason = "";
@@ -995,7 +1139,7 @@ public class AccountDAO {
         serverResponse.put("reason", reason);
         return serverResponse;
 	}
-	
+	 
 	private static JSONObject returnFailureResponse(String reason) {
 		JSONObject serverResponse = new JSONObject();
 		serverResponse.put("result", "FAILURE");

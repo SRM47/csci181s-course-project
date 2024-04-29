@@ -30,7 +30,9 @@ public class PatientController {
         JSONObject json = new JSONObject(medicalRecord);
         if (json.getString("result").equals("SUCCESS")) {
         	recordTextArea.setText(parseMedicalRecord(json.getJSONArray("records")));
-        }    
+        }   else if (json.getString("result").equals("FAILURE")) {
+        	recordTextArea.setText(json.getString("reason"));
+        }
     }
     
     private String parseMedicalRecord(JSONArray records) {

@@ -205,8 +205,13 @@ public class APIHandler{
 	        return serverResponse;
 	    }
 	    
-	    EmailSender.sendDefaultPasswordEmail(email, generatedPassword, userType);
-	    return serverResponse;
+	    String result = EmailSender.sendDefaultPasswordEmail(email, generatedPassword, userType);
+	    
+	    if (result.equals("SUCCESS")) {
+	    	return serverResponse;
+	    }
+	    return returnFailureResponse("Error sending email");
+
 	}
 
 

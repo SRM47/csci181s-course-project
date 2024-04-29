@@ -67,12 +67,12 @@ public class EmailSender {
             msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail, false));
             Transport.send(msg);  
 
-            return "Email Sent Successfully!!";
+            return "SUCCESS";
             
         }
         catch (Exception e) {
             e.printStackTrace();
-            return "Error sending email";
+            return "FAILURE";
         }
     }
     
