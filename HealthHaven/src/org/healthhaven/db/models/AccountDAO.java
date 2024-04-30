@@ -12,7 +12,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 import org.healthhaven.model.AttemptLimit;
 import org.healthhaven.model.EmailSender;
@@ -1072,32 +1074,58 @@ public class AccountDAO {
         }
     }
 	
+	private static double generateLaplaceNoise(double epsilon, double sensitivity) {
+		Random random = new Random();
+        double scale = sensitivity / epsilon;
+        double u = 0.5 - random.nextDouble();  
+        return -scale * Math.signum(u) * Math.log(1 - 2 * Math.abs(u));
+    }
+	
 	public static JSONObject getMedicalInformationDataByQuery(Connection conn, String when, String date) {
+		double epsilon = 0.1;  // Privacy parameter
+        double sensitivity = 1.0;  // Sensitivity for height and weight
+        
+        HashMap<String, String> patientIdToRandomizedId = new HashMap<>();
+        int counter = 0;
+        
 	    JSONObject serverResponse = new JSONObject();
 	    String result = "SUCCESS";
 	    String reason = "";
 	    
 	    String sql = "SELECT * FROM healthhaven.medical_information WHERE CAST(timestamp AS DATE) " + when + " DATE '" + date + "' AND data_sharing = TRUE";
-
+	    
 	    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 	        System.out.println(pstmt.toString());
 	        ResultSet data_rs = pstmt.executeQuery();
 
 	        // Create an array to store the entries
 	        JSONArray entriesArray = new JSONArray();
+	        
+	        // Create a unique key to hash with to create randomized user identifiers
 
 	        while (data_rs.next()) {
 	            float height = data_rs.getFloat("height");
 	            float weight = data_rs.getFloat("weight");
 	            java.util.Date entryDate = data_rs.getDate("timestamp");
-				String patientid = data_rs.getString("patientid");
+				String patientId = data_rs.getString("patientid");
+				
+				// Generate noisy height and weight data. Double to float can lose precision but that is OKAY for now.
+	            float noisyHeight = height + (float) generateLaplaceNoise(epsilon, sensitivity);
+	            float noisyWeight = weight + (float) generateLaplaceNoise(epsilon, sensitivity);
+	            
+	            // Check if patientID already has a pseudonym; if not, generate one
+	            String patientPseudonym = patientIdToRandomizedId.get(patientId);
+	            if (patientPseudonym == null) {
+	            	patientPseudonym = "P" + String.valueOf(counter++);
+	            	patientIdToRandomizedId.put(patientId, patientPseudonym);
+	            }
 
 	            // Create a JSON object for each entry
 	            JSONObject entry = new JSONObject();
-	            entry.put("height", height);
-	            entry.put("weight", weight);
+	            entry.put("height", noisyHeight);
+	            entry.put("weight", noisyWeight);
 	            entry.put("entryDate", entryDate.toString()); // Or format the date as needed
-				entry.put("patientid", patientid);
+				entry.put("identifier", patientPseudonym);
 	            // Add the entry to the array
 	            entriesArray.put(entry);
 	        }
@@ -1108,7 +1136,7 @@ public class AccountDAO {
 	    } catch (SQLException e) {
 	        result = "FAILURE";
 	        reason = e.getMessage();
-	    }
+	    } 
 
 	    serverResponse.put("result", result);
 	    serverResponse.put("reason", reason);

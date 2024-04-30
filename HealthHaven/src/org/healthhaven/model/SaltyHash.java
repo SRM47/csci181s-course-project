@@ -22,11 +22,32 @@ public class SaltyHash {
 		return Base64.getEncoder().encodeToString(randomBytes1);
 	}
 	
-	//ChatGPT and StackOverflow
+//	//ChatGPT and StackOverflow
+//	public static String pwHash(String password, String salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
+//		
+//		
+//		char[] password2 = password.toCharArray();
+//		byte[] salt2 = Base64.getDecoder().decode(salt);
+//		
+//		
+//		PBEKeySpec spec = new PBEKeySpec(password2, salt2, ITERATIONS, KEY_LENGTH);
+//
+//		SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+//		byte[] rHash = skf.generateSecret(spec).getEncoded();
+//		
+//		return Base64.getEncoder().encodeToString(rHash);
+//	}
+	
 	public static String pwHash(String password, String salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
+		return hashWithSalt(password, salt);
+	}
+	
+	
+	
+	//ChatGPT and StackOverflow
+	public static String hashWithSalt(String plaintext, String salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
 		
-		
-		char[] password2 = password.toCharArray();
+		char[] password2 = plaintext.toCharArray();
 		byte[] salt2 = Base64.getDecoder().decode(salt);
 		
 		
