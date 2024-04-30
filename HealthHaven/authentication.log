@@ -751,3 +751,15 @@
 
 [2024-04-29 16:15:35] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:XNEBXKX5EVEEA6H3 result:SUCCESS reason:Successfully authentiated
 
+[2024-04-29 16:49:12] - 127.0.0.1 - request:LOGIN caller_email:sameerrajmalik+1@gmail.com result:SUCCESS reason:EXISTING
+
+[2024-04-29 16:49:33] - 127.0.0.1 - request:LOGIN caller_email:sameerrajmalik+1@gmail.com result:SUCCESS reason:No reason provided
+
+[2024-04-29 16:49:54] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:DD6HP7OI7UXBANEB result:SUCCESS reason:Successfully authentiated
+
+[2024-04-29 16:55:48] - 127.0.0.1 - request:LOGIN caller_email:sameerrajmalik+1@gmail.com result:SUCCESS reason:EXISTING
+
+[2024-04-29 16:56:04] - 127.0.0.1 - request:LOGIN caller_email:sameerrajmalik+1@gmail.com result:SUCCESS reason:No reason provided
+
+[2024-04-29 16:56:19] - 127.0.0.1 - request:REQUEST_PATIENT_DATA caller_id:DD6HP7OI7UXBANEB result:SUCCESS reason:Successfully authentiated
+
