@@ -32,7 +32,7 @@ class AccountDAOTest {
         when(mockStmt.executeUpdate()).thenReturn(1); // Simulate 1 row inserted
 
         // Invoke the method under test
-        JSONObject result = AccountDAO.createTemporaryUser(mockConn, "userId123", "email@example.com", "password", "2000-01-01", "USER");
+        JSONObject result = AccountDAO.createTemporaryUser(mockConn, "userId123", "email@example.com", "password", "2000-01-01", "USER", null);
 
         // Verify and assert the result
         assertEquals("SUCCESS", result.getString("result"));

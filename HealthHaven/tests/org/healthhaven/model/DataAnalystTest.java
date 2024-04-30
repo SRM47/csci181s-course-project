@@ -8,6 +8,7 @@ import java.time.LocalDate;
 
 import org.healthhaven.model.User.Account;
 import org.healthhaven.server.ServerCommunicator;
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
@@ -46,7 +47,7 @@ public class DataAnalystTest extends UserTest<DataAnalyst> {
             DataAnalyst analyst = new DataAnalyst("userID", "email@example.com", "John", "Doe", "123 Main St", LocalDate.now(), cookie);
 
             // Execute the method under test
-            String response = analyst.performDataAnalysis();
+            JSONObject response = analyst.performDataAnalysis(false, false, null);
 
             // Assert that the response is as expected
             assertEquals(expectedServerResponse, response, "The server response should match the expected data summary.");
