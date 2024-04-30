@@ -235,7 +235,7 @@ public class AccountDAO {
 			return returnFailureResponse(e.getMessage());
 		}
 
-		return returnFailureResponse("Doctor not authorized to view this patient");
+		return returnFailureResponse("Either patient does not exist or doctor is not authorized for this action");
 	}
 
 	public static JSONObject viewUserInformation(Connection conn, String doctorId, String userId) {

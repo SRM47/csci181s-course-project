@@ -30,7 +30,7 @@ public class ReferenceMonitor {
 			break;
 		case "ALLOW_ACCOUNT_CREATION": 
 			if (accountType.equals("Superadmin")) {
-				res = true;
+				res = json.getString("userType").equals("Data Analyst") || json.getString("userType").equals("Doctor");
 			} else if (accountType.equals("Doctor")) {
 				res = json.getString("userType").equals("Patient");
 			} else {

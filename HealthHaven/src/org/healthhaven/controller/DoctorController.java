@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.TimeZone;
 
 import org.healthhaven.model.*;
 import org.json.JSONArray;
@@ -17,7 +18,6 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
@@ -100,7 +100,9 @@ public class DoctorController {
 
 	@FXML
 	public void handleViewPatientRecord() {
+		updateRecordResponse.setText("");
 		updateFormContainer.setVisible(false);
+		response2.setText("");
 		dataTable.getItems().setAll(parseMedicalInformationResultJSON(null));
 		
 		String patientID = patientIdField.getText();
@@ -168,7 +170,7 @@ public class DoctorController {
 			} 
 
             // Create MedicalDataInstance
-            MedicalDataInstance dataInstance = new MedicalDataInstance(height, weight, date);
+            MedicalDataInstance dataInstance = new MedicalDataInstance(height, weight, date, null);
             System.out.println(dataInstance);
 
             // Add to the list
@@ -180,7 +182,8 @@ public class DoctorController {
     }
 	
 	private Date convertDateStringToDate(String dateString) throws ParseException {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSSSS");
+        //formatter.setTimeZone(TimeZone.getTimeZone("UTC"));  // Set the timezone to UTC as indicated by 'Z'
         return formatter.parse(dateString);
     } 
 	

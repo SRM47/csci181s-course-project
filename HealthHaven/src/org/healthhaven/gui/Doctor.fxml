@@ -66,16 +66,16 @@
                   <Insets />
                </VBox.margin>
             </HBox>
-            <Label fx:id="response2" alignment="CENTER" contentDisplay="CENTER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="150.0" textFill="#d30909">
+            <Label fx:id="response2" alignment="CENTER" contentDisplay="CENTER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="200.0" textFill="#d30909">
                <font>
                   <Font size="9.0" />
                </font>
             </Label>
             <TableView fx:id="dataTable" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="120.0" prefWidth="340.0">
                <columns>
-                  <TableColumn fx:id="heightColumn" editable="false" prefWidth="75.0" sortable="false" text="Height" />
-                  <TableColumn fx:id="weightColumn" editable="false" prefWidth="75.0" sortable="false" text="Weight" />
-                  <TableColumn fx:id="timestampColumn" editable="false" prefWidth="190.0" sortable="false" text="Timestamp" />
+                  <TableColumn fx:id="heightColumn" editable="false" prefWidth="70.0" sortable="false" text="Height" />
+                  <TableColumn fx:id="weightColumn" editable="false" prefWidth="70.0" sortable="false" text="Weight" />
+                  <TableColumn fx:id="timestampColumn" editable="false" prefWidth="200.0" sortable="false" text="Timestamp" />
                </columns>
             </TableView>
             <Label fx:id="updateRecordResponse" textFill="#ee0707">
