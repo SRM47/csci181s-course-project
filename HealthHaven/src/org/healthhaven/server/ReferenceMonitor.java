@@ -32,8 +32,7 @@ public class ReferenceMonitor {
 			break;
 		case "ALLOW_ACCOUNT_CREATION": 
 			if (accountType.equals("Superadmin")) {
-				res = true;
-				reason = "";
+				res = json.getString("userType").equals("Data Analyst") || json.getString("userType").equals("Doctor");
 			} else if (accountType.equals("Doctor")) {
 				res = "Patient".equals(json.optString("userType"));
 				reason = res ? "" : "User type trying to be accessed is not a patient";

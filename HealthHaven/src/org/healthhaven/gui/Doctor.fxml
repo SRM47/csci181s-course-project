@@ -25,20 +25,20 @@
             </Label>
             <Label text="Create Patient Account">
                <VBox.margin>
-                  <Insets bottom="5.0" top="5.0" />
+                  <Insets bottom="5.0" />
                </VBox.margin>
             </Label>
-            <TextField fx:id="newPatientEmailField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="150.0" promptText="Enter email">
+            <TextField fx:id="newPatientEmailField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="23.0" prefWidth="150.0" promptText="Enter email">
                <VBox.margin>
                   <Insets bottom="2.0" />
                </VBox.margin>
             </TextField>
-            <DatePicker fx:id="dobDatePicker" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="150.0" promptText="Pick date of birth" />
-            <Label fx:id="response" alignment="CENTER" contentDisplay="CENTER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="100.0" textFill="#d30909">
+            <DatePicker fx:id="dobDatePicker" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="23.0" prefWidth="150.0" promptText="Pick date of birth" />
+            <Label fx:id="response1" alignment="CENTER" contentDisplay="CENTER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="150.0" textFill="#d30909">
                <font>
                   <Font size="9.0" />
                </font></Label>
-            <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" prefHeight="30.0" prefWidth="200.0">
+            <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity">
                <children>
                   <Button fx:id="createPatientButton" mnemonicParsing="false" onAction="#createNewPatient" text="Create">
                      <HBox.margin>
@@ -54,46 +54,57 @@
             </HBox>
             <Label text="Update Patient Record">
                <VBox.margin>
-                  <Insets top="5.0" />
+                  <Insets top="3.0" />
                </VBox.margin>
             </Label>
-            <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="220.0">
+            <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="220.0">
                <children>
                   <TextField fx:id="patientIdField" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" promptText="Enter Patient ID" />
                   <Button fx:id="searchButton" mnemonicParsing="false" onAction="#handleViewPatientRecord" text="Search" />
                </children>
-               <padding>
-                  <Insets top="5.0" />
-               </padding>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
             </HBox>
-            <TextArea fx:id="patientRecordArea" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="80.0" prefWidth="400.0" />
+            <Label fx:id="response2" alignment="CENTER" contentDisplay="CENTER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="200.0" textFill="#d30909">
+               <font>
+                  <Font size="9.0" />
+               </font>
+            </Label>
+            <TableView fx:id="dataTable" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="120.0" prefWidth="340.0">
+               <columns>
+                  <TableColumn fx:id="heightColumn" editable="false" prefWidth="70.0" sortable="false" text="Height" />
+                  <TableColumn fx:id="weightColumn" editable="false" prefWidth="70.0" sortable="false" text="Weight" />
+                  <TableColumn fx:id="timestampColumn" editable="false" prefWidth="200.0" sortable="false" text="Timestamp" />
+               </columns>
+            </TableView>
             <Label fx:id="updateRecordResponse" textFill="#ee0707">
                <font>
                   <Font size="9.0" />
                </font>
             </Label>
-            <VBox fx:id="updateFormContainer" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="300.0">
+            <VBox fx:id="updateFormContainer" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity">
                <children>
-                  <TextField fx:id="patientHeightField" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="200.0" promptText="Update Height">
-                     <VBox.margin>
-                        <Insets top="5.0" />
-                     </VBox.margin>
-                  </TextField>
-                  <TextField fx:id="patientWeightField" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="200.0" promptText="Update Weight">
-                     <VBox.margin>
-                        <Insets bottom="5.0" />
-                     </VBox.margin>
-                  </TextField>
-                  <HBox alignment="TOP_CENTER" layoutX="10.0" layoutY="10.0" prefHeight="100.0" prefWidth="200.0">
+                  <HBox>
+                     <children>
+                        <TextField fx:id="patientHeightField" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="23.0" prefWidth="150.0" promptText="Update Height">
+                           <HBox.margin>
+                              <Insets right="5.0" />
+                           </HBox.margin>
+                        </TextField>
+                        <TextField fx:id="patientWeightField" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="23.0" prefWidth="150.0" promptText="Update Weight" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="TOP_CENTER" layoutX="10.0" layoutY="10.0">
                      <children>
                         <Button mnemonicParsing="false" onAction="#handleUpdatePatientRecord" text="Update">
                            <HBox.margin>
-                              <Insets left="5.0" right="5.0" />
+                              <Insets left="5.0" right="5.0" top="2.0" />
                            </HBox.margin>
                         </Button>
                         <Button fx:id="cancelButton2" mnemonicParsing="false" onAction="#handleCancel2" text="Cancel">
                            <HBox.margin>
-                              <Insets left="5.0" right="5.0" />
+                              <Insets left="5.0" right="5.0" top="2.0" />
                            </HBox.margin>
                         </Button>
                      </children>

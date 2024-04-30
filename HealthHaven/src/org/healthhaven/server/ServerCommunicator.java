@@ -27,7 +27,7 @@ import org.json.JSONObject;
 
 public class ServerCommunicator {
 
-    private static final String SERVER_ADDRESS = "localhost";
+    private static final String SERVER_ADDRESS = "3.101.124.150";
     private static final int SERVER_PORT = 8888; // Example port for account data server
     
     private static final String protocol = "TLSv1.3";
@@ -80,7 +80,7 @@ public class ServerCommunicator {
             BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             
             // Set socket timeout.
-            socket.setSoTimeout(10000);
+            //socket.setSoTimeout(10000);
         	
             
             // Write the message.

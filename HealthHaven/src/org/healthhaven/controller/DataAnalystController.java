@@ -66,6 +66,9 @@ public class DataAnalystController{
     		return;
     	}
     	LocalDate date = datePicker.getValue();
+    	if (date==null) {
+    		return;
+    	}
     	
         JSONObject result_data = dataAnalyst.performDataAnalysis(after, before, date);
         System.out.println(result_data);
