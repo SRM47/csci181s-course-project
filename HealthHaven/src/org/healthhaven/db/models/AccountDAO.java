@@ -216,6 +216,9 @@ public class AccountDAO {
 	}
 	
 	public static JSONObject isDoctorAuthorizedToViewPatientData(Connection conn, String doctorId, String patientId) {
+		if (doctorId == null || patientId == null) {
+			return returnFailureResponse("Must provide both doctor and patient id.");
+		}
 		String sql = "SELECT COUNT(*) FROM healthhaven.medical_map WHERE doctorid = ? AND patientid = ?";
 
 		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -614,6 +617,16 @@ public class AccountDAO {
 			System.err.println("Error parsing provided DOB");
 		}
 		return false;
+	}
+	
+	public static JSONObject verifyUserIdfromEmail(Connection conn, String userId, String email) {
+		if (userId == null || email == null) {
+			return returnFailureResponse("Please provide a userId and email");
+		}
+		if (userId.equals(getUserIdFromEmail(conn, email))) {
+			return returnSuccessResponse("");
+		}
+		return returnFailureResponse("Unable to match email and userId");
 	}
 
 	private static String getUserIdFromEmail(Connection conn, String email) {
