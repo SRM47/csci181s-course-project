@@ -22,7 +22,7 @@ jobs:
       run: |
         ssh -o "StrictHostKeyChecking=no" ubuntu@ec2-3-101-124-150.us-west-1.compute.amazonaws.com "
           echo 'Connected successfully';
-          cd /path/to/your/repository;  # Change to your repository directory
+          cd csci181s-course-project/; 
           git pull;
           sudo systemctl enable server.service;
           sudo systemctl start server.service;
