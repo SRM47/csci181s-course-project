@@ -33,8 +33,6 @@ public class SuperadminController {
 	@FXML
 	private MenuButton accountTypeMenu;
 	@FXML
-	private MenuItem patientMenuItem;
-	@FXML
 	private MenuItem doctorMenuItem;
 	@FXML
 	private MenuItem dataAnalystMenuItem;
@@ -71,10 +69,6 @@ public class SuperadminController {
 		accountTypeMenu.setText(doctorMenuItem.getText());
 	}
 
-	@FXML
-	public void updateAccountTypePatient() {
-		accountTypeMenu.setText(patientMenuItem.getText());
-	}
 
 	@FXML
 	public void updateAccountTypeDataAnalyst() {
@@ -88,9 +82,6 @@ public class SuperadminController {
 		String rat = accountTypeMenu.getText();
 		Account userAccountType = Account.NONE;
 		switch (accountTypeMenu.getText()) {
-		case "Patient":
-			userAccountType = Account.PATIENT;
-			break;
 		case "Doctor":
 			userAccountType = Account.DOCTOR;
 			break;
@@ -105,6 +96,7 @@ public class SuperadminController {
 		// Input validation
 		if (rat.isEmpty() || email.isEmpty() || dob == null) {
 			response.setText("Please fill in all fields.");
+			return;
 		}
 		String serverResponse = superadmin.authorizeAccountCreation(email, userAccountType, dob);
 		if (serverResponse==null) {
@@ -114,18 +106,12 @@ public class SuperadminController {
 		JSONObject json = new JSONObject(serverResponse);
 		if (json.getString("result").equals("SUCCESS")) {
 			response.setText("Account created");
-		} else if (json.getString("result").equals("FAILTURE")){
+		} else if (json.getString("result").equals("FAILURE")){
 			response.setText(json.getString("reason"));
 		}
 
 	}
 	
-//	//TODO: Incomplete
-//	private void listAccounts() {
-//		String accountRecords = superadmin.viewAccountList();
-//		;
-//		recordTextArea.setText(accountRecords);
-//	}
 	
 	@FXML
 	public void handleUserIdSearch() {
@@ -146,18 +132,17 @@ public class SuperadminController {
 			} else if (json.getString("result").equals("SUCCESS")){
 				this.userID = userID;
 				recordTextArea.setText(parseUserData(json));
-				//deactivationResponse.setText("Successfully deactivated");
 			}
 		}
 		
 	}
 	
 	private String parseUserData(JSONObject json) {
-		return "User ID: " + json.getString("userID") + "\n" +
-	               "First name: " + json.getString("first_name") + "\n" +
-	               "Last name: " + json.getString("last_name") + "\n" +
-	               "Email: " + json.getString("email") + "\n" +
- 	               "Account Type: " + json.getString("accountType");
+	    return "User ID: " + json.optString("userID", "Not available") + "\n" +
+	           "First name: " + json.optString("first_name", "Not available") + "\n" +
+	           "Last name: " + json.optString("last_name", "Not available") + "\n" +
+	           "Email: " + json.optString("email", "Not available") + "\n" +
+	           "Account Type: " + json.optString("accountType", "Not available");
 	}
 	
 	@FXML
@@ -172,12 +157,14 @@ public class SuperadminController {
 			} else if (json.getString("result").equals("SUCCESS")){
 				deactivationResponse.setText("Successfully deactivated");
 				recordTextArea.setText("");
+				UserIDField.setText("");
 			}
 		}
 	}
 	@FXML
 	public void handleCancel() {
 		emailTextfield.setText("");
+		response.setText("");
 		datepicker.setValue(null);
 	}
 

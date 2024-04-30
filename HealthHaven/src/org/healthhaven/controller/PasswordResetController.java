@@ -71,7 +71,11 @@ public class PasswordResetController{
 	public void handleSubmit() {
 		this.json = null;
 		OTPSection.setVisible(false);
+		PasswordField1.setText("");
+		PasswordField2.setText("");
+		PasswordResetMessage.setText("");
 		passwordResetSection.setVisible(false);
+		passwordStrengthBar.setProgress(0);
 		
 		String email = emailTextfield.getText();
 		if (email.isEmpty()) {
@@ -87,7 +91,6 @@ public class PasswordResetController{
 					this.email = email;
 					OTPSection.setVisible(true);
 					OTPResponse.setText("OTP sent to your email");
-					emailTextfield.setText("");
 				}
 			}
 		}
@@ -109,11 +112,13 @@ public class PasswordResetController{
 				OTPResponse.setText(jsonObj.getString("reason"));
 			}
 			else if (jsonObj.getString("result").equals("SUCCESS")) {
-					this.json = jsonObj;
-					OTPSection.setVisible(false);
-					passwordResetSection.setVisible(true);
-					OTPPasscodeField.setText("");
-			}
+				OTPResponse.setText("");
+				emailTextfield.setText("");
+				this.json = jsonObj;
+				OTPSection.setVisible(false);
+				passwordResetSection.setVisible(true);
+				OTPPasscodeField.setText("");
+		}
 				
 		}
 	}
@@ -156,6 +161,7 @@ public class PasswordResetController{
 			    		PasswordResetMessage.setText(jsonObj.getString("reason"));
 			    	} else if (jsonObj.getString("result").equals("SUCCESS")) {
 			    		PasswordResetMessage.setText("Password got updated");
+			    		passwordStrengthBar.setProgress(0);
 			    		PasswordField1.setText("");
 			    		PasswordField2.setText("");
 			    	}

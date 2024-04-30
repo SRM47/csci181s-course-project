@@ -24,7 +24,6 @@
                <children>
                   <MenuButton fx:id="accountTypeMenu" mnemonicParsing="false" text="User Type">
                     <items>
-                        <MenuItem fx:id="patientMenuItem" mnemonicParsing="false" onAction="#updateAccountTypePatient" text="Patient" />
                       <MenuItem fx:id="doctorMenuItem" mnemonicParsing="false" onAction="#updateAccountTypeDoctor" text="Doctor" />
                       <MenuItem fx:id="dataAnalystMenuItem" mnemonicParsing="false" onAction="#updateAccountTypeDataAnalyst" onMenuValidation="#updateAccountTypeDataAnalyst" text="Data Analyst" />
                     </items>

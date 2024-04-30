@@ -1,17 +1,25 @@
 package org.healthhaven.controller;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.Date;
 
 import org.healthhaven.model.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 
 public class DoctorController {
@@ -21,7 +29,7 @@ public class DoctorController {
 	@FXML
 	private DatePicker dobDatePicker;
 	@FXML
-	private Label response;
+	private Label response1;
 	@FXML
 	private Button createPatientButton;
 	@FXML
@@ -30,7 +38,19 @@ public class DoctorController {
 	@FXML
 	private TextField patientIdField;
 	@FXML
-	private TextArea patientRecordArea;
+	private Label response2;
+	
+    @FXML
+    private TableView<MedicalDataInstance> dataTable;
+    
+    @FXML
+    private TableColumn<MedicalDataInstance, Float> heightColumn;
+    
+    @FXML
+    private TableColumn<MedicalDataInstance, Float> weightColumn;
+    
+    @FXML
+    private TableColumn<MedicalDataInstance, Date> timestampColumn;
 
 	@FXML
 	private TextField patientHeightField;
@@ -57,59 +77,117 @@ public class DoctorController {
 
 	@FXML
 	public void createNewPatient() {
-		response.setText("");
+		response1.setText("");
 		String email = newPatientEmailField.getText();
 		LocalDate dob = dobDatePicker.getValue();
 		if (email.isEmpty() || dob == null) {
-			response.setText("Please fill out all fields.");
+			response1.setText("Please fill out all fields.");
 		}
 
 		String serverResponse = doctor.authorizeAccountCreation(email, dob);
 		if (serverResponse.equals(null)) {
-			response.setText("Error");
+			response1.setText("Error");
 			return;
 		}
 		
 		JSONObject json = new JSONObject(serverResponse);
 		if (json.getString("result").equals("SUCCESS")) {
-			response.setText("Account created!");
+			response1.setText("Account created!");
 		} else {
-			response.setText(json.getString("reason"));
+			response1.setText(json.getString("reason"));
 		}
 	}
 
 	@FXML
 	public void handleViewPatientRecord() {
 		updateFormContainer.setVisible(false);
-		patientRecordArea.setText("");
+		dataTable.getItems().setAll(parseMedicalInformationResultJSON(null));
 		
 		String patientID = patientIdField.getText();
 
 		// Server response
+		showPatientRecord(patientID);
+
+	}
+	
+	private void showPatientRecord(String patientID) {
+
+		// Server response
 		String patientRecord = doctor.viewPatientRecord(patientID);
 		
+		//Displaying the result
 		if(patientRecord.equals(null)) {
-			patientRecordArea.setText("Could not retrive data");
-		}
-		JSONObject json = new JSONObject(patientRecord);
+			response2.setText("Could not retrive data");
+			return;
+		} 
 		
+		System.out.print(patientRecord);
+		
+		JSONObject json = new JSONObject(patientRecord);
 		if (json.getString("result").equals("FAILURE")) {
-			patientRecordArea.setText(json.getString("reason"));
+			response2.setText(json.getString("reason"));
 			updateFormContainer.setVisible(false);
 			patientIdField.setText(null);
 
-		} else {
-			patientRecordArea.setText(parseMedicalRecord(json.getJSONArray("records")));
-
-			// Show the update form only if a patient record is successfully retrieved
-			updateFormContainer.setVisible(!patientRecord.isEmpty());
+		} else if (json.getString("result").equals("SUCCESS")) {
+			heightColumn.setCellValueFactory(new PropertyValueFactory<MedicalDataInstance, Float>("height"));
+	    	weightColumn.setCellValueFactory(new PropertyValueFactory<MedicalDataInstance, Float>("weight"));
+	    	timestampColumn.setCellValueFactory(new PropertyValueFactory<MedicalDataInstance, Date>("timestamp"));
+	        
+	        dataTable.getItems().setAll(parseMedicalInformationResultJSON(json));
+	        updateFormContainer.setVisible(!patientRecord.isEmpty());
 			updateFormContainer.setManaged(!patientRecord.isEmpty());
+			
 		}
-
 	}
+	
+	private ObservableList<MedicalDataInstance> parseMedicalInformationResultJSON(JSONObject json) {
+    	ObservableList<MedicalDataInstance> dataList = FXCollections.observableArrayList(); // Recommended initialization
+    	if (json==null) {
+    		return dataList;
+    	}
+        JSONArray entriesArray = json.optJSONArray("records"); // Get the 'entries' array
+        if (entriesArray == null) {
+        	return dataList;
+        }
+
+        for (int i = 0; i < entriesArray.length(); i++) { // Using length() for the loop
+            JSONObject entry = entriesArray.getJSONObject(i);
+
+            float height = (float) entry.getDouble("Height");
+            float weight = (float) entry.getDouble("Weight");
+            String dateString = entry.getString("Timestamp");
+
+            // Convert dateString to a Date object (assuming you have a suitable method)
+            Date date = null;
+			try {
+				date = convertDateStringToDate(dateString);
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+
+            // Create MedicalDataInstance
+            MedicalDataInstance dataInstance = new MedicalDataInstance(height, weight, date);
+            System.out.println(dataInstance);
+
+            // Add to the list
+            dataList.add(dataInstance);
+        }
+
+        return dataList;
+    	
+    }
+	
+	private Date convertDateStringToDate(String dateString) throws ParseException {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        return formatter.parse(dateString);
+    } 
+	
 
 	@FXML
 	public void handleUpdatePatientRecord() {
+		response2.setText("");
 		String patientID = patientIdField.getText();
 		
 		if (patientHeightField.getText().isEmpty() || patientWeightField.getText().isEmpty()) {
@@ -143,44 +221,19 @@ public class DoctorController {
 		} 
 		JSONObject json = new JSONObject(response);
 		if (json.getString("result").equals("FAILURE")) {
-			patientRecordArea.setText(json.getString("reason"));
+			response2.setText(json.getString("reason"));
 		} else if (json.getString("result").equals("SUCCESS")) {
-			patientRecordArea.setText("Updated to " + json.getString("details"));
+			response2.setText("Success!");
+			showPatientRecord(patientID);
 		}
 		
 
 	}
-	
-	
-	private String parseMedicalRecord(JSONArray records) {
-    	// Parse the records JSON string into a JSON array
-        JSONArray jsonArray = new JSONArray(records);
-
-        // StringBuilder to build the resulting string
-        StringBuilder result = new StringBuilder();
-
-        // Iterate through each element in the JSON array
-        for (int i = 0; i < jsonArray.length(); i++) {
-            JSONObject record = jsonArray.getJSONObject(i);
-
-            // Extract values from the JSON object
-            int height = record.getInt("Height");
-            int weight = record.getInt("Weight");
-            String timestamp = record.getString("Timestamp");
-
-            // Append formatted string to result
-            result.append("Height: ").append(height)
-                  .append(", Weight: ").append(weight)
-                  .append(", Timestamp: ").append(timestamp)
-                  .append("\n");  // Each record in one line
-        }
-        return result.toString();
-    }
 
 	@FXML
 	public void handleCancel() {
 		newPatientEmailField.setText("");
-		response.setText("");
+		response1.setText("");
 		dobDatePicker.setValue(null);
 	}
 

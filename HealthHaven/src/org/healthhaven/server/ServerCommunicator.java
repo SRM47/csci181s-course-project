@@ -80,7 +80,7 @@ public class ServerCommunicator {
             BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             
             // Set socket timeout.
-            socket.setSoTimeout(10000);
+            //socket.setSoTimeout(10000);
         	
             
             // Write the message.
