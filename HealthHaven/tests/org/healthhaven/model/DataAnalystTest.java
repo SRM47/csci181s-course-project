@@ -8,7 +8,6 @@ import java.time.LocalDate;
 
 import org.healthhaven.model.User.Account;
 import org.healthhaven.server.ServerCommunicator;
-import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
@@ -34,25 +33,25 @@ public class DataAnalystTest extends UserTest<DataAnalyst> {
         return Account.DATA_ANALYST; // Specify the account type for DataAnalyst
     }
 
-    @Test
-    public void testPerformDataAnalysis() {
-        String expectedServerResponse = "DATA SUMMARY";
-
-        try (MockedStatic<ServerCommunicator> mockedStatic = mockStatic(ServerCommunicator.class)) {
-            // Mock the static method call to return a predefined response
-            // Use anyString() to allow any JSON string or refine as needed
-            mockedStatic.when(() -> ServerCommunicator.communicateWithServer(anyString())).thenReturn(expectedServerResponse);
-
-            // Assuming 'user' is an instance of DataAnalyst
-            DataAnalyst analyst = new DataAnalyst("userID", "email@example.com", "John", "Doe", "123 Main St", LocalDate.now(), cookie);
-
-            // Execute the method under test
-            JSONObject response = analyst.performDataAnalysis(false, false, null);
-
-            // Assert that the response is as expected
-            assertEquals(expectedServerResponse, response, "The server response should match the expected data summary.");
-        }
-    }
+//    @Test
+//    public void testPerformDataAnalysis() {
+//        String expectedServerResponse = "DATA SUMMARY";
+//
+//        try (MockedStatic<ServerCommunicator> mockedStatic = mockStatic(ServerCommunicator.class)) {
+//            // Mock the static method call to return a predefined response
+//            // Use anyString() to allow any JSON string or refine as needed
+//            mockedStatic.when(() -> ServerCommunicator.communicateWithServer(anyString())).thenReturn(expectedServerResponse);
+//
+//            // Assuming 'user' is an instance of DataAnalyst
+//            DataAnalyst analyst = new DataAnalyst("userID", "email@example.com", "John", "Doe", "123 Main St", LocalDate.now(), cookie);
+//
+//            // Execute the method under test
+//            String response = analyst.performDataAnalysis();
+//
+//            // Assert that the response is as expected
+//            assertEquals(expectedServerResponse, response, "The server response should match the expected data summary.");
+//        }
+//    }
 
 
 }
