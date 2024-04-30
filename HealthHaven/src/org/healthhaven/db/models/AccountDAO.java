@@ -26,7 +26,7 @@ import org.json.JSONObject;
 
 public class AccountDAO {
 	public static synchronized JSONObject createTemporaryUser(Connection conn, String userId, String email, String password,
-			String dob, String accountType) {
+			String dob, String accountType, String callerId) {
 		int rowsInserted = 0;
 		// Set the 'dob' column to the dob to verify later
 		// Convert the String dob into a java.sql.Date
@@ -102,6 +102,18 @@ public class AccountDAO {
 	        rowsInserted = stmt.executeUpdate();
 			if (rowsInserted <= 0) {
 				return returnFailureResponse(conn, "Unable to create entry in cookie table.");
+			}
+			
+			// If the user type is a patient, then update the medical_map with the doctor id and patient id
+		    sql = "INSERT INTO healthhaven.medical_map (doctorid, patientid) VALUES (?, ?)";
+		    
+		    stmt = conn.prepareStatement(sql);
+		    stmt.setString(1, callerId);
+	        stmt.setString(2, userId);
+	        
+	        rowsInserted = stmt.executeUpdate();
+			if (rowsInserted <= 0) {
+				return returnFailureResponse(conn, "Unable to update medical mapping database");
 			}
 			
 			// Commit everything at once.
@@ -202,6 +214,29 @@ public class AccountDAO {
 		serverResponse.put("reason", reason);
 		return serverResponse;
 	}
+	
+	public static JSONObject isDoctorAuthorizedToViewPatientData(Connection conn, String doctorId, String patientId) {
+		String sql = "SELECT COUNT(*) FROM healthhaven.medical_map WHERE doctorid = ? AND patientid = ?";
+
+		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+			stmt.setString(1, doctorId);
+			stmt.setString(2, patientId);
+
+			try (ResultSet rs = stmt.executeQuery()) {
+				if (rs.next()) {
+					int count = rs.getInt(1);
+					if (count > 0) {
+						return returnSuccessResponse("Doctor is authorized to view this patient");
+					}
+				}
+			}
+		} catch (SQLException e) {
+			System.err.println("Error checking account existence: " + e.getMessage());
+			return returnFailureResponse(e.getMessage());
+		}
+
+		return returnFailureResponse("Doctor not authorized to view this patient");
+	}
 
 	public static JSONObject viewUserInformation(Connection conn, String doctorId, String userId) {
 		JSONObject serverResponse = new JSONObject();
@@ -210,8 +245,15 @@ public class AccountDAO {
 			serverResponse.put("reason", "User does not exist!");
 			return serverResponse;
 		}
+		
+		if (!accountCreatedById(conn, userId)) {
+			serverResponse.put("result", "FAILURE");
+			serverResponse.put("reason", "User exists but has not yet initialized their account!");
+			return serverResponse;
+		}
 
 //		TODO: check that PatientUserID is the right way
+		
 		String selectSQL = "";
 		if (doctorId != null && doctorId != "") {
 			selectSQL = "SELECT * FROM healthhaven.medical_information WHERE patientid = ? AND doctorid = ?";
@@ -595,6 +637,26 @@ public class AccountDAO {
 
 	public static boolean accountExistsById(Connection conn, String userId) {
 		String sql = "SELECT COUNT(*) FROM healthhaven.authentication WHERE userid = ?";
+
+		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+			stmt.setString(1, userId);
+
+			try (ResultSet rs = stmt.executeQuery()) {
+				if (rs.next()) {
+					int count = rs.getInt(1);
+					return count > 0; // True if there's at least one row with this userid
+				}
+			}
+		} catch (SQLException e) {
+			System.err.println("Error checking account existence: " + e.getMessage());
+			return false; // Or potentially throw an exception instead
+		}
+
+		return false; // Default to account not existing if an error occurs or no match is found
+	}
+	
+	public static boolean accountCreatedById(Connection conn, String userId) {
+		String sql = "SELECT COUNT(*) FROM healthhaven.authentication WHERE userid = ? AND reset = true";
 
 		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 			stmt.setString(1, userId);

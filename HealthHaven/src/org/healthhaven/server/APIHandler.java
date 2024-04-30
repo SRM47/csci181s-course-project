@@ -27,7 +27,7 @@ public class APIHandler{
 		
 		// Authorize request
 		if (!(request.equals("LOGIN") || request.equals("CREATE_ACCOUNT")||request.equals("PASSWORD_RESET"))) {
-			boolean isAuthorized = ReferenceMonitor.authorizeRequest(clientSocket, json.getString("accountType"), json.optString("callerId"), json);
+			boolean isAuthorized = ReferenceMonitor.authorizeRequest(clientSocket, json.getString("accountType"), json.optString("callerId"), json, cnn);
 			if (!isAuthorized) {
 				return returnFailureResponse("User is not authorized to perform this command");
 			}
@@ -177,8 +177,9 @@ public class APIHandler{
 	    String email = json.optString("email", null);
 	    String dob = json.optString("dob", null);
 	    String userType = json.optString("userType", null); // Notice using optString now
+	    String callerId = json.optString("callerId", null); // Notice using optString now
 
-	    if (email == null || dob == null || userType == null) {
+	    if (email == null || dob == null || userType == null || callerId == null) {
 	    	return returnFailureResponse("Missing one or more of the required fields");
 	    }
 
@@ -189,7 +190,7 @@ public class APIHandler{
 	    String generatedPassword = PasswordGenerator.generate(16);
 	    UserIdGenerator generator = new UserIdGenerator(16);
 	    String generatedUserId = generator.generate();
-	    JSONObject serverResponse = AccountDAO.createTemporaryUser(cnn, generatedUserId, email, generatedPassword, dob, userType);
+	    JSONObject serverResponse = AccountDAO.createTemporaryUser(cnn, generatedUserId, email, generatedPassword, dob, userType, callerId);
 
 	    if ("FAILURE".equals(serverResponse.optString("result"))) {
 	        return serverResponse;
