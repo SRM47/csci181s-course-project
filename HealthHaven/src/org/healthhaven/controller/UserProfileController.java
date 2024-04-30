@@ -213,6 +213,7 @@ public class UserProfileController {
 			    	if (jsonObj.getString("result").equals("FAILURE")) {
 			    		PasswordResetMessage.setText(jsonObj.getString("reason"));
 			    	} else if (jsonObj.getString("result").equals("SUCCESS")) {
+			    		passwordStrengthBar.setProgress(0);
 			    		PasswordResetMessage.setText("Password got updated");
 			    		PasswordField1.setText("");
 			    		PasswordField2.setText("");
