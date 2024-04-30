@@ -50,6 +50,9 @@ public class DataAnalystController{
     @FXML
     private TableColumn<MedicalDataInstance, Date> timestampColumn;
     
+    @FXML
+    private TableColumn<MedicalDataInstance, String> identifierColumn;
+    
 
     public void setDataAnalyst(DataAnalyst dataAnalyst) {
         this.dataAnalyst = dataAnalyst;
@@ -64,22 +67,21 @@ public class DataAnalystController{
     	}
     	LocalDate date = datePicker.getValue();
     	
-        String result_data = dataAnalyst.performDataAnalysis(after, before, date);
+        JSONObject result_data = dataAnalyst.performDataAnalysis(after, before, date);
         System.out.println(result_data);
         
         heightColumn.setCellValueFactory(new PropertyValueFactory<MedicalDataInstance, Float>("height"));
     	weightColumn.setCellValueFactory(new PropertyValueFactory<MedicalDataInstance, Float>("weight"));
     	timestampColumn.setCellValueFactory(new PropertyValueFactory<MedicalDataInstance, Date>("timestamp"));
+    	identifierColumn.setCellValueFactory(new PropertyValueFactory<MedicalDataInstance, String>("identifier"));
         
         dataTable.getItems().setAll(parseMedicalInformationResultJSON(result_data));
     }
     
-    private ObservableList<MedicalDataInstance> parseMedicalInformationResultJSON(String result) {
+    private ObservableList<MedicalDataInstance> parseMedicalInformationResultJSON(JSONObject result) {
     	ObservableList<MedicalDataInstance> dataList = FXCollections.observableArrayList(); // Recommended initialization
-
-        JSONObject json = new JSONObject(result);
         
-        JSONArray entriesArray = json.optJSONArray("entries"); // Get the 'entries' array
+        JSONArray entriesArray = result.optJSONArray("entries"); // Get the 'entries' array
         if (entriesArray == null) {
         	return dataList;
         }
@@ -90,6 +92,7 @@ public class DataAnalystController{
             float height = (float) entry.getDouble("height");
             float weight = (float) entry.getDouble("weight");
             String dateString = entry.getString("entryDate");
+            String identifier = entry.getString("identifier");
 
             // Convert dateString to a Date object (assuming you have a suitable method)
             Date date = null;
@@ -101,7 +104,7 @@ public class DataAnalystController{
 			} 
 
             // Create MedicalDataInstance
-            MedicalDataInstance dataInstance = new MedicalDataInstance(height, weight, date);
+            MedicalDataInstance dataInstance = new MedicalDataInstance(height, weight, date, identifier);
             System.out.println(dataInstance);
 
             // Add to the list

@@ -59,7 +59,7 @@ public class DataAnalyst extends User {
 	 * Get and print the data summary
 	 * @param scanner
 	 */
-	public String performDataAnalysis(boolean after, boolean before, LocalDate date){
+	public JSONObject performDataAnalysis(boolean after, boolean before, LocalDate date){
 		JSONObject json = new JSONObject();
 		json.put("request", "REQUEST_PATIENT_DATA");
 		json.put("callerId", getUserID());
@@ -76,19 +76,8 @@ public class DataAnalyst extends User {
 //		return ServerCommunicator.communicateWithServer(json.toString());
 	    
 	    String serverResponse = ServerCommunicator.communicateWithServer(json.toString());
-        JSONObject jsonResponse = new JSONObject(serverResponse);
-//        System.out.println(jsonResponse.toString());
-
-        // Check if the request was successful
-        if (!jsonResponse.getString("result").equals("SUCCESS")) {
-            return "Error: " + jsonResponse.getString("reason");
-        }
-        
-
-        // Extract entries array from the response
-        JSONArray dataArray = jsonResponse.getJSONArray("entries");
-
-        return DifferentialPrivacyUtil.applyDP(dataArray);
+  
+        return new JSONObject(serverResponse);
 	}
 
 

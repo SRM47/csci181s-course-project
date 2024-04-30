@@ -3,8 +3,11 @@
  */
 package org.healthhaven.server;
 
+import java.sql.Connection;
+
 import javax.net.ssl.SSLSocket;
 
+import org.healthhaven.db.models.AccountDAO;
 import org.healthhaven.logging.Logger;
 import org.json.JSONObject;
 
@@ -15,7 +18,7 @@ public class ReferenceMonitor {
 	
 	private static final String AUTHORIZATION_LOG_FILE_PATH = "authorization.log";
 	
-	protected static boolean authorizeRequest(SSLSocket clientSocket, String accountType, String callerId, JSONObject json) {
+	protected static boolean authorizeRequest(SSLSocket clientSocket, String accountType, String callerId, JSONObject json, Connection conn) {
 		boolean res = false;
 		switch (json.getString("request")) {
 		case "UPDATE_DATA_SHARING":
@@ -43,14 +46,14 @@ public class ReferenceMonitor {
 			if (accountType.equals("Patient")) {
 				res = json.getString("patientID").equals(callerId);
 			} else if (accountType.equals("Doctor")) {
-				res = true;
+				res = AccountDAO.isDoctorAuthorizedToViewPatientData(conn, json.getString("doctorID"), json.getString("patientID")).getString("result").equals("SUCCESS");
 			} else {
 				res = false;		
 			}
 			break;
 			
 		case "CREATE_RECORD": //doctor
-			res = accountType.equals("Doctor");
+			res = accountType.equals("Doctor") && AccountDAO.isDoctorAuthorizedToViewPatientData(conn, json.getString("doctorID"), json.getString("patientID")).getString("result").equals("SUCCESS");
 			break;
 			
 		case "DEACTIVATE_ACCOUNT": //any user for themselves or admin for everyone

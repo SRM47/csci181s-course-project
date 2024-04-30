@@ -12,7 +12,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 import org.healthhaven.model.AttemptLimit;
 import org.healthhaven.model.EmailSender;
@@ -24,7 +26,7 @@ import org.json.JSONObject;
 
 public class AccountDAO {
 	public static synchronized JSONObject createTemporaryUser(Connection conn, String userId, String email, String password,
-			String dob, String accountType) {
+			String dob, String accountType, String callerId) {
 		int rowsInserted = 0;
 		// Set the 'dob' column to the dob to verify later
 		// Convert the String dob into a java.sql.Date
@@ -100,6 +102,18 @@ public class AccountDAO {
 	        rowsInserted = stmt.executeUpdate();
 			if (rowsInserted <= 0) {
 				return returnFailureResponse(conn, "Unable to create entry in cookie table.");
+			}
+			
+			// If the user type is a patient, then update the medical_map with the doctor id and patient id
+		    sql = "INSERT INTO healthhaven.medical_map (doctorid, patientid) VALUES (?, ?)";
+		    
+		    stmt = conn.prepareStatement(sql);
+		    stmt.setString(1, callerId);
+	        stmt.setString(2, userId);
+	        
+	        rowsInserted = stmt.executeUpdate();
+			if (rowsInserted <= 0) {
+				return returnFailureResponse(conn, "Unable to update medical mapping database");
 			}
 			
 			// Commit everything at once.
@@ -200,6 +214,29 @@ public class AccountDAO {
 		serverResponse.put("reason", reason);
 		return serverResponse;
 	}
+	
+	public static JSONObject isDoctorAuthorizedToViewPatientData(Connection conn, String doctorId, String patientId) {
+		String sql = "SELECT COUNT(*) FROM healthhaven.medical_map WHERE doctorid = ? AND patientid = ?";
+
+		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+			stmt.setString(1, doctorId);
+			stmt.setString(2, patientId);
+
+			try (ResultSet rs = stmt.executeQuery()) {
+				if (rs.next()) {
+					int count = rs.getInt(1);
+					if (count > 0) {
+						return returnSuccessResponse("Doctor is authorized to view this patient");
+					}
+				}
+			}
+		} catch (SQLException e) {
+			System.err.println("Error checking account existence: " + e.getMessage());
+			return returnFailureResponse(e.getMessage());
+		}
+
+		return returnFailureResponse("Doctor not authorized to view this patient");
+	}
 
 	public static JSONObject viewUserInformation(Connection conn, String doctorId, String userId) {
 		JSONObject serverResponse = new JSONObject();
@@ -208,8 +245,15 @@ public class AccountDAO {
 			serverResponse.put("reason", "User does not exist!");
 			return serverResponse;
 		}
+		
+		if (!accountCreatedById(conn, userId)) {
+			serverResponse.put("result", "FAILURE");
+			serverResponse.put("reason", "User exists but has not yet initialized their account!");
+			return serverResponse;
+		}
 
 //		TODO: check that PatientUserID is the right way
+		
 		String selectSQL = "";
 		if (doctorId != null && doctorId != "") {
 			selectSQL = "SELECT * FROM healthhaven.medical_information WHERE patientid = ? AND doctorid = ?";
@@ -593,6 +637,26 @@ public class AccountDAO {
 
 	public static boolean accountExistsById(Connection conn, String userId) {
 		String sql = "SELECT COUNT(*) FROM healthhaven.authentication WHERE userid = ?";
+
+		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+			stmt.setString(1, userId);
+
+			try (ResultSet rs = stmt.executeQuery()) {
+				if (rs.next()) {
+					int count = rs.getInt(1);
+					return count > 0; // True if there's at least one row with this userid
+				}
+			}
+		} catch (SQLException e) {
+			System.err.println("Error checking account existence: " + e.getMessage());
+			return false; // Or potentially throw an exception instead
+		}
+
+		return false; // Default to account not existing if an error occurs or no match is found
+	}
+	
+	public static boolean accountCreatedById(Connection conn, String userId) {
+		String sql = "SELECT COUNT(*) FROM healthhaven.authentication WHERE userid = ? AND reset = true";
 
 		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 			stmt.setString(1, userId);
@@ -1072,31 +1136,58 @@ public class AccountDAO {
         }
     }
 	
+	private static double generateLaplaceNoise(double epsilon, double sensitivity) {
+		Random random = new Random();
+        double scale = sensitivity / epsilon;
+        double u = 0.5 - random.nextDouble();  
+        return -scale * Math.signum(u) * Math.log(1 - 2 * Math.abs(u));
+    }
+	
 	public static JSONObject getMedicalInformationDataByQuery(Connection conn, String when, String date) {
+		double epsilon = 0.1;  // Privacy parameter
+        double sensitivity = 1.0;  // Sensitivity for height and weight
+        
+        HashMap<String, String> patientIdToRandomizedId = new HashMap<>();
+        int counter = 0;
+        
 	    JSONObject serverResponse = new JSONObject();
 	    String result = "SUCCESS";
 	    String reason = "";
 	    
 	    String sql = "SELECT * FROM healthhaven.medical_information WHERE CAST(timestamp AS DATE) " + when + " DATE '" + date + "' AND data_sharing = TRUE";
-
+	    
 	    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 	        System.out.println(pstmt.toString());
 	        ResultSet data_rs = pstmt.executeQuery();
 
 	        // Create an array to store the entries
 	        JSONArray entriesArray = new JSONArray();
+	        
+	        // Create a unique key to hash with to create randomized user identifiers
 
 	        while (data_rs.next()) {
 	            float height = data_rs.getFloat("height");
 	            float weight = data_rs.getFloat("weight");
 	            java.util.Date entryDate = data_rs.getDate("timestamp");
+				String patientId = data_rs.getString("patientid");
+				
+				// Generate noisy height and weight data. Double to float can lose precision but that is OKAY for now.
+	            float noisyHeight = height + (float) generateLaplaceNoise(epsilon, sensitivity);
+	            float noisyWeight = weight + (float) generateLaplaceNoise(epsilon, sensitivity);
+	            
+	            // Check if patientID already has a pseudonym; if not, generate one
+	            String patientPseudonym = patientIdToRandomizedId.get(patientId);
+	            if (patientPseudonym == null) {
+	            	patientPseudonym = "P" + String.valueOf(counter++);
+	            	patientIdToRandomizedId.put(patientId, patientPseudonym);
+	            }
 
 	            // Create a JSON object for each entry
 	            JSONObject entry = new JSONObject();
-	            entry.put("height", height);
-	            entry.put("weight", weight);
+	            entry.put("height", noisyHeight);
+	            entry.put("weight", noisyWeight);
 	            entry.put("entryDate", entryDate.toString()); // Or format the date as needed
-
+				entry.put("identifier", patientPseudonym);
 	            // Add the entry to the array
 	            entriesArray.put(entry);
 	        }
@@ -1107,7 +1198,7 @@ public class AccountDAO {
 	    } catch (SQLException e) {
 	        result = "FAILURE";
 	        reason = e.getMessage();
-	    }
+	    } 
 
 	    serverResponse.put("result", result);
 	    serverResponse.put("reason", reason);
