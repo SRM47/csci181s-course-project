@@ -29,6 +29,8 @@ import javafx.stage.Stage;
 import me.gosimple.nbvcxz.Nbvcxz;
 import me.gosimple.nbvcxz.scoring.Result;
 
+// asdfasdf
+
 public class AccountCreationController {
 	@FXML
 	private Button submitButton;
