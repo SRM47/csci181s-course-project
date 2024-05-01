@@ -546,17 +546,13 @@ public class AccountDAO {
 
 	private static boolean updateAuthenticationTable(Connection conn, String sql, String password, String userId) {
 		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-			// IMPORTANT: Replace with your password hashing mechanism
-			String hashedPassword = password;
-			
-			stmt.setString(1, hashedPassword);
 			
 			String salt = SaltyHash.genSalt();
-			stmt.setString(2, salt);
+			stmt.setString(1, salt);
 			
 			try {
 				String hashpass = SaltyHash.pwHash(password, salt);
-				stmt.setString(3, hashpass);
+				stmt.setString(2, hashpass);
 			} catch (NoSuchAlgorithmException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -565,7 +561,7 @@ public class AccountDAO {
 				e.printStackTrace();
 			}
 			
-			stmt.setString(4, userId);
+			stmt.setString(3, userId);
 
 			int rowsUpdated = stmt.executeUpdate();
 			if (rowsUpdated <= 0) {
