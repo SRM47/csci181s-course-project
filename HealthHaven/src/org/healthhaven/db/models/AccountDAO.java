@@ -150,9 +150,10 @@ public class AccountDAO {
 
 		} else {
 
-			String sql = "SELECT * FROM healthhaven.authentication WHERE email = '" + email + "'";
+			String sql = "SELECT * FROM healthhaven.authentication WHERE email = ?";
 
 			try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+				stmt.setString(1, email);
 				ResultSet data_rs = stmt.executeQuery();
 				boolean resetValue = data_rs.getBoolean("reset");
 				if (resetValue) {
