@@ -1214,8 +1214,9 @@ public class AccountDAO {
 				String patientId = data_rs.getString("patientid");
 				
 				// Generate noisy height and weight data. Double to float can lose precision but that is OKAY for now.
-	            float noisyHeight = height + (float) generateLaplaceNoise(epsilon, sensitivity);
-	            float noisyWeight = weight + (float) generateLaplaceNoise(epsilon, sensitivity);
+				float noisyHeight = (float) Math.max(0.1, height + (float) generateLaplaceNoise(epsilon, sensitivity));
+	            float noisyWeight = (float) Math.max(0.1, weight + (float) generateLaplaceNoise(epsilon, sensitivity));
+	            
 	            
 	            // Check if patientID already has a pseudonym; if not, generate one
 	            String patientPseudonym = patientIdToRandomizedId.get(patientId);
