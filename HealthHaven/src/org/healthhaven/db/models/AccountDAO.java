@@ -155,7 +155,11 @@ public class AccountDAO {
 			try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 				stmt.setString(1, email);
 				ResultSet data_rs = stmt.executeQuery();
-				boolean resetValue = data_rs.getBoolean("reset");
+				boolean resetValue = false;
+				if (data_rs.next()) {
+					resetValue = data_rs.getBoolean("reset");
+				}
+				
 				if (resetValue) {
 					result = "FAILURE";
 					reason = "Account already exist";
