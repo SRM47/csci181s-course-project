@@ -1,6 +1,7 @@
 package org.healthhaven.server;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 
 import javax.net.ssl.SSLSocket;
 
@@ -200,9 +201,17 @@ public class APIHandler{
 	    
 	    if (result.equals("SUCCESS")) {
 	    	return serverResponse;
+	    } else {
+	    	try {
+	    		AccountDAO.deleteUserData(cnn, "healthhaven.users", generatedUserId);
+	    		AccountDAO.deleteMedicalMapData(cnn, "healthhaven.medical_map", generatedUserId);
+	    		cnn.commit();
+	    		return returnFailureResponse("Error sending email");
+	    	} catch(SQLException e) {
+	    		return returnFailureResponse("Cannot delete the row");
+	    	}
+	    	
 	    }
-	    return returnFailureResponse("Error sending email");
-
 	}
 
 

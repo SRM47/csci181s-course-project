@@ -82,6 +82,7 @@ public class DoctorController {
 		LocalDate dob = dobDatePicker.getValue();
 		if (email.isEmpty() || dob == null) {
 			response1.setText("Please fill out all fields.");
+			return;
 		}
 
 		String serverResponse = doctor.authorizeAccountCreation(email, dob);

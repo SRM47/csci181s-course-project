@@ -104,18 +104,20 @@ public class AccountDAO {
 				return returnFailureResponse(conn, "Unable to create entry in cookie table.");
 			}
 			
-			// If the user type is a patient, then update the medical_map with the doctor id and patient id
-		    sql = "INSERT INTO healthhaven.medical_map (doctorid, patientid) VALUES (?, ?)";
-		    
-		    stmt = conn.prepareStatement(sql);
-		    stmt.setString(1, callerId);
-	        stmt.setString(2, userId);
-	        
-	        rowsInserted = stmt.executeUpdate();
-			if (rowsInserted <= 0) {
-				return returnFailureResponse(conn, "Unable to update medical mapping database");
+			if (UserDAO.getUserAccountType(conn, callerId).equals("Doctor")&&UserDAO.getUserAccountType(conn, userId).equals("Patient")) {
+				// If the user type is a patient, then update the medical_map with the doctor id and patient id
+			    sql = "INSERT INTO healthhaven.medical_map (doctorid, patientid) VALUES (?, ?)";
+			    
+			    stmt = conn.prepareStatement(sql);
+			    stmt.setString(1, callerId);
+		        stmt.setString(2, userId);
+		        
+		        rowsInserted = stmt.executeUpdate();
+				if (rowsInserted <= 0) {
+					return returnFailureResponse(conn, "Unable to update medical mapping database");
+				}
 			}
-			
+
 			// Commit everything at once.
 			conn.commit();
 			
@@ -1131,6 +1133,7 @@ public class AccountDAO {
         try {
             deleteUserData(conn, "healthhaven.users", userId);
             deleteMedicalData(conn, userId);
+            deleteMedicalMapData(conn, "healthhaven.medical_map", userId);
             conn.commit();
             serverResponse.put("result", result);
         } catch (SQLException e) {
@@ -1148,7 +1151,16 @@ public class AccountDAO {
 		return serverResponse;
 	}
 	
-	private static boolean deleteUserData(Connection conn, String tableName, String userId) throws SQLException {
+	public static boolean deleteMedicalMapData(Connection conn, String tableName, String userId) throws SQLException{
+		String sql = "DELETE FROM " + tableName + " WHERE patientid = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, userId);
+            int affectedRows = stmt.executeUpdate();
+            return (affectedRows > 0);
+        }
+	}
+	
+	public static boolean deleteUserData(Connection conn, String tableName, String userId) throws SQLException {
         String sql = "DELETE FROM " + tableName + " WHERE userid = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, userId);

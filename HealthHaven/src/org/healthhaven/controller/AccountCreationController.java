@@ -110,6 +110,7 @@ public class AccountCreationController {
 					legalLastNameTextfield.setText("");
 					addressTextfield.setText("");
 					dobDatePicker.setValue(null);
+					passwordStrengthBar.setProgress(0);
 					
 				}
 			}
