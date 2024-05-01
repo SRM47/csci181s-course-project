@@ -734,9 +734,10 @@ public class AccountDAO {
 		//TODO: SQL Injection Attack risk.
 		
 		// Returns the userId if user is authenticated correctly
-		String sql = "SELECT * FROM healthhaven.authentication WHERE email = '" + email + "'";
+		String sql = "SELECT * FROM healthhaven.authentication WHERE email = ?";
 
 		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+			stmt.setString(1, email);
 			ResultSet data_rs = stmt.executeQuery();
 			System.out.println("Statement Executed");
 
@@ -794,6 +795,7 @@ public class AccountDAO {
 		} catch (SQLException | NoSuchAlgorithmException | InvalidKeySpecException e) {
 			result = "FAILURE";
 			reason = "Error Authenticating User";
+			e.printStackTrace();
 		}
 
 		serverResponse.put("result", result);
