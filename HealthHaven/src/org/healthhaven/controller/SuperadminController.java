@@ -129,6 +129,7 @@ public class SuperadminController {
 			JSONObject json = new JSONObject(serverResponse);
 			if (json.getString("result").equals("FAILURE")) {
 				deactivationResponse.setText(json.getString("reason"));
+				recordTextArea.setText("");
 			} else if (json.getString("result").equals("SUCCESS")){
 				this.userID = userID;
 				recordTextArea.setText(parseUserData(json));

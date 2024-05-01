@@ -227,6 +227,8 @@ public class DoctorController {
 			response2.setText(json.getString("reason"));
 		} else if (json.getString("result").equals("SUCCESS")) {
 			response2.setText("Success!");
+			patientWeightField.setText("");
+			patientHeightField.setText("");
 			showPatientRecord(patientID);
 		}
 		

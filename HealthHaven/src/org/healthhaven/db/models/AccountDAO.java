@@ -149,27 +149,44 @@ public class AccountDAO {
 			reason = "Error verifying the DOB";
 
 		} else {
-			// Step 3: Update users table
-			// Step 5: Update authentication table (with password update)
-			String usersUpdateSql = "UPDATE healthhaven.users SET legalfirstname = ?, legallastname = ?, address = ?, data_sharing = TRUE WHERE userid = ?";
-			String authenticationUpdateSql = "UPDATE healthhaven.authentication SET password = ?, totp_key = ?, reset = ?, salt = ?, hashpass=? WHERE userid = ?";
-			if (!updateUserTable(conn, usersUpdateSql, legalfirstname, legallastname, address, userId)
-					|| !updateAuthenticationTable(conn, authenticationUpdateSql, password, true, TOTP.genSecretKey(),
-							userId)) {
-				result = "FAILURE";
-				reason = "Database Entry Error";
-			} else {
-				try {
-					conn.commit();
-				} catch (SQLException e) {
-					try {
-						conn.rollback();
-					} catch (SQLException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
+
+			String sql = "SELECT * FROM healthhaven.authentication WHERE email = '" + email + "'";
+
+			try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+				ResultSet data_rs = stmt.executeQuery();
+				boolean resetValue = data_rs.getBoolean("reset");
+				if (resetValue) {
+					result = "FAILURE";
+					reason = "Account already exist";
+				} else {
+					// Step 3: Update users table
+					// Step 5: Update authentication table (with password update)
+					String usersUpdateSql = "UPDATE healthhaven.users SET legalfirstname = ?, legallastname = ?, address = ?, data_sharing = TRUE WHERE userid = ?";
+					String authenticationUpdateSql = "UPDATE healthhaven.authentication SET password = ?, totp_key = ?, reset = ?, salt = ?, hashpass=? WHERE userid = ?";
+					if (!updateUserTable(conn, usersUpdateSql, legalfirstname, legallastname, address, userId)
+							|| !updateAuthenticationTable(conn, authenticationUpdateSql, password, true, TOTP.genSecretKey(),
+									userId)) {
+						result = "FAILURE";
+						reason = "Database Entry Error";
+					} else {
+						try {
+							conn.commit();
+						} catch (SQLException e) {
+							try {
+								conn.rollback();
+							} catch (SQLException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+							e.printStackTrace();
+						}
 					}
-					e.printStackTrace();
+					
 				}
+				
+			} catch (SQLException e) {
+				result = "FAILURE";
+				reason = "Error Authenticating User";
 			}
 			
 		}
@@ -254,8 +271,6 @@ public class AccountDAO {
 			serverResponse.put("reason", "User exists but has not yet initialized their account!");
 			return serverResponse;
 		}
-
-//		TODO: check that PatientUserID is the right way
 		
 		String selectSQL = "";
 		if (doctorId != null && doctorId != "") {
@@ -274,7 +289,7 @@ public class AccountDAO {
 			
 			try (ResultSet rs = stmt.executeQuery()) {
 				if (!rs.next()) { // If ResultSet is empty, no records are found for the given IDs.
-					serverResponse.put("result", "FAILURE");
+					serverResponse.put("result", "SUCCESS");
 					serverResponse.put("reason", "No records found for the given user ID.");
 					return serverResponse;
 				}

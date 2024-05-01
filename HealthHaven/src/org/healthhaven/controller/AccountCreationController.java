@@ -105,6 +105,12 @@ public class AccountCreationController {
 					response.setText(jsonObj.getString("reason"));
 				} else if (jsonObj.getString("result").equals("SUCCESS")){
 					response.setText("Account created");
+					passwordTextfield.setText("");
+					legalFirstNameTextfield.setText("");
+					legalLastNameTextfield.setText("");
+					addressTextfield.setText("");
+					dobDatePicker.setValue(null);
+					
 				}
 			}
 				
