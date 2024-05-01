@@ -25,6 +25,7 @@ jobs:
           cd csci181s-course-project/; 
           git stash;
           git pull;
+          sudo systemctl stop servre.service;
           sudo systemctl enable server.service;
           sudo systemctl start server.service;
           sudo systemctl status server.service;
