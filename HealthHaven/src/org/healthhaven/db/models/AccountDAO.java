@@ -520,7 +520,7 @@ public class AccountDAO {
 			result = "FAILURE";
 			reason = "Account does not exist";
 		}
-		String authenticationUpdateSql = "UPDATE healthhaven.authentication SET password = ?, salt = ?, hashpass = ? WHERE userid = ?";
+		String authenticationUpdateSql = "UPDATE healthhaven.authentication SET salt = ?, hashpass = ? WHERE userid = ?";
 		if (!updateAuthenticationTable(conn, authenticationUpdateSql, newPassword, getUserIdFromEmail(conn, email))) {
 			result = "FAILURE";
 			reason = "Database Entry Error";
@@ -743,7 +743,6 @@ public class AccountDAO {
 				if (type.equals("PASSWORD_RESET")) {
 					sendTOTPEmail(email, TOTP.genTOTP2(data_rs.getString("totp_key")));
 				} else {
-					String truePassword = data_rs.getString("password");
 					
 					String trueHash = data_rs.getString("hashpass");
 					String trueSalt = data_rs.getString("salt");
