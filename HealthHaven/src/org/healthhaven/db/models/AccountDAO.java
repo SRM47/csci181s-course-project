@@ -71,18 +71,18 @@ public class AccountDAO {
 			}
 			
 			// Insert into authentication table
-			sql = "INSERT INTO healthhaven.authentication (userid, email, password, reset, salt, hashpass) VALUES (?, ?, ?, ?, ?, ?)";
+			sql = "INSERT INTO healthhaven.authentication (userid, email, reset, salt, hashpass) VALUES (?, ?, ?, ?, ?)";
 			
 			stmt = conn.prepareStatement(sql);
 			stmt.setString(1, userId);
 			stmt.setString(2, email);
-			stmt.setString(3, password); // TODO: Remove this at some point.
-			stmt.setBoolean(4, false);
+			// stmt.setString(3, password); // TODO: Remove this at some point.
+			stmt.setBoolean(3, false);
 			String salt = SaltyHash.genSalt();
-			stmt.setString(5, salt);
+			stmt.setString(4, salt);
 			
 			try {
-				stmt.setString(6, SaltyHash.pwHash(password, salt));
+				stmt.setString(5, SaltyHash.pwHash(password, salt));
 			} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
 				return returnFailureResponse(conn, e.getMessage());
 			}
