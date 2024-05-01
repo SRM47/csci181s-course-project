@@ -23,6 +23,7 @@
                   <TableColumn fx:id="timestampColumn" editable="false" prefWidth="200.0" sortable="false" text="Timestamp" />
                </columns>
             </TableView>
+            <Label fx:id="response" textFill="#ee0b0b" />
          </children>
       </VBox>
    </children>
