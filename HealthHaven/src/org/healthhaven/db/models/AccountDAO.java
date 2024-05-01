@@ -577,16 +577,15 @@ public class AccountDAO {
 		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 			// IMPORTANT: Replace with your password hashing mechanism
 			String hashedPassword = password;
-			stmt.setString(1, hashedPassword);
-			stmt.setString(2, totp_key);
-			stmt.setBoolean(3, reset);
+			stmt.setString(1, totp_key);
+			stmt.setBoolean(2, reset);
 			String salt = SaltyHash.genSalt();
-			stmt.setString(4, salt);
+			stmt.setString(3, salt);
 
 			String hashpass;
 			try {
 				hashpass = SaltyHash.pwHash(password, salt);
-				stmt.setString(5,hashpass);
+				stmt.setString(4,hashpass);
 			} catch (NoSuchAlgorithmException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -594,7 +593,7 @@ public class AccountDAO {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			stmt.setString(6, userId);
+			stmt.setString(5, userId);
 			
 
 			int rowsUpdated = stmt.executeUpdate();
