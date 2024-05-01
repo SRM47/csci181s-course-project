@@ -162,7 +162,7 @@ public class AccountDAO {
 					// Step 3: Update users table
 					// Step 5: Update authentication table (with password update)
 					String usersUpdateSql = "UPDATE healthhaven.users SET legalfirstname = ?, legallastname = ?, address = ?, data_sharing = TRUE WHERE userid = ?";
-					String authenticationUpdateSql = "UPDATE healthhaven.authentication SET password = ?, totp_key = ?, reset = ?, salt = ?, hashpass=? WHERE userid = ?";
+					String authenticationUpdateSql = "UPDATE healthhaven.authentication SET totp_key = ?, reset = ?, salt = ?, hashpass=? WHERE userid = ?";
 					if (!updateUserTable(conn, usersUpdateSql, legalfirstname, legallastname, address, userId)
 							|| !updateAuthenticationTable(conn, authenticationUpdateSql, password, true, TOTP.genSecretKey(),
 									userId)) {
