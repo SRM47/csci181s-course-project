@@ -187,6 +187,7 @@ public class AccountDAO {
 			} catch (SQLException e) {
 				result = "FAILURE";
 				reason = "Error Authenticating User";
+				e.printStackTrace();
 			}
 			
 		}
