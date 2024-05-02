@@ -1,67 +1,67 @@
-//package org.healthhaven.model;
-//
-//import org.healthhaven.server.ServerCommunicator;
-//import org.junit.jupiter.api.AfterEach;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.Test;
-//import org.mockito.ArgumentCaptor;
-//import org.mockito.MockedStatic;
-//import org.mockito.Mockito;
-//
-//import java.time.LocalDate;
-//
-//import static org.junit.jupiter.api.Assertions.assertEquals;
-//import static org.junit.jupiter.api.Assertions.assertTrue;
-//import static org.mockito.ArgumentMatchers.anyString;
-//
-//public class AccountCreationServiceTest {
-//    private MockedStatic<ServerCommunicator> mockedServerCommunicator;
-//
-//    @BeforeEach
-//    public void setUp() {
-//        // Initialize the mocked static method before each test
-//        mockedServerCommunicator = Mockito.mockStatic(ServerCommunicator.class);
-//        mockedServerCommunicator.when(() -> ServerCommunicator.communicateWithServer(anyString())).thenReturn("Mock Response");
-//    }
-//
-//    @Test
-//    public void testCreateUserForAllUserTypes() {
-//        // An array of all user types to test, including an undefined type to trigger the default case
-//        String[] userTypes = {"Patient", "Doctor", "Data_Analyst", "Superadmin", "UNDEFINED"};
-//        for (String userType : userTypes) {
-//            String result = AccountCreationService.createUser(userType, "test@example.com", "password", "John", "Doe", "123 Main St", LocalDate.of(1980, 1, 1));
-//            assertEquals("Mock Response", result, "The response for userType " + userType + " should be 'Mock Response'");
-//        }
-//    }
-//
-//    @Test
-//    public void testCreateUserWithInvalidUserType() {
-//        // Testing with an explicitly invalid user type to ensure the method handles it gracefully
-//        String result = AccountCreationService.createUser("INVALID_TYPE", "test@example.com", "password", "John", "Doe", "123 Main St", LocalDate.of(1980, 1, 1));
-//        assertEquals("Mock Response", result, "The response for an invalid userType should be 'Mock Response'");
-//    }
-//
-//    @Test
-//    public void testDetailsForPatientAccountCreation() {
-//        ArgumentCaptor<String> argumentCaptor = ArgumentCaptor.forClass(String.class);
-//        AccountCreationService.createUser("Patient", "jane.doe@example.com", "securepassword", "Jane", "Doe", "456 Elm Street", LocalDate.of(1990, 5, 15));
-//
-//        mockedServerCommunicator.verify(() -> ServerCommunicator.communicateWithServer(argumentCaptor.capture()));
-//        String capturedArgument = argumentCaptor.getValue();
-//
-//        // Print the argument to check what is actually captured
-//        System.out.println(capturedArgument);
-//
-//        // Assertions can be expanded to check for specific JSON fields
-//        assertTrue(capturedArgument.contains("\"accountType\":\"Patient\""), "The JSON must contain the patient account type.");
-//        assertTrue(capturedArgument.contains("\"email\":\"jane.doe@example.com\""), "The JSON must contain the correct email.");
-//    }
-//
-//
-//
-//    @AfterEach
-//    public void tearDown() {
-//        // Close the mocked static method after each test
-//        mockedServerCommunicator.close();
-//    }
-//}
+package org.healthhaven.model;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
+import org.healthhaven.server.ServerCommunicator;
+import org.json.JSONObject;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+
+class AccountCreationServiceTest {
+
+    @Test
+    void testCreateUser() {
+        try (MockedStatic<ServerCommunicator> mockedStatic = mockStatic(ServerCommunicator.class)) {
+            // Setup the expected server response and mock the communicateWithServer method
+            String expectedResponse = "Success";
+            mockedStatic.when(() -> ServerCommunicator.communicateWithServer(anyString())).thenReturn(expectedResponse);
+
+            // Test createUser with a sample input
+            String result = AccountCreationService.createUser("DOCTOR", "test@example.com", "password123", "John", "Doe", "123 Main St", LocalDate.of(1990, 1, 1));
+
+            // Assert that the result is as expected
+            assertEquals(expectedResponse, result, "The response from server should be handled correctly by createUser");
+        }
+    }
+
+    @Test
+    void testInsertNewAccountIntoDB() {
+        try (MockedStatic<ServerCommunicator> mockedStatic = mockStatic(ServerCommunicator.class)) {
+            String expectedResponse = "Database Entry Created";
+            mockedStatic.when(() -> ServerCommunicator.communicateWithServer(anyString())).thenReturn(expectedResponse);
+
+            User.Account userType = User.Account.DOCTOR;
+            String email = "test@example.com";
+            String password = "password123";
+            String firstName = "John";
+            String lastName = "Doe";
+            String address = "123 Main St";
+            LocalDate dob = LocalDate.of(1990, 1, 1);
+
+            String result = AccountCreationService.insertNewAccountIntoDB(userType, email, password, firstName, lastName, address, dob);
+
+            // Verify that the JSON sent to the server is as expected
+            ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+            mockedStatic.verify(() -> ServerCommunicator.communicateWithServer(captor.capture()));
+            JSONObject json = new JSONObject(captor.getValue());
+
+            assertEquals(email, json.getString("email"), "Email should match input");
+            assertEquals(password, json.getString("password"), "Password should match input");
+            assertEquals(firstName, json.getString("first_name"), "First name should match input");
+            assertEquals(lastName, json.getString("last_name"), "Last name should match input");
+            assertEquals(address, json.getString("address"), "Address should match input");
+            assertEquals(dob.toString(), json.getString("dob"), "DOB should match input");
+            assertEquals(userType.getAccountName(), json.getString("accountType"), "Account type should match input");
+
+            assertEquals(expectedResponse, result, "The response from server should be returned by the method");
+        }
+    }
+}

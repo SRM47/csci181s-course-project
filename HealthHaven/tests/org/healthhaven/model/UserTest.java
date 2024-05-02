@@ -111,16 +111,46 @@ public abstract class UserTest<T extends User> {
     }
 
 
-//    @Override
-//    public User createUser() {
-//        return new User("userId", "example@example.com", "John", "Doe", "123 Main St", LocalDate.of(1980, 1, 1));
-//    }
-//
-//    @Override
-//    protected Account getExpectedAccountType() {
-//        // Return the expected Account type for the specific test subclass
-//        return Account.NONE; // Or the appropriate Account type for this test
-//    }
+    @Test
+    public void testDeactivateValidate() {
+        try (MockedStatic<ServerCommunicator> mockedStatic = mockStatic(ServerCommunicator.class)) {
+            String expectedResponse = "Success";
+            mockedStatic.when(() -> ServerCommunicator.communicateWithServer(anyString())).thenReturn(expectedResponse);
+            
+            String password = "secure123";
+            String actualResponse = user.deactivate(password, "VALIDATE");
+
+            ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+            mockedStatic.verify(() -> ServerCommunicator.communicateWithServer(captor.capture()), atLeastOnce());
+            String capturedJson = captor.getValue();
+
+            JSONObject json = new JSONObject(capturedJson);
+            assertEquals("DEACTIVATE_ACCOUNT", json.getString("request"));
+            assertEquals("VALIDATE_ACCOUNT", json.getString("type"));
+            assertEquals(password, json.getString("password"));
+            assertEquals(expectedResponse, actualResponse, "Should return the expected success message from the server");
+        }
+    }
+
+    @Test
+    public void testDeactivateAccount() {
+        try (MockedStatic<ServerCommunicator> mockedStatic = mockStatic(ServerCommunicator.class)) {
+            String expectedResponse = "Success";
+            mockedStatic.when(() -> ServerCommunicator.communicateWithServer(anyString())).thenReturn(expectedResponse);
+            
+            String actualResponse = user.deactivate("", "DEACTIVATE");
+
+            ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+            mockedStatic.verify(() -> ServerCommunicator.communicateWithServer(captor.capture()), atLeastOnce());
+            String capturedJson = captor.getValue();
+
+            JSONObject json = new JSONObject(capturedJson);
+            assertEquals("DEACTIVATE_ACCOUNT", json.getString("request"));
+            assertEquals("DEACTIVATE_ACCOUNT", json.getString("type"));
+            assertEquals(user.getUserID(), json.getString("userId"));
+            assertEquals(expectedResponse, actualResponse, "Should return the expected success message from the server");
+        }
+    }
 
 
 
