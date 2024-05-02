@@ -11,11 +11,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -157,6 +161,107 @@ class AccountDAOTest {
         Mockito.verify(stmt).setString(3, "docId123"); // Verifies doctorId was set correctly
         Mockito.verify(stmt, atLeastOnce()).executeQuery(); // Verify that a query was executed
     }
+    
+    @Test
+    public void testGenerateAndUpdateNewUserCookie() throws SQLException {
+        // Mock the connection and prepared statement
+        Connection mockConn = mock(Connection.class);
+        PreparedStatement mockPstmt = mock(PreparedStatement.class);
+
+        // Configure the mock to return our prepared statement
+        when(mockConn.prepareStatement(any(String.class))).thenReturn(mockPstmt);
+
+        // Mock the executeUpdate and commit behaviors
+        when(mockPstmt.executeUpdate()).thenReturn(1);
+        doNothing().when(mockConn).commit();
+
+        // Generate the cookie and update the database
+        String userId = "user123";
+        String cookie = AccountDAO.generateAndUpdateNewUserCookie(mockConn, userId);
+
+        // Verify that methods are called correctly
+        verify(mockConn).prepareStatement(anyString());
+        verify(mockPstmt).setString(1, cookie);
+        verify(mockPstmt).setString(2, userId);
+        verify(mockPstmt).executeUpdate();
+        verify(mockConn).commit();
+
+        // Assert that a cookie was returned
+        assertNotNull(cookie);
+
+        // Check cookie format (optional)
+        assertNotEquals("", cookie); // Simple check to ensure cookie is not empty
+    }
+
+    @Test
+    public void testGenerateAndUpdateNewUserCookie_WithSQLException() throws SQLException {
+        // Mock the connection and prepared statement
+        Connection mockConn = mock(Connection.class);
+        PreparedStatement mockPstmt = mock(PreparedStatement.class);
+
+        // Configure the mock to throw an SQLException
+        when(mockConn.prepareStatement(any(String.class))).thenReturn(mockPstmt);
+        when(mockPstmt.executeUpdate()).thenThrow(new SQLException("Database error"));
+
+        // Attempt to generate the cookie and handle the exception
+        String userId = "user123";
+        String cookie = AccountDAO.generateAndUpdateNewUserCookie(mockConn, userId);
+
+        // Verify that rollback is called
+        verify(mockConn).rollback();
+
+        // Assert that null is returned due to the exception
+        assertNull(cookie);
+    }
+    
+    @Test
+    public void testLogoutUser_Successful() throws SQLException {
+        // Mock the connection and prepared statement
+        Connection mockConn = mock(Connection.class);
+        PreparedStatement mockPstmt = mock(PreparedStatement.class);
+
+        // Setup mock behavior
+        when(mockConn.prepareStatement(any(String.class))).thenReturn(mockPstmt);
+        when(mockPstmt.executeUpdate()).thenReturn(1);
+        doNothing().when(mockConn).commit();
+
+        // Perform the logout
+        String userId = "user456";
+        JSONObject response = AccountDAO.logoutUser(mockConn, userId);
+
+        // Verify interactions
+        verify(mockConn).prepareStatement(anyString());
+        verify(mockPstmt).setString(1, userId);
+        verify(mockPstmt).executeUpdate();
+        verify(mockConn).commit();
+
+        // Check the response
+        assertEquals("SUCCESS", response.getString("result"));
+        assertEquals("", response.getString("reason")); // Assuming no reason needed on success
+    }
+
+    @Test
+    public void testLogoutUser_FailureDueToSQLException() throws SQLException {
+        // Mock the connection and prepared statement
+        Connection mockConn = mock(Connection.class);
+        PreparedStatement mockPstmt = mock(PreparedStatement.class);
+
+        // Setup mock to throw an SQLException
+        when(mockConn.prepareStatement(any(String.class))).thenReturn(mockPstmt);
+        when(mockPstmt.executeUpdate()).thenThrow(new SQLException("Failed to execute update"));
+
+        // Perform the logout
+        String userId = "user456";
+        JSONObject response = AccountDAO.logoutUser(mockConn, userId);
+
+        // Verify rollback is called
+        verify(mockConn).rollback();
+
+        // Check the response
+        assertEquals("FAILURE", response.getString("result"));
+        assertEquals("SQL error failed to logout", response.getString("reason"));
+    }
+
     
 
 
